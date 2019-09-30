@@ -74,26 +74,26 @@ defined('MOODLE_INTERNAL') || die();
 //     }
 // }
 
-// //DEFINE("LOCALhoteles_city_dashboard_CATEGORY_PARENT_NAME", "parent_category");
-// //DEFINE("LOCALhoteles_city_dashboard_DEBUG", true);
+// //DEFINE("LOCAL_HOTELES_CITY_DASHBOARD_CATEGORY_PARENT_NAME", "parent_category");
+// //DEFINE("LOCAL_HOTELES_CITY_DASHBOARD_DEBUG", true);
 
 // //DEFINE("KPI_NA", 0);
 // //DEFINE("KPI_OPS", 1);
 // //DEFINE("KPI_HISTORICO", 2);
 // //DEFINE("KPI_SCORCARD", 3);
 
-// //DEFINE("LOCALhoteles_city_dashboard_NOFILTER", "__NOFILTER__");
+// //DEFINE("LOCAL_HOTELES_CITY_DASHBOARD_NOFILTER", "__NOFILTER__");
 
-// //DEFINE('LOCALhoteles_city_dashboard_PROGRAMAS_ENTRENAMIENTO', 1);
-// //DEFINE('LOCALhoteles_city_dashboard_CURSOS_CAMPANAS', 2);
-// //DEFINE('LOCALhoteles_city_dashboard_COURSE_KPI_COMPARATIVE', 3);
-// //DEFINE('LOCALhoteles_city_dashboard_AVAILABLE_COURSES', 4);
+// //DEFINE('LOCAL_HOTELES_CITY_DASHBOARD_PROGRAMAS_ENTRENAMIENTO', 1);
+// //DEFINE('LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS', 2);
+// //DEFINE('LOCAL_HOTELES_CITY_DASHBOARD_COURSE_KPI_COMPARATIVE', 3);
+// //DEFINE('LOCAL_HOTELES_CITY_DASHBOARD_AVAILABLE_COURSES', 4);
 
 // function local_hoteles_city_dashboard_get_course_tabs(){
 //     return $tabOptions = [
-//         LOCALhoteles_city_dashboard_PROGRAMAS_ENTRENAMIENTO => 'Programas de entrenamiento',
-//         LOCALhoteles_city_dashboard_CURSOS_CAMPANAS => 'Campañas',
-//         LOCALhoteles_city_dashboard_COURSE_KPI_COMPARATIVE => "Comparación de KPI's",
+//         LOCAL_HOTELES_CITY_DASHBOARD_PROGRAMAS_ENTRENAMIENTO => 'Programas de entrenamiento',
+//         LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS => 'Campañas',
+//         LOCAL_HOTELES_CITY_DASHBOARD_COURSE_KPI_COMPARATIVE => "Comparación de KPI's",
 //     ];
 // }
 
@@ -111,17 +111,17 @@ defined('MOODLE_INTERNAL') || die();
 //     ];
 // }
 
-// //DEFINE("COMPLETION_DEFAULT", 1);
-// //DEFINE("COMPLETION_DEFAULT_AND_GRADE", 2);
-// //DEFINE("COMPLETION_BY_GRADE", 3);
-// //DEFINE("COMPLETION_BY_BADGE", 4);
-// //DEFINE("COMPLETION_BY_ACTIVITY", 5);
-// //DEFINE("COMPLETION_BY_AVG", 6);
-// // //DEFINE("COMPLETION_BY_ATTENDANCE", 5);
+// //DEFINE("LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_DEFAULT", 1);
+// //DEFINE("LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_DEFAULT_AND_GRADE", 2);
+// //DEFINE("LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_BY_GRADE", 3);
+// //DEFINE("LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_BY_BADGE", 4);
+// //DEFINE("LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_BY_ACTIVITY", 5);
+// //DEFINE("LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_BY_AVG", 6);
+// // //DEFINE("LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_BY_ATTENDANCE", 5);
 
-// //DEFINE('hoteles_city_dashboard_INDICATORS', 'regiones/distritos/entrenadores/tiendas/puestos/ccosto');
-// //DEFINE('hoteles_city_dashboard_INDICATORS_FOR_KPIS', 'regiones/distritos/tiendas/periodos');
-// //DEFINE('hoteles_city_dashboard_CHARTS', ['bar' => 'Barras', 'pie' => 'Pay', 'gauge' => 'Círculo']); //'bar/pie/gauge');
+// //DEFINE('LOCAL_HOTELES_CITY_DASHBOARD_INDICATORS', 'regiones/distritos/entrenadores/tiendas/puestos/ccosto');
+// //DEFINE('LOCAL_HOTELES_CITY_DASHBOARD_INDICATORS_FOR_KPIS', 'regiones/distritos/tiendas/periodos');
+// //DEFINE('LOCAL_HOTELES_CITY_DASHBOARD_CHARTS', ['bar' => 'Barras', 'pie' => 'Pay', 'gauge' => 'Círculo']); //'bar/pie/gauge');
 
 
 // function local_hoteles_city_dashboard_relate_column_with_fields(array $columns, array $requiredFields, bool &$hasRequiredColumns){
@@ -253,11 +253,11 @@ defined('MOODLE_INTERNAL') || die();
 
 // function local_hoteles_city_dashboard_get_completion_modes(){
 //     return [
-//         COMPLETION_DEFAULT => "Finalizado/No finalizado (seguimiento de finalización configurado)",
-//         // COMPLETION_DEFAULT_AND_GRADE => "Finalizado/No finalizado más calificación (por ponderación en curso pero no establecida para finalización de curso)",
-//         COMPLETION_BY_GRADE => "Calificación de una actividad",
-//         COMPLETION_BY_BADGE => "Obtención de una insignia",
-//         COMPLETION_BY_ACTIVITY => "Finalización de una actividad",
+//         LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_DEFAULT => "Finalizado/No finalizado (seguimiento de finalización configurado)",
+//         // LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_DEFAULT_AND_GRADE => "Finalizado/No finalizado más calificación (por ponderación en curso pero no establecida para finalización de curso)",
+//         LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_BY_GRADE => "Calificación de una actividad",
+//         LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_BY_BADGE => "Obtención de una insignia",
+//         LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_BY_ACTIVITY => "Finalización de una actividad",
 //     ];
 // }
 
@@ -376,16 +376,10 @@ defined('MOODLE_INTERNAL') || die();
 
 // function local_hoteles_city_dashboard_get_email_provider_to_allow(){
 //     if($email_provider = get_config('local_hoteles_city_dashboard', 'allowed_email_addresses_in_course')){
-//         return $email_provider; // Ejemplo: @alsea.com.mx o @dominos.com.mx
+//         return $email_provider; // Ejemplo: @subitus.com.mx
 //     }else{
 //         return ""; // Permitirá todos los correos si no se configura esta sección
 //     }
-// }
-
-// function local_hoteles_city_dashboard_get_userid_with_dominos_mail(){
-//     global $DB;
-//     $query = "SELECT id FROM {user} WHERE ";
-//     return $DB->get_fieldset_sql($query);
 // }
 
 // function local_hoteles_city_dashboard_get_enrolled_users_ids(int $courseid, string $fecha_inicial, string $fecha_final){
@@ -419,30 +413,30 @@ defined('MOODLE_INTERNAL') || die();
 // }
 
 // function local_hoteles_city_dashboard_get_courses_with_filter(bool $allCourses = false, int $type){
-//     $LOCALhoteles_city_dashboard_CURSOS_CAMPANAS = get_config('local_hoteles_city_dashboard', 'LOCALhoteles_city_dashboard_CURSOS_CAMPANAS');
-//     if($LOCALhoteles_city_dashboard_CURSOS_CAMPANAS === false && $LOCALhoteles_city_dashboard_CURSOS_CAMPANAS == ''){
-//         $LOCALhoteles_city_dashboard_CURSOS_CAMPANAS = "";
+//     $LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS = get_config('local_hoteles_city_dashboard', 'LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS');
+//     if($LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS === false && $LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS == ''){
+//         $LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS = "";
 //     }
 //     switch ($type) {
-//         case LOCALhoteles_city_dashboard_AVAILABLE_COURSES:
+//         case LOCAL_HOTELES_CITY_DASHBOARD_AVAILABLE_COURSES:
 //             return local_hoteles_city_dashboard_get_courses($allCourses);
 //             break;
-//         case LOCALhoteles_city_dashboard_PROGRAMAS_ENTRENAMIENTO: // Cursos en línea
+//         case LOCAL_HOTELES_CITY_DASHBOARD_PROGRAMAS_ENTRENAMIENTO: // Cursos en línea
 //         # not in
-//             // $LOCALhoteles_city_dashboard_CURSOS_CAMPANAS = get_config('local_hoteles_city_dashboard', 'LOCALhoteles_city_dashboard_CURSOS_CAMPANAS');
-//             if($LOCALhoteles_city_dashboard_CURSOS_CAMPANAS != ""){
-//                 $where = " AND id NOT IN ({$LOCALhoteles_city_dashboard_CURSOS_CAMPANAS}) ";
+//             // $LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS = get_config('local_hoteles_city_dashboard', 'LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS');
+//             if($LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS != ""){
+//                 $where = " AND id NOT IN ({$LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS}) ";
 //             }else{
 //                 $where = "";
 //             }
 //             return local_hoteles_city_dashboard_get_courses($allCourses, $where);
 //             break;
         
-//         case LOCALhoteles_city_dashboard_CURSOS_CAMPANAS: // Cursos presenciales
+//         case LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS: // Cursos presenciales
 //         # where id in
-//             // $LOCALhoteles_city_dashboard_CURSOS_CAMPANAS = get_config('local_hoteles_city_dashboard', 'LOCALhoteles_city_dashboard_CURSOS_CAMPANAS');
-//             if($LOCALhoteles_city_dashboard_CURSOS_CAMPANAS != ""){
-//                 $where = " AND id IN ({$LOCALhoteles_city_dashboard_CURSOS_CAMPANAS}) ";
+//             // $LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS = get_config('local_hoteles_city_dashboard', 'LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS');
+//             if($LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS != ""){
+//                 $where = " AND id IN ({$LOCAL_HOTELES_CITY_DASHBOARD_CURSOS_CAMPANAS}) ";
 //             }else{
 //                 return array();
 //                 $where = "";
@@ -450,7 +444,7 @@ defined('MOODLE_INTERNAL') || die();
 //             return local_hoteles_city_dashboard_get_courses($allCourses, $where);
 //             break;
         
-//         case LOCALhoteles_city_dashboard_COURSE_KPI_COMPARATIVE: // Cruce de kpis KPI_NA
+//         case LOCAL_HOTELES_CITY_DASHBOARD_COURSE_KPI_COMPARATIVE: // Cruce de kpis KPI_NA
 //             $kpis = local_hoteles_city_dashboard_get_KPIS();
 //             $wherecourseidin = array();
 
@@ -552,7 +546,7 @@ defined('MOODLE_INTERNAL') || die();
 //  * @return array
 //  */
 // function local_hoteles_city_dashboard_get_courses_overview(int $type, array $params = array(), bool $allCourses = false){
-//     if($type === LOCALhoteles_city_dashboard_COURSE_KPI_COMPARATIVE){
+//     if($type === LOCAL_HOTELES_CITY_DASHBOARD_COURSE_KPI_COMPARATIVE){
 //         return local_hoteles_city_dashboard_get_kpi_overview($params, $allCourses);
 //     }
 //     $courses = local_hoteles_city_dashboard_get_courses_with_filter($allCourses, $type);
@@ -594,8 +588,8 @@ defined('MOODLE_INTERNAL') || die();
 //     return $slug;
 // } 
 
-// define('RETURN_RANDOM_DATA', false);
-// define('MAX_RANDOM_NUMBER', 500);
+// define('LOCAL_HOTELES_CITY_RETURN_RANDOM_DATA', false);
+// define('LOCAL_HOTELES_CITY_MAX_RANDOM_NUMBER', 500);
 // function local_hoteles_city_dashboard_get_course_information(int $courseid, bool $get_kpis = false, bool $get_activities = false, array $params = array(), bool $get_comparative = false){
 //     global $DB;
 //     $course = $DB->get_record('course', array('id' => $courseid));
@@ -611,8 +605,8 @@ defined('MOODLE_INTERNAL') || die();
 //     $fecha_inicial = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_inicial');
 //     $fecha_final = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_final');
 
-//     if(RETURN_RANDOM_DATA){
-//         $response->enrolled_users = random_int(100, MAX_RANDOM_NUMBER);
+//     if(LOCAL_HOTELES_CITY_RETURN_RANDOM_DATA){
+//         $response->enrolled_users = random_int(100, LOCAL_HOTELES_CITY_MAX_RANDOM_NUMBER);
 //         $response->approved_users = random_int(5, $response->enrolled_users);
 //         $response->percentage = local_hoteles_city_dashboard_percentage_of($response->approved_users, $response->enrolled_users);
 //         $response->not_approved_users = $response->enrolled_users - $response->approved_users;
@@ -633,13 +627,7 @@ defined('MOODLE_INTERNAL') || die();
 //             }
 //             $response->activities = $activities;
 //         }
-//         if($get_kpis){
-//             $response->kpi = local_hoteles_city_dashboard_get_kpi_info($courseid, $params);
-//         }
 //         return $response;
-//     }
-//     if($get_kpis){
-//         $response->kpi = local_hoteles_city_dashboard_get_kpi_info($courseid, $params);
 //     }
 //     $userids = local_hoteles_city_dashboard_get_user_ids_with_params($courseid, $params);
 //     if($userids === false){
@@ -710,38 +698,6 @@ defined('MOODLE_INTERNAL') || die();
 //     return $response;
 // }
 
-// function local_hoteles_city_dashboard_get_kpi_info(int $courseid, array $params = array()){
-//     $kpis = array();
-//     foreach(local_hoteles_city_dashboard_get_KPIS() as $key => $kpi){
-//         if($setting = get_config('local_hoteles_city_dashboard', 'kpi_' . $key)){
-//             $courses = explode(',', $setting);
-//             if(array_search($courseid, $courses) !== false){
-//                 $kpi_info = new stdClass();
-//                 $kpi_info->kpi_name = $kpi;
-//                 $kpi_info->kpi = $key;
-//                 switch($key){
-//                     case KPI_OPS: // 1 // Aprobado, no aprobado y destacado
-//                         $kpi_info->type = "CALIFICACION";
-//                         break;
-//                     case KPI_HISTORICO: // 2 retorna el número de quejas
-//                         $kpi_info->type = "NÚMERO DE QUEJAS";
-                        
-//                         break;
-//                     case KPI_SCORCARD: // 3
-//                         $kpi_info->type = "ROTACIÓN";
-//                         break;
-//                     default:
-//                     break;
-//                 }
-//                 $kpi_info->value    = local_hoteles_city_dashboard_get_kpi_results($key, $params);
-                
-//                 array_push($kpis, $kpi_info);
-//             }
-//         }
-//     }
-//     return $kpis;
-// }
-
 // function local_hoteles_city_dashboard_get_value_from_params(array $params, string $search, $returnIfNotExists = '', bool $apply_not_empty = false){
 //     if(array_key_exists($search, $params)){
 //         if($apply_not_empty){
@@ -753,60 +709,6 @@ defined('MOODLE_INTERNAL') || die();
 //         }
 //     }
 //     return $returnIfNotExists;
-// }
-
-// function local_hoteles_city_dashboard_get_kpi_results($kpi, array $params){
-//     // return null;
-//     global $DB;
-
-//     $fecha_kpi = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_kpi', date('Y-m-d', time()));
-//     $selected_date = new DateTime($fecha_kpi);
-//     $month = $selected_date->format('m');
-//     $year = $selected_date->format('Y');
-//     $sql_fecha_kpi = " AND YEAR(FROM_UNIXTIME(kpi_date)) = {$year} AND MONTH(FROM_UNIXTIME(kpi_date)) = $month ";
-    
-//     $sqlParams = array();
-//     $ccoms = "";
-//     if(isset($params['selected_ccoms'])){
-//         $ccoms = $params['selected_ccoms'];
-//         if($ccoms == '*') $ccoms = '';
-//         if( $ccoms != ''){
-//             $ccoms = " AND ccosto IN ({$ccoms}) ";
-//         }
-//     }
-
-//     $fecha_inicial = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_inicial');
-//     $fecha_final = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_final');
-    
-//     $campo_fecha = 'kpi_date';
-//     $filtro_fecha = "";
-//     $filtro_fecha = local_hoteles_city_dashboard_create_sql_dates($campo_fecha, $fecha_inicial, $fecha_final);
-
-//     $whereClauses = " 1 = 1 {$ccoms} {$filtro_fecha} {$sql_fecha_kpi} GROUP BY estatus ";
-//     switch($kpi){
-//         case KPI_OPS: // 1 // Aprobado, no aprobado y destacado
-//             $query = "SELECT estatus, COUNT(*) AS conteo FROM {dominos_kpis} WHERE {$whereClauses}";
-//             $result = $DB->get_records_sql_menu($query, $sqlParams);
-//             if(empty($result)) return null;
-//             return $result;
-//             break;
-//         case KPI_HISTORICO: // 2 retorna el número de quejas
-//             $query = "SELECT ROUND(AVG(quejas), 0) AS quejas FROM {dominos_kpis} WHERE {$whereClauses} ";
-//             $result = $DB->get_field_sql($query, $sqlParams);
-//             if(empty($result)) return null;
-//             return $result;
-//             break;
-//         case KPI_SCORCARD: // 3
-//             $query = "SELECT ROUND(AVG(rotacion_mensual), 2) AS rotacion_mensual, ROUND(AVG(rotacion_rolling)) AS rotacion_rolling
-//              FROM {dominos_kpis} WHERE {$whereClauses} ";
-//             $result = $DB->get_record_sql($query, $sqlParams);
-//             if(empty($result)) return null;
-//             return $result;
-//             break;
-//         default:
-//             return null;
-//         break;
-//     }
 // }
 
 // function local_hoteles_city_dashboard_create_sql_dates($campo_fecha, $fecha_inicial, $fecha_final){
@@ -857,7 +759,7 @@ defined('MOODLE_INTERNAL') || die();
 //     $query = "";
 //     // _log("Tipo de completado", $completion_mode);
 //     switch($completion_mode){
-//         case COMPLETION_DEFAULT:
+//         case LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_DEFAULT:
 //             if(empty($userids)){
 //                 $whereids = "";
 //             }else{
@@ -868,7 +770,7 @@ defined('MOODLE_INTERNAL') || die();
 //             $query = "SELECT count(*) AS completions FROM {course_completions} AS p
 //             WHERE p.course = {$courseid} AND p.timecompleted IS NOT NULL {$whereids} {$filtro_fecha} ";
 //         break;
-//         case COMPLETION_BY_GRADE:
+//         case LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_BY_GRADE:
 //             if(empty($userids)){
 //                 $whereids = "";
 //             }else{
@@ -877,7 +779,7 @@ defined('MOODLE_INTERNAL') || die();
 //             $grade_item = get_config('local_hoteles_city_dashboard', 'course_grade_activity_completion_' . $courseid);
 //             $minimum_score = get_config('local_hoteles_city_dashboard', 'course_minimum_score_' . $courseid);
 //             if($grade_item === false || $minimum_score === false){ // Missing configuration
-//                 // _log("Missing configuration courseid", $courseid, 'COMPLETION_BY_GRADE');
+//                 // _log("Missing configuration courseid", $courseid, 'LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_BY_GRADE');
 //                 return $response;
 //             }
 //             $campo_fecha = "gg.timemodified";
@@ -885,10 +787,10 @@ defined('MOODLE_INTERNAL') || die();
 //             $query = "SELECT count(*) AS completions FROM {grade_grades} AS gg WHERE
 //              gg.itemid = {$grade_item} AND final_grade >= {$minimum_score} {$whereids} {$filtro_fecha}";
 //         break;
-//         // case COMPLETION_BY_AVG:
-//         //     $query = "Query COMPLETION_BY_AVG";
+//         // case LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_BY_AVG:
+//         //     $query = "Query LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_BY_AVG";
 //         // break;
-//         case COMPLETION_BY_ACTIVITY:
+//         case LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_BY_ACTIVITY:
 //             if(empty($userids)){
 //                 $whereids = "";
 //             }else{
@@ -901,7 +803,7 @@ defined('MOODLE_INTERNAL') || die();
 //             $query = "SELECT count(*) AS completions from {course_modules_completion} WHERE
 //              coursemoduleid = {$completion_activity} AND completionstate IN (1,2) $whereids {$filtro_fecha}";
 //         break;
-//         case COMPLETION_BY_BADGE:
+//         case LOCAL_HOTELES_CITY_DASHBOARD_COMPLETION_BY_BADGE:
 //             // Obtener los id de usuarios inscritos en el curso
 //             $completion_badge = get_config('local_hoteles_city_dashboard', 'badge_completion_' . $courseid);
 //             // $ids = implode(',', $ids);
@@ -1077,7 +979,7 @@ defined('MOODLE_INTERNAL') || die();
 // // }
 
 // function local_hoteles_city_dashboard_get_indicators(string $from = ''){
-//     $indicators = explode('/', hoteles_city_dashboard_INDICATORS);
+//     $indicators = explode('/', LOCAL_HOTELES_CITY_DASHBOARD_INDICATORS);
 //     if(!empty($from)){
 //         $exists = array_search($from, $indicators);
 //         if($exists !== false){
@@ -1093,7 +995,7 @@ defined('MOODLE_INTERNAL') || die();
 // }
 
 // function local_hoteles_city_dashboard_get_kpi_indicators(string $from = ''){
-//     $indicators = explode('/', hoteles_city_dashboard_INDICATORS_FOR_KPIS);
+//     $indicators = explode('/', LOCAL_HOTELES_CITY_DASHBOARD_INDICATORS_FOR_KPIS);
 //     if(!empty($from)){
 //         $exists = array_search($from, $indicators);
 //         if($exists !== false){
@@ -1109,7 +1011,7 @@ defined('MOODLE_INTERNAL') || die();
 // }
 
 // function local_hoteles_city_dashboard_get_charts(){
-//     return hoteles_city_dashboard_CHARTS;
+//     return LOCAL_HOTELES_CITY_DASHBOARD_CHARTS;
 // }
 
 // function local_hoteles_city_dashboard_get_profile_fields(){
@@ -1129,7 +1031,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // if(!function_exists('_log')){
 //     function _log(...$parameters){
-//         if(!LOCALhoteles_city_dashboard_DEBUG){
+//         if(!LOCAL_HOTELES_CITY_DASHBOARD_DEBUG){
 //             return;
 //         }
 //         $output = "";
@@ -1252,7 +1154,7 @@ defined('MOODLE_INTERNAL') || die();
 // }
 
 // function local_hoteles_city_dashboard_get_category_parent(){
-//     if($data = get_config('local_hoteles_city_dashboard', LOCALhoteles_city_dashboard_CATEGORY_PARENT_NAME)){
+//     if($data = get_config('local_hoteles_city_dashboard', LOCAL_HOTELES_CITY_DASHBOARD_CATEGORY_PARENT_NAME)){
 //         return $data;
 //     }else{
 //         return 1; // Miscelaneous
@@ -1298,14 +1200,14 @@ defined('MOODLE_INTERNAL') || die();
 //     global $DB;
 //     $courseactivities = local_hoteles_city_dashboard_get_activities($courseid, " AND completion != 0 ");
 //     foreach($courseactivities as $key => $activity){
-//         $activityInformation = local_dominos_dashboard_get_activity_completions($activityid = $key, $userids, $title = $activity, $fecha_inicial, $fecha_final);
+//         $activityInformation = local_hoteles_city_dashboard_get_activity_completions($activityid = $key, $userids, $title = $activity, $fecha_inicial, $fecha_final);
 //         array_push($activities, $activityInformation);
 //     }
 //     usort($activities, function ($a, $b) {return $a['completed'] < $b['completed'];});
 //     return $activities;
 // }
 
-// function local_dominos_dashboard_get_activity_completions(int $activityid, string $userids = "", $title = "", string $fecha_inicial, string $fecha_final){
+// function local_hoteles_city_dashboard_get_activity_completions(int $activityid, string $userids = "", $title = "", string $fecha_inicial, string $fecha_final){
 //     $campo_fecha = "timemodified";
 //     $filtro_fecha = "";
 //     $filtro_fecha = local_hoteles_city_dashboard_create_sql_dates($campo_fecha, $fecha_inicial, $fecha_final);
@@ -1426,74 +1328,3 @@ defined('MOODLE_INTERNAL') || die();
 //     return $m;
 // }
 
-// function local_hoteles_city_dashboard_make_all_historic_reports(){
-//     $courses =  local_hoteles_city_dashboard_get_courses();
-//     foreach($courses as $course){
-//         local_hoteles_city_dashboard_make_historic_report($course->id);
-//     }
-// }
-
-// function local_hoteles_city_dashboard_make_historic_report(int $courseid){
-//     global $DB;
-//     $currenttime = time();
-//     $course = $DB->get_record('course', array('id' => $courseid), 'id, shortname, fullname');
-//     if($course == false){
-//         return false;
-//     }
-//     $course_information = local_hoteles_city_dashboard_get_course_information($course->id, $kpis = false, $activities = false, $params = array(), false);
-//     local_hoteles_city_dashboard_insert_historic_record($course_information, $currenttime, $course);
-//     foreach (local_hoteles_city_dashboard_get_indicators() as $indicator) {
-//         foreach (local_hoteles_city_dashboard_get_catalogue($indicator) as $item) {
-//             $params = array();
-//             $params[$indicator] = $item;
-//             $course_information = local_hoteles_city_dashboard_get_course_information($courseid, $kpis = false, $activities = false, $params = array(), false);
-//             local_hoteles_city_dashboard_insert_historic_record($course_information, $currenttime, $course, $indicator, $item);
-//         }
-//     }
-// }
-
-// function local_hoteles_city_dashboard_insert_historic_record(stdClass $course_information, $currenttime, stdClass $course, $filterid = "", $filtertext = ""){
-//     global $DB;
-//     _log($course);
-//     $record = new stdClass();
-//     // $record->id             = ''; // autoincrement
-//     $record->courseid       = intval($course->id);
-//     $record->shortname      = $course->shortname;
-//     $record->fullname       = $course->fullname;
-//     $record->enrolled_users = $course_information->enrolled_users;
-//     $record->approved_users = $course_information->approved_users;
-//     $record->filterid       = $filterid;
-//     $record->filtertext     = $filtertext;
-//     $record->timecreated    = $currenttime;
-//     return $DB->insert_record('dominos_historico', $record);
-// }
-
-// function local_hoteles_city_dashboard_get_historic_reports(int $courseid, $params = array()){
-//     if(RETURN_RANDOM_DATA){
-//         $response = array();
-//         for($i = 0; $i < 10; $i++){
-//             $temp = new stdClass();
-//             $temp->id = $i;
-//             $temp->courseid = $courseid;
-//             $temp->shortname = "Curso " . $i;
-//             $temp->fullname = "" . $i;
-//             $temp->enrolled_users = random_int(0, MAX_RANDOM_NUMBER);
-//             $temp->approved_users = random_int(0, $temp->enrolled_users);
-//             $temp->filterid = "";
-//             $temp->filtertext = "";
-//             $temp->timecreated = "";
-//             $temp->fecha = date('d-m-Y');
-//             array_push($response, $temp);
-//         }
-//         return $response;
-//     }
-//     global $DB;
-//     return $DB->get_records('dominos_historico', array('courseid' => $courseid), ' fecha desc ', '*, from_unixtime(timecreated) as fecha' , $limitfrom = 0, $limintnum = 10);
-//     // Pass: Subitus2019! ALTER TABLE mdl_dominos_historico CHANGE COLUMN course courseid BIGINT(10) NULL DEFAULT NULL AFTER id;
-// }
-
-// function local_hoteles_city_dashboard_get_historic_dates(int $courseid){
-//     global $DB;
-//     $query = "SELECT distinct DATE(FROM_UNIXTIME(timecreated)) FROM {dominos_historico} WHERE courseid = ?";
-//     return $DB->get_recordset_sql($query, array($courseid));
-// }
