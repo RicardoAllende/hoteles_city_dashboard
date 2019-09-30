@@ -25,14 +25,35 @@
 
 
 $capabilities = array(
-    'local/hoteles_city_dashboard:report' => array(
+    'local/hoteles_city_dashboard:view' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
             'manager' => CAP_ALLOW
         )
     ),
-    'local/hoteles_city_dashboard:manageusers' => array(
+    'local/hoteles_city_dashboard:regional' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        )
+    ),
+    'local/hoteles_city_dashboard:gerente' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        )
+    ),
+    'local/hoteles_city_dashboard:ao' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        )
+    ),
+    'local/hoteles_city_dashboard:administrativo' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(

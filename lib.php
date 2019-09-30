@@ -53,23 +53,15 @@ function local_hoteles_city_dashboard_user_has_access(bool $throwError = true){
 
 // Agrega enlace al Dashboard en el menú lateral de Moodle
 function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) {
-    _log('Dentro de la función local_hoteles_city_dashboard_extend_navigation');
-    $has_capability = local_hoteles_city_dashboard_user_has_access(false);
-    if($has_capability){
-        global $CFG;
+    global $CFG; 
+    if(has_capability('local/hoteles_city_dashboard:view', context_system::instance())){
         $node = $nav->add (
             get_string('pluginname', 'local_hoteles_city_dashboard'),
-            new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/dashboard.php' )
-        );
-        $node->showinflatnavigation = true;
-        $node = $nav->add (
-            'Configuraciones ' . get_string('pluginname', 'local_hoteles_city_dashboard'),
-            new moodle_url( $CFG->wwwroot . '/admin/settings.php?section=local_hoteles_city_dashboard' )
-        );
-        $node->showinflatnavigation = true;
-        $node = $nav->add (
-            "Subir KPI's en csv " . get_string('pluginname', 'local_hoteles_city_dashboard'),
-            new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/subir_archivo.php' )
+            new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/dashboard.php' ),
+            navigation_node::TYPE_CUSTOM,
+            'Dashboard',
+            'local_hoteles_city_dashboard',
+            new pix_icon("b/report", 'moodle')
         );
         $node->showinflatnavigation = true;
     }
