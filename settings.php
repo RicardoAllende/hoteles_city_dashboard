@@ -31,11 +31,13 @@ if ($hassiteconfig) {
 
     require_once(__DIR__ . '/lib.php');
     $lhcd_pluginname = 'local_hoteles_city_dashboard';
+
     $settings = new theme_boost_admin_settingspage_tabs($lhcd_pluginname, get_string('pluginname', $lhcd_pluginname));
     $ADMIN->add('modules', $settings);
-    $page = new admin_settingpage($lhcd_pluginname . 'tab_userform', get_string('tab_userform', $lhcd_pluginname));
 
-    $default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields();
+    $page = new admin_settingpage($lhcd_pluginname . 'tab_userform', get_string('tab_userform', $lhcd_pluginname)); // Inicia pestaña
+
+    $default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields(true);
     $name = $lhcd_pluginname . '/userformdefaultfields';
     $title = get_string('userformdefaultfields', $lhcd_pluginname);
     $description = get_string('userformdefaultfields' . '_desc', $lhcd_pluginname);
@@ -54,5 +56,29 @@ if ($hassiteconfig) {
     $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $custom_fields);
     $page->add($setting);
     
-    $settings->add($page);
+    $settings->add($page); // Se agrega pestaña a la administración del plugin
+
+    // $page = new admin_settingpage($lhcd_pluginname . 'tab_userform', get_string('tab_userform', $lhcd_pluginname)); // Inicia pestaña
+
+    // $default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields();
+    // $name = $lhcd_pluginname . '/userformdefaultfields';
+    // $title = get_string('userformdefaultfields', $lhcd_pluginname);
+    // $description = get_string('userformdefaultfields' . '_desc', $lhcd_pluginname);
+    // $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $default_profile_fields);
+    // $page->add($setting);
+    
+    // $name = new lang_string('userformimage', $lhcd_pluginname);
+    // $description = new lang_string('userformimage_desc', $lhcd_pluginname);
+    // $setting = new admin_setting_configcheckbox($lhcd_pluginname . '/userformimage', $name, $description, 0);
+    // $page->add($setting);
+
+    // $custom_fields = local_hoteles_city_dashboard_get_custom_profile_fields();
+    // $name = $lhcd_pluginname . '/userformcustomfields';
+    // $title = get_string('userformcustomfields', $lhcd_pluginname);
+    // $description = get_string('userformcustomfields' . '_desc', $lhcd_pluginname);
+    // $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $custom_fields);
+    // $page->add($setting);
+    
+    // $settings->add($page); // Se agrega pestaña a la administración del plugin
+
 }

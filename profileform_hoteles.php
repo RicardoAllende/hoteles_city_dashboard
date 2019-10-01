@@ -31,7 +31,7 @@ require_once(__DIR__ . '/lib.php');
 // require_once($CFG->dirroot . '/user/profile/lib.php');
 
 /**
- * Class profileform_hoteles.
+ * Class profileform_hoteles. Código tomado de user\editadvanced_form.php para editar su funcionmiento
  *
  * @copyright 1999 Martin Dougiamas  http://dougiamas.com
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

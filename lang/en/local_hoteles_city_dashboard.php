@@ -34,3 +34,5 @@ $string['userformdefaultfields'] = 'Campos formulario de usuario';
 $string['userformdefaultfields_desc'] = 'Seleccione los campos a mostrar en el formulario de usuario. Presione ctrl para seleccionar varios campos';
 $string['userformimage'] = '¿Incluir foto en formulario?';
 $string['userformimage_desc'] = 'Seleccione esta opción para permitir editar imágenes en el formulario del dashboard administrativo Hoteles City';
+
+$string['tab_profile'] = 'Campos del reporte';
