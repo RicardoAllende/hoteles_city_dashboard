@@ -27,6 +27,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 require_once($CFG->dirroot.'/lib/formslib.php');
+require_once(__DIR__ . '/lib.php');
 // require_once($CFG->dirroot . '/user/profile/lib.php');
 
 /**
@@ -107,6 +108,8 @@ class profileform_hoteles extends moodleform {
 
         // $mform->addElement('selectgroups', 'auth', get_string('chooseauthmethod', 'auth'), $authoptions);
         // $mform->addHelpButton('auth', 'chooseauthmethod', 'auth');
+        $mform->addElement('hidden', 'auth', 'manual');
+        $mform->setType('auth', PARAM_TEXT);
 
         $mform->addElement('advcheckbox', 'suspended', get_string('suspended', 'auth'));
         $mform->addHelpButton('suspended', 'suspended', 'auth');

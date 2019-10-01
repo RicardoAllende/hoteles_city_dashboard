@@ -98,13 +98,13 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
         $mform->setType($fullname, PARAM_NOTAGS);
     }
 
-    // $enabledusernamefields = useredit_get_enabled_name_fields();
+    $enabledusernamefields = useredit_get_enabled_name_fields();
     // _log('$enabledusernamefields', $enabledusernamefields);
-    // // Add the enabled additional name fields.
-    // foreach ($enabledusernamefields as $addname) {
-    //     $mform->addElement('text', $addname,  get_string($addname), 'maxlength="100" size="30"');
-    //     $mform->setType($addname, PARAM_NOTAGS);
-    // }
+    // Add the enabled additional name fields.
+    foreach ($enabledusernamefields as $addname) {
+        $mform->addElement('text', $addname,  get_string($addname), 'maxlength="100" size="30"');
+        $mform->setType($addname, PARAM_NOTAGS);
+    }
 
     // Do not show email field if change confirmation is pending.
     // if ($user->id > 0 and !empty($CFG->emailchangeconfirmation) and !empty($user->preference_newemail)) {
@@ -181,36 +181,38 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     }
 
     // Edición de imágenes
-    // if (empty($USER->newadminuser)) {
-    //     $mform->addElement('header', 'moodle_picture', get_string('pictureofuser'));
-    //     $mform->setExpanded('moodle_picture', true);
-
-    //     if (!empty($CFG->enablegravatar)) {
-    //         $mform->addElement('html', html_writer::tag('p', get_string('gravatarenabled')));
-    //     }
-
-    //     $mform->addElement('static', 'currentpicture', get_string('currentpicture'));
-
-    //     $mform->addElement('checkbox', 'deletepicture', get_string('deletepicture'));
-    //     $mform->setDefault('deletepicture', 0);
-
-    //     $mform->addElement('filemanager', 'imagefile', get_string('newpicture'), '', $filemanageroptions);
-    //     $mform->addHelpButton('imagefile', 'newpicture');
-
-    //     $mform->addElement('text', 'imagealt', get_string('imagealt'), 'maxlength="100" size="30"');
-    //     $mform->setType('imagealt', PARAM_TEXT);
-
+    // if(in_array('imagen', $allowed_fields)){
+        if (empty($USER->newadminuser)) {
+            $mform->addElement('header', 'moodle_picture', get_string('pictureofuser'));
+            $mform->setExpanded('moodle_picture', true);
+    
+            if (!empty($CFG->enablegravatar)) {
+                $mform->addElement('html', html_writer::tag('p', get_string('gravatarenabled')));
+            }
+    
+            $mform->addElement('static', 'currentpicture', get_string('currentpicture'));
+    
+            $mform->addElement('checkbox', 'deletepicture', get_string('deletepicture'));
+            $mform->setDefault('deletepicture', 0);
+    
+            $mform->addElement('filemanager', 'imagefile', get_string('newpicture'), '', $filemanageroptions);
+            $mform->addHelpButton('imagefile', 'newpicture');
+    
+            $mform->addElement('text', 'imagealt', get_string('imagealt'), 'maxlength="100" size="30"');
+            $mform->setType('imagealt', PARAM_TEXT);
+    
+        }
     // }
 
     // Display user name fields that are not currenlty enabled here if there are any.
-    // $disabledusernamefields = useredit_get_disabled_name_fields($enabledusernamefields);
-    // if (count($disabledusernamefields) > 0) {
-    //     $mform->addElement('header', 'moodle_additional_names', get_string('additionalnames'));
-    //     foreach ($disabledusernamefields as $allname) {
-    //         $mform->addElement('text', $allname, get_string($allname), 'maxlength="100" size="30"');
-    //         $mform->setType($allname, PARAM_NOTAGS);
-    //     }
-    // }
+    $disabledusernamefields = useredit_get_disabled_name_fields($enabledusernamefields);
+    if (count($disabledusernamefields) > 0) {
+        $mform->addElement('header', 'moodle_additional_names', get_string('additionalnames'));
+        foreach ($disabledusernamefields as $allname) {
+            $mform->addElement('text', $allname, get_string($allname), 'maxlength="100" size="30"');
+            $mform->setType($allname, PARAM_NOTAGS);
+        }
+    }
     if(in_array('interests', $allowed_fields)){ 
         if (core_tag_tag::is_enabled('core', 'user') and empty($USER->newadminuser)) {
             $mform->addElement('header', 'moodle_interests', get_string('interests'));
