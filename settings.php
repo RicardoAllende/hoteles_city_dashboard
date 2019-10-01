@@ -25,7 +25,29 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-if ($ADMIN->fulltree) {
-   // TODO: Define the plugin settings page.
-   // https://docs.moodle.org/dev/Admin_settings
+if ($hassiteconfig) {
+    // TODO: Define the plugin settings page.
+    // https://docs.moodle.org/dev/Admin_settings
+
+    require_once(__DIR__ . '/lib.php');
+    $lhcd_pluginname = 'local_hoteles_city_dashboard';
+    $settings = new theme_boost_admin_settingspage_tabs($lhcd_pluginname, get_string('pluginname', $lhcd_pluginname));
+    $ADMIN->add('modules', $settings);
+    $page = new admin_settingpage($lhcd_pluginname . 'tab_signin', get_string('tab_signin', $lhcd_pluginname));
+
+    $default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields();
+    $name = $lhcd_pluginname . '/signindefaultfields';
+    $title = get_string('signindefaultfields', $lhcd_pluginname);
+    $description = get_string('signindefaultfields' . '_desc', $lhcd_pluginname);
+    $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $default_profile_fields);
+    $page->add($setting);
+    
+    $custom_fields = local_hoteles_city_dashboard_get_custom_profile_fields();
+    $name = $lhcd_pluginname . '/signincustomfields';
+    $title = get_string('signincustomfields', $lhcd_pluginname);
+    $description = get_string('signincustomfields' . '_desc', $lhcd_pluginname);
+    $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $custom_fields);
+    $page->add($setting);
+    
+    $settings->add($page);
 }

@@ -24,18 +24,21 @@
  */
 require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/profileform_hoteles.php');
-require_once($CFG->libdir.'/gdlib.php');
+// require_once($CFG->libdir.'/gdlib.php');
 require_once($CFG->libdir.'/adminlib.php');
 // require_once($CFG->dirroot.'/user/editadvanced_form.php');
 require_once($CFG->dirroot.'/user/editlib.php');
 require_once($CFG->dirroot.'/user/profile/lib.php');
 require_once($CFG->dirroot.'/user/lib.php');
-require_once($CFG->dirroot.'/webservice/lib.php');
+// require_once($CFG->dirroot.'/webservice/lib.php');
+// require_once($CFG->dirroot.'/lib/formslib.php');
+
+$id     = optional_param('id', -1, PARAM_INT);    // User id; -1 if creating new user.
+$PAGE->set_url($url = $CFG->wwwroot . '/local/hoteles_city_dashboard.php', array('id' => $id));
 
 global $DB;
-$id     = optional_param('id', $USER->id, PARAM_INT);    // User id; -1 if creating new user.
 
-$systemcontext = get_system_context();
+$systemcontext = context_system::instance();
 
 if ($id == -1) {
     // Creating new user.

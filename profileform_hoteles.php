@@ -27,7 +27,8 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 require_once($CFG->dirroot.'/lib/formslib.php');
-require_once($CFG->dirroot . '/user/profile/lib.php');
+require_once(__DIR__ . '/custom_editlib.php');
+// require_once($CFG->dirroot . '/user/profile/lib.php');
 
 /**
  * Class profileform_hoteles.
@@ -68,61 +69,61 @@ class profileform_hoteles extends moodleform {
         // Print the required moodle fields first.
         $mform->addElement('header', 'moodle', $strgeneral);
 
-        $auths = core_component::get_plugin_list('auth');
-        $enabled = get_string('pluginenabled', 'core_plugin');
-        $disabled = get_string('plugindisabled', 'core_plugin');
-        $authoptions = array($enabled => array(), $disabled => array());
-        $cannotchangepass = array();
-        $cannotchangeusername = array();
-        foreach ($auths as $auth => $unused) {
-            $authinst = get_auth_plugin($auth);
+        // $auths = core_component::get_plugin_list('auth');
+        // $enabled = get_string('pluginenabled', 'core_plugin');
+        // $disabled = get_string('plugindisabled', 'core_plugin');
+        // $authoptions = array($enabled => array(), $disabled => array());
+        // $cannotchangepass = array();
+        // $cannotchangeusername = array();
+        // foreach ($auths as $auth => $unused) {
+        //     $authinst = get_auth_plugin($auth);
 
-            if (!$authinst->is_internal()) {
-                $cannotchangeusername[] = $auth;
-            }
+        //     if (!$authinst->is_internal()) {
+        //         $cannotchangeusername[] = $auth;
+        //     }
 
-            $passwordurl = $authinst->change_password_url();
-            if (!($authinst->can_change_password() && empty($passwordurl))) {
-                if ($userid < 1 and $authinst->is_internal()) {
-                    // This is unlikely but we can not create account without password
-                    // when plugin uses passwords, we need to set it initially at least.
-                } else {
-                    $cannotchangepass[] = $auth;
-                }
-            }
-            if (is_enabled_auth($auth)) {
-                $authoptions[$enabled][$auth] = get_string('pluginname', "auth_{$auth}");
-            } else {
-                $authoptions[$disabled][$auth] = get_string('pluginname', "auth_{$auth}");
-            }
-        }
+        //     $passwordurl = $authinst->change_password_url();
+        //     if (!($authinst->can_change_password() && empty($passwordurl))) {
+        //         if ($userid < 1 and $authinst->is_internal()) {
+        //             // This is unlikely but we can not create account without password
+        //             // when plugin uses passwords, we need to set it initially at least.
+        //         } else {
+        //             $cannotchangepass[] = $auth;
+        //         }
+        //     }
+        //     if (is_enabled_auth($auth)) {
+        //         $authoptions[$enabled][$auth] = get_string('pluginname', "auth_{$auth}");
+        //     } else {
+        //         $authoptions[$disabled][$auth] = get_string('pluginname', "auth_{$auth}");
+        //     }
+        // }
 
         $mform->addElement('text', 'username', get_string('username'), 'size="20"');
         $mform->addHelpButton('username', 'username', 'auth');
         $mform->setType('username', PARAM_RAW);
 
-        if ($userid !== -1) {
-            $mform->disabledIf('username', 'auth', 'in', $cannotchangeusername);
-        }
+        // if ($userid !== -1) {
+        //     $mform->disabledIf('username', 'auth', 'in', $cannotchangeusername);
+        // }
 
-        $mform->addElement('selectgroups', 'auth', get_string('chooseauthmethod', 'auth'), $authoptions);
-        $mform->addHelpButton('auth', 'chooseauthmethod', 'auth');
+        // $mform->addElement('selectgroups', 'auth', get_string('chooseauthmethod', 'auth'), $authoptions);
+        // $mform->addHelpButton('auth', 'chooseauthmethod', 'auth');
 
         $mform->addElement('advcheckbox', 'suspended', get_string('suspended', 'auth'));
         $mform->addHelpButton('suspended', 'suspended', 'auth');
 
         $mform->addElement('checkbox', 'createpassword', get_string('createpassword', 'auth'));
-        $mform->disabledIf('createpassword', 'auth', 'in', $cannotchangepass);
+        // $mform->disabledIf('createpassword', 'auth', 'in', $cannotchangepass);
 
-        if (!empty($CFG->passwordpolicy)) {
-            $mform->addElement('static', 'passwordpolicyinfo', '', print_password_policy());
-        }
+        // if (!empty($CFG->passwordpolicy)) {
+        //     $mform->addElement('static', 'passwordpolicyinfo', '', print_password_policy());
+        // }
         $mform->addElement('passwordunmask', 'newpassword', get_string('newpassword'), 'size="20"');
         $mform->addHelpButton('newpassword', 'newpassword');
         $mform->setType('newpassword', core_user::get_property_type('password'));
         $mform->disabledIf('newpassword', 'createpassword', 'checked');
 
-        $mform->disabledIf('newpassword', 'auth', 'in', $cannotchangepass);
+        // $mform->disabledIf('newpassword', 'auth', 'in', $cannotchangepass);
 
         // // Check if the user has active external tokens.
         // if ($userid and empty($CFG->passwordchangetokendeletion)) {
@@ -144,10 +145,10 @@ class profileform_hoteles extends moodleform {
         $mform->disabledIf('preference_auth_forcepasswordchange', 'createpassword', 'checked');
 
         // Shared fields.
-        useredit_shared_definition($mform, $editoroptions, $filemanageroptions, $user);
+        custom_useredit_shared_definition($mform, $editoroptions, $filemanageroptions, $user);
 
         // Next the customisable profile fields.
-        profile_definition($mform, $userid);
+        custom_profile_definition($mform, $userid);
 
         if ($userid == -1) {
             $btnstring = get_string('createuser');
@@ -179,64 +180,64 @@ class profileform_hoteles extends moodleform {
             $user = false;
         }
 
-        // User can not change own auth method.
-        if ($userid == $USER->id) {
-            $mform->hardFreeze('auth');
-            $mform->hardFreeze('preference_auth_forcepasswordchange');
-        }
+        // // User can not change own auth method.
+        // if ($userid == $USER->id) {
+        //     $mform->hardFreeze('auth');
+        //     $mform->hardFreeze('preference_auth_forcepasswordchange');
+        // }
 
-        // Admin must choose some password and supply correct email.
-        if (!empty($USER->newadminuser)) {
-            $mform->addRule('newpassword', get_string('required'), 'required', null, 'client');
-            if ($mform->elementExists('suspended')) {
-                $mform->removeElement('suspended');
-            }
-        }
+        // // Admin must choose some password and supply correct email.
+        // if (!empty($USER->newadminuser)) {
+        //     $mform->addRule('newpassword', get_string('required'), 'required', null, 'client');
+        //     if ($mform->elementExists('suspended')) {
+        //         $mform->removeElement('suspended');
+        //     }
+        // }
 
         // Require password for new users.
-        if ($userid > 0) {
-            if ($mform->elementExists('createpassword')) {
-                $mform->removeElement('createpassword');
-            }
-        }
+        // if ($userid > 0) {
+        //     if ($mform->elementExists('createpassword')) {
+        //         $mform->removeElement('createpassword');
+        //     }
+        // }
 
-        if ($user and is_mnet_remote_user($user)) {
-            // Only local accounts can be suspended.
-            if ($mform->elementExists('suspended')) {
-                $mform->removeElement('suspended');
-            }
-        }
-        if ($user and ($user->id == $USER->id or is_siteadmin($user))) {
-            // Prevent self and admin mess ups.
-            if ($mform->elementExists('suspended')) {
-                $mform->hardFreeze('suspended');
-            }
-        }
+        // if ($user and is_mnet_remote_user($user)) {
+        //     // Only local accounts can be suspended.
+        //     if ($mform->elementExists('suspended')) {
+        //         $mform->removeElement('suspended');
+        //     }
+        // }
+        // if ($user and ($user->id == $USER->id or is_siteadmin($user))) {
+        //     // Prevent self and admin mess ups.
+        //     if ($mform->elementExists('suspended')) {
+        //         $mform->hardFreeze('suspended');
+        //     }
+        // }
 
         // Print picture.
-        if (empty($USER->newadminuser)) {
-            if ($user) {
-                $context = context_user::instance($user->id, MUST_EXIST);
-                $fs = get_file_storage();
-                $hasuploadedpicture = ($fs->file_exists($context->id, 'user', 'icon', 0, '/', 'f2.png') || $fs->file_exists($context->id, 'user', 'icon', 0, '/', 'f2.jpg'));
-                if (!empty($user->picture) && $hasuploadedpicture) {
-                    $imagevalue = $OUTPUT->user_picture($user, array('courseid' => SITEID, 'size' => 64));
-                } else {
-                    $imagevalue = get_string('none');
-                }
-            } else {
-                $imagevalue = get_string('none');
-            }
-            $imageelement = $mform->getElement('currentpicture');
-            $imageelement->setValue($imagevalue);
+        // if (empty($USER->newadminuser)) {
+        //     if ($user) {
+        //         $context = context_user::instance($user->id, MUST_EXIST);
+        //         $fs = get_file_storage();
+        //         $hasuploadedpicture = ($fs->file_exists($context->id, 'user', 'icon', 0, '/', 'f2.png') || $fs->file_exists($context->id, 'user', 'icon', 0, '/', 'f2.jpg'));
+        //         if (!empty($user->picture) && $hasuploadedpicture) {
+        //             $imagevalue = $OUTPUT->user_picture($user, array('courseid' => SITEID, 'size' => 64));
+        //         } else {
+        //             $imagevalue = get_string('none');
+        //         }
+        //     } else {
+        //         $imagevalue = get_string('none');
+        //     }
+        //     $imageelement = $mform->getElement('currentpicture');
+        //     $imageelement->setValue($imagevalue);
 
-            if ($user && $mform->elementExists('deletepicture') && !$hasuploadedpicture) {
-                $mform->removeElement('deletepicture');
-            }
-        }
+        //     if ($user && $mform->elementExists('deletepicture') && !$hasuploadedpicture) {
+        //         $mform->removeElement('deletepicture');
+        //     }
+        // }
 
         // Next the customisable profile fields.
-        profile_definition_after_data($mform, $userid);
+        custom_profile_definition_after_data($mform, $userid);
     }
 
     /**
