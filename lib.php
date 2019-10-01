@@ -68,8 +68,8 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
 }
 
 function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions, $user) {
-    $allowed_fields = get_config('local_hoteles_city_dashboard', 'signindefaultfields');
-    _log('signindefaultfields', $allowed_fields);
+    $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformdefaultfields');
+    _log('userformdefaultfields', $allowed_fields);
     if(empty($allowed_fields)){
         return;
     }
@@ -311,7 +311,7 @@ function custom_profile_definition($mform, $userid = 0) {
     // _log('categorías', $categories); // QUITAR ESTO
     $count = 0;
     // $first = true;
-    $allowed_fields = get_config('local_hoteles_city_dashboard', 'signincustomfields');
+    $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformcustomfields');
     if(empty($allowed_fields)){
         return;
     }

@@ -27,8 +27,10 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Dashboard administrativo Hoteles City';
 
-$string['tab_signin'] = 'Formulario de usuario';
-$string['signincustomfields'] = 'Campos personalizados en formulario de usuario';
-$string['signincustomfields_desc'] = 'Seleccione los campos externos a mostrar en el formulario de usuario. Presione ctrl para seleccionar varios campos';
-$string['signindefaultfields'] = 'Campos formulario de usuario';
-$string['signindefaultfields_desc'] = 'Seleccione los campos a mostrar en el formulario de usuario. Presione ctrl para seleccionar varios campos';
+$string['tab_userform'] = 'Formulario de usuario';
+$string['userformcustomfields'] = 'Campos personalizados en formulario de usuario';
+$string['userformcustomfields_desc'] = 'Seleccione los campos externos a mostrar en el formulario de usuario. Presione ctrl para seleccionar varios campos';
+$string['userformdefaultfields'] = 'Campos formulario de usuario';
+$string['userformdefaultfields_desc'] = 'Seleccione los campos a mostrar en el formulario de usuario. Presione ctrl para seleccionar varios campos';
+$string['userformimage'] = '¿Incluir foto en formulario?';
+$string['userformimage_desc'] = 'Seleccione esta opción para permitir editar imágenes en el formulario del dashboard administrativo Hoteles City';
