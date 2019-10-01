@@ -68,6 +68,14 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
 }
 
 function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions, $user) {
+    $allowed_fields = get_config('local_hoteles_city_dashboard', 'signindefaultfields');
+    _log('signindefaultfields', $allowed_fields);
+    if(empty($allowed_fields)){
+        return;
+    }
+    $allowed_fields = explode(',', $allowed_fields);
+    _log('custom_useredit_shared_definition() allowed fields', $allowed_fields);
+
     global $CFG, $USER, $DB;
 
     if ($user->id > 0) {
@@ -78,8 +86,7 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     $stringman = get_string_manager();
 
     // Add the necessary names.
-    $fields = useredit_get_required_name_fields();
-    // _log('useredit_shared_definition', $fields); // quitar esto
+    $fields = useredit_get_required_name_fields(); // fullname y lastname
     foreach ($fields as $fullname) {
         $mform->addElement('text', $fullname,  get_string($fullname),  'maxlength="100" size="30"');
         if ($stringman->string_exists('missing'.$fullname, 'core')) {
@@ -91,53 +98,68 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
         $mform->setType($fullname, PARAM_NOTAGS);
     }
 
-    $enabledusernamefields = useredit_get_enabled_name_fields();
-    // Add the enabled additional name fields.
-    foreach ($enabledusernamefields as $addname) {
-        $mform->addElement('text', $addname,  get_string($addname), 'maxlength="100" size="30"');
-        $mform->setType($addname, PARAM_NOTAGS);
-    }
+    // $enabledusernamefields = useredit_get_enabled_name_fields();
+    // _log('$enabledusernamefields', $enabledusernamefields);
+    // // Add the enabled additional name fields.
+    // foreach ($enabledusernamefields as $addname) {
+    //     $mform->addElement('text', $addname,  get_string($addname), 'maxlength="100" size="30"');
+    //     $mform->setType($addname, PARAM_NOTAGS);
+    // }
 
     // Do not show email field if change confirmation is pending.
-    if ($user->id > 0 and !empty($CFG->emailchangeconfirmation) and !empty($user->preference_newemail)) {
-        $notice = get_string('emailchangepending', 'auth', $user);
-        $notice .= '<br /><a href="edit.php?cancelemailchange=1&amp;id='.$user->id.'">'
-                . get_string('emailchangecancel', 'auth') . '</a>';
-        $mform->addElement('static', 'emailpending', get_string('email'), $notice);
-    } else {
+    // if ($user->id > 0 and !empty($CFG->emailchangeconfirmation) and !empty($user->preference_newemail)) {
+    //     $notice = get_string('emailchangepending', 'auth', $user);
+    //     $notice .= '<br /><a href="edit.php?cancelemailchange=1&amp;id='.$user->id.'">'
+    //             . get_string('emailchangecancel', 'auth') . '</a>';
+    //     $mform->addElement('static', 'emailpending', get_string('email'), $notice);
+    // } else {
+    //     $mform->addElement('text', 'email', get_string('email'), 'maxlength="100" size="30"');
+    //     $mform->addRule('email', $strrequired, 'required', null, 'client');
+    //     $mform->setType('email', PARAM_RAW_TRIMMED);
+    // }
+    // Mostrando campo de email
+    if(in_array('email', $allowed_fields)){
         $mform->addElement('text', 'email', get_string('email'), 'maxlength="100" size="30"');
         $mform->addRule('email', $strrequired, 'required', null, 'client');
         $mform->setType('email', PARAM_RAW_TRIMMED);
     }
 
-    $choices = array();
-    $choices['0'] = get_string('emaildisplayno');
-    $choices['1'] = get_string('emaildisplayyes');
-    $choices['2'] = get_string('emaildisplaycourse');
-    $mform->addElement('select', 'maildisplay', get_string('emaildisplay'), $choices);
-    $mform->setDefault('maildisplay', core_user::get_property_default('maildisplay'));
+    // $choices = array();
+    // $choices['0'] = get_string('emaildisplayno');
+    // $choices['1'] = get_string('emaildisplayyes');
+    // $choices['2'] = get_string('emaildisplaycourse');
+    // $mform->addElement('select', 'maildisplay', get_string('emaildisplay'), $choices);
+    // $mform->setDefault('maildisplay', core_user::get_property_default('maildisplay'));
+    $mform->addElement('hidden', 'maildisplay', core_user::get_property_default('maildisplay'));
+    $mform->setType('maildisplay', PARAM_INT);
 
-    $mform->addElement('text', 'city', get_string('city'), 'maxlength="120" size="21"');
-    $mform->setType('city', PARAM_TEXT);
-    if (!empty($CFG->defaultcity)) {
-        $mform->setDefault('city', $CFG->defaultcity);
+    if(in_array('city', $allowed_fields)){
+        $mform->addElement('text', 'city', get_string('city'), 'maxlength="120" size="21"');
+        $mform->setType('city', PARAM_TEXT);
+        if (!empty($CFG->defaultcity)) {
+            $mform->setDefault('city', $CFG->defaultcity);
+        }
     }
 
-    $choices = get_string_manager()->get_list_of_countries();
-    $choices = array('' => get_string('selectacountry') . '...') + $choices;
-    $mform->addElement('select', 'country', get_string('selectacountry'), $choices);
-    if (!empty($CFG->country)) {
-        $mform->setDefault('country', core_user::get_property_default('country'));
+    if(in_array('country', $allowed_fields)){
+        $choices = get_string_manager()->get_list_of_countries();
+        $choices = array('' => get_string('selectacountry') . '...') + $choices;
+        $mform->addElement('select', 'country', get_string('selectacountry'), $choices);
+        if (!empty($CFG->country)) {
+            $mform->setDefault('country', core_user::get_property_default('country'));
+        }
     }
 
-    if (isset($CFG->forcetimezone) and $CFG->forcetimezone != 99) {
-        $choices = core_date::get_list_of_timezones($CFG->forcetimezone);
-        $mform->addElement('static', 'forcedtimezone', get_string('timezone'), $choices[$CFG->forcetimezone]);
-        $mform->addElement('hidden', 'timezone');
-        $mform->setType('timezone', core_user::get_property_type('timezone'));
-    } else {
-        $choices = core_date::get_list_of_timezones($user->timezone, true);
-        $mform->addElement('select', 'timezone', get_string('timezone'), $choices);
+    if(in_array('timezone', $allowed_fields)){
+        if (isset($CFG->forcetimezone) and $CFG->forcetimezone != 99) {
+            $choices = core_date::get_list_of_timezones($CFG->forcetimezone);
+            $mform->addElement('static', 'forcedtimezone', get_string('timezone'), $choices[$CFG->forcetimezone]);
+            $mform->addElement('hidden', 'timezone');
+            $mform->setType('timezone', core_user::get_property_type('timezone'));
+        } else {
+            $choices = core_date::get_list_of_timezones($user->timezone, true);
+            $mform->addElement('select', 'timezone', get_string('timezone'), $choices);
+        }
     }
 
     // if (!empty($CFG->allowuserthemes)) {
@@ -152,30 +174,33 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     //     $mform->addElement('select', 'theme', get_string('preferredtheme'), $choices);
     // }
 
-    $mform->addElement('editor', 'description_editor', get_string('userdescription'), null, $editoroptions);
-    $mform->setType('description_editor', PARAM_CLEANHTML);
-    $mform->addHelpButton('description_editor', 'userdescription');
-
-    if (empty($USER->newadminuser)) {
-        $mform->addElement('header', 'moodle_picture', get_string('pictureofuser'));
-        $mform->setExpanded('moodle_picture', true);
-
-        if (!empty($CFG->enablegravatar)) {
-            $mform->addElement('html', html_writer::tag('p', get_string('gravatarenabled')));
-        }
-
-        $mform->addElement('static', 'currentpicture', get_string('currentpicture'));
-
-        $mform->addElement('checkbox', 'deletepicture', get_string('deletepicture'));
-        $mform->setDefault('deletepicture', 0);
-
-        $mform->addElement('filemanager', 'imagefile', get_string('newpicture'), '', $filemanageroptions);
-        $mform->addHelpButton('imagefile', 'newpicture');
-
-        $mform->addElement('text', 'imagealt', get_string('imagealt'), 'maxlength="100" size="30"');
-        $mform->setType('imagealt', PARAM_TEXT);
-
+    if(in_array('description', $allowed_fields)){
+        $mform->addElement('editor', 'description_editor', get_string('userdescription'), null, $editoroptions);
+        $mform->setType('description_editor', PARAM_CLEANHTML);
+        $mform->addHelpButton('description_editor', 'userdescription');
     }
+
+    // Edición de imágenes
+    // if (empty($USER->newadminuser)) {
+    //     $mform->addElement('header', 'moodle_picture', get_string('pictureofuser'));
+    //     $mform->setExpanded('moodle_picture', true);
+
+    //     if (!empty($CFG->enablegravatar)) {
+    //         $mform->addElement('html', html_writer::tag('p', get_string('gravatarenabled')));
+    //     }
+
+    //     $mform->addElement('static', 'currentpicture', get_string('currentpicture'));
+
+    //     $mform->addElement('checkbox', 'deletepicture', get_string('deletepicture'));
+    //     $mform->setDefault('deletepicture', 0);
+
+    //     $mform->addElement('filemanager', 'imagefile', get_string('newpicture'), '', $filemanageroptions);
+    //     $mform->addHelpButton('imagefile', 'newpicture');
+
+    //     $mform->addElement('text', 'imagealt', get_string('imagealt'), 'maxlength="100" size="30"');
+    //     $mform->setType('imagealt', PARAM_TEXT);
+
+    // }
 
     // Display user name fields that are not currenlty enabled here if there are any.
     // $disabledusernamefields = useredit_get_disabled_name_fields($enabledusernamefields);
@@ -186,59 +211,85 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     //         $mform->setType($allname, PARAM_NOTAGS);
     //     }
     // }
+    if(in_array('interests', $allowed_fields)){ 
+        if (core_tag_tag::is_enabled('core', 'user') and empty($USER->newadminuser)) {
+            $mform->addElement('header', 'moodle_interests', get_string('interests'));
+            $mform->addElement('tags', 'interests', get_string('interestslist'),
+                array('itemtype' => 'user', 'component' => 'core'));
+            $mform->addHelpButton('interests', 'interestslist');
+        }
+    }
 
-    // if (core_tag_tag::is_enabled('core', 'user') and empty($USER->newadminuser)) {
-    //     $mform->addElement('header', 'moodle_interests', get_string('interests'));
-    //     $mform->addElement('tags', 'interests', get_string('interestslist'),
-    //         array('itemtype' => 'user', 'component' => 'core'));
-    //     $mform->addHelpButton('interests', 'interestslist');
-    // }
 
     // Moodle optional fields.
-    $mform->addElement('header', 'moodle_optional', get_string('optional', 'form'));
+    // $mform->addElement('header', 'moodle_optional', get_string('optional', 'form'));
 
-    $mform->addElement('text', 'url', get_string('webpage'), 'maxlength="255" size="50"');
-    $mform->setType('url', core_user::get_property_type('url'));
+    if(in_array('url', $allowed_fields)){ 
+        $mform->addElement('text', 'url', get_string('webpage'), 'maxlength="255" size="50"');
+        $mform->setType('url', core_user::get_property_type('url'));
+    }
 
-    $mform->addElement('text', 'icq', get_string('icqnumber'), 'maxlength="15" size="25"');
-    $mform->setType('icq', core_user::get_property_type('icq'));
-    $mform->setForceLtr('icq');
+    if(in_array('icq', $allowed_fields)){
+        $mform->addElement('text', 'icq', get_string('icqnumber'), 'maxlength="15" size="25"');
+        $mform->setType('icq', core_user::get_property_type('icq'));
+        $mform->setForceLtr('icq');
+    }
 
-    $mform->addElement('text', 'skype', get_string('skypeid'), 'maxlength="50" size="25"');
-    $mform->setType('skype', core_user::get_property_type('skype'));
-    $mform->setForceLtr('skype');
+    if(in_array('skype', $allowed_fields)){
+        $mform->addElement('text', 'skype', get_string('skypeid'), 'maxlength="50" size="25"');
+        $mform->setType('skype', core_user::get_property_type('skype'));
+        $mform->setForceLtr('skype');
+    }
 
-    $mform->addElement('text', 'aim', get_string('aimid'), 'maxlength="50" size="25"');
-    $mform->setType('aim', core_user::get_property_type('aim'));
-    $mform->setForceLtr('aim');
+    if(in_array('aim', $allowed_fields)){
+        $mform->addElement('text', 'aim', get_string('aimid'), 'maxlength="50" size="25"');
+        $mform->setType('aim', core_user::get_property_type('aim'));
+        $mform->setForceLtr('aim');
+    }
 
-    $mform->addElement('text', 'yahoo', get_string('yahooid'), 'maxlength="50" size="25"');
-    $mform->setType('yahoo', core_user::get_property_type('yahoo'));
-    $mform->setForceLtr('yahoo');
+    if(in_array('yahoo', $allowed_fields)){
+        $mform->addElement('text', 'yahoo', get_string('yahooid'), 'maxlength="50" size="25"');
+        $mform->setType('yahoo', core_user::get_property_type('yahoo'));
+        $mform->setForceLtr('yahoo');
+    }
 
-    $mform->addElement('text', 'msn', get_string('msnid'), 'maxlength="50" size="25"');
-    $mform->setType('msn', core_user::get_property_type('msn'));
-    $mform->setForceLtr('msn');
+    if(in_array('msn', $allowed_fields)){
+        $mform->addElement('text', 'msn', get_string('msnid'), 'maxlength="50" size="25"');
+        $mform->setType('msn', core_user::get_property_type('msn'));
+        $mform->setForceLtr('msn');
+    }
 
-    $mform->addElement('text', 'idnumber', get_string('idnumber'), 'maxlength="255" size="25"');
-    $mform->setType('idnumber', core_user::get_property_type('idnumber'));
+    if(in_array('idnumber', $allowed_fields)){
+        $mform->addElement('text', 'idnumber', get_string('idnumber'), 'maxlength="255" size="25"');
+        $mform->setType('idnumber', core_user::get_property_type('idnumber'));
+    }
 
-    $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
-    $mform->setType('institution', core_user::get_property_type('institution'));
+    if(in_array('institution', $allowed_fields)){
+        $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
+        $mform->setType('institution', core_user::get_property_type('institution'));
+    }
 
-    $mform->addElement('text', 'department', get_string('department'), 'maxlength="255" size="25"');
-    $mform->setType('department', core_user::get_property_type('department'));
+    if(in_array('department', $allowed_fields)){
+        $mform->addElement('text', 'department', get_string('department'), 'maxlength="255" size="25"');
+        $mform->setType('department', core_user::get_property_type('department'));
+    }
 
-    $mform->addElement('text', 'phone1', get_string('phone1'), 'maxlength="20" size="25"');
-    $mform->setType('phone1', core_user::get_property_type('phone1'));
-    $mform->setForceLtr('phone1');
+    if(in_array('phone1', $allowed_fields)){
+        $mform->addElement('text', 'phone1', get_string('phone1'), 'maxlength="20" size="25"');
+        $mform->setType('phone1', core_user::get_property_type('phone1'));
+        $mform->setForceLtr('phone1');
+    }
 
-    $mform->addElement('text', 'phone2', get_string('phone2'), 'maxlength="20" size="25"');
-    $mform->setType('phone2', core_user::get_property_type('phone2'));
-    $mform->setForceLtr('phone2');
+    if(in_array('phone2', $allowed_fields)){
+        $mform->addElement('text', 'phone2', get_string('phone2'), 'maxlength="20" size="25"');
+        $mform->setType('phone2', core_user::get_property_type('phone2'));
+        $mform->setForceLtr('phone2');
+    }
 
-    $mform->addElement('text', 'address', get_string('address'), 'maxlength="255" size="25"');
-    $mform->setType('address', core_user::get_property_type('address'));
+    if(in_array('address', $allowed_fields)){
+        $mform->addElement('text', 'address', get_string('address'), 'maxlength="255" size="25"');
+        $mform->setType('address', core_user::get_property_type('address'));
+    }
 }
 
 
@@ -249,7 +300,6 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
  * @param int $userid id of user whose profile is being edited.
  */
 function custom_profile_definition($mform, $userid = 0) {
-    _log('Entró en la función custom_profile_definition');
     global $CFG, $DB;
 
     // If user is "admin" fields are displayed regardless.
@@ -291,7 +341,7 @@ function custom_profile_definition($mform, $userid = 0) {
                 if($first){
                     $mform->addElement('header', 'category_'.$categoryid, format_string($formfield->get_category_name()));
                     $first = !$first;
-                    _log($formfield);
+                    // _log($formfield);
                     $first = false;
                 }
                 $formfield->edit_field($mform);
@@ -317,11 +367,36 @@ function custom_profile_definition_after_data($mform, $userid) {
 }
 
 function local_hoteles_city_dashboard_get_default_profile_fields(){
-    return array('username', 'fullname', 'firstname', 'lastname', 'email',
-        'address', 'phone1', 'phone2', 'icq', 'skype', 'yahoo', 'aim', 'msn', 'department',
-        'institution', 'interests', 'idnumber', 'lang', 'timezone', 'description',
-        'city', 'url', 'country'
+    $fields = array(
+        // 'username', 
+        // 'fullname', 
+        // 'firstname', 
+        // 'lastname', 
+        'email',
+        'address', 
+        'phone1', 
+        'phone2', 
+        'icq', 
+        'skype', 
+        'yahoo', 
+        'aim', 
+        'msn', 
+        'department',
+        'institution', 
+        'interests', 
+        'idnumber', 
+        // 'lang', 
+        'timezone', 
+        'description',
+        'city', 
+        'url', 
+        'country',
     );
+    $response = array();
+    foreach($fields as $field){
+        $response[$field] = $field;
+    }
+    return $response;
 }
 
 
