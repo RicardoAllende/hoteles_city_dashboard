@@ -25,31 +25,31 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-function local_hoteles_city_dashboard_user_has_access(bool $throwError = true){
-    $has_capability = has_capability('local/hoteles_city_dashboard:view', context_system::instance());
-    if(!$has_capability){ // si el rol del usuario no tiene permiso, buscar si está en la configuración: allowed_email_admins
-        if(isloggedin()){
-            $allowed_email_admins = get_config('local_hoteles_city_dashboard', 'allowed_email_admins');
-            if(!empty($allowed_email_admins)){
-                $allowed_email_admins = explode(' ', $allowed_email_admins);
-                if(!empty($allowed_email_admins)){
-                    global $USER;
-                    $email = $USER->email;
-                    if(in_array($email, $allowed_email_admins) !== false){
-                        $has_capability = true;
-                    }
-                }
-            }
-        }
-    }
-    if($throwError){
-        if(!$has_capability){
-            print_error('Usted no tiene permiso para acceder a esta sección');
-        }
-    }else{
-        return $has_capability;
-    }
-}
+// function local_hoteles_city_dashboard_user_has_access(bool $throwError = true){
+//     $has_capability = has_capability('local/hoteles_city_dashboard:view', context_system::instance());
+//     if(!$has_capability){ // si el rol del usuario no tiene permiso, buscar si está en la configuración: allowed_email_admins
+//         if(isloggedin()){
+//             $allowed_email_admins = get_config('local_hoteles_city_dashboard', 'allowed_email_admins');
+//             if(!empty($allowed_email_admins)){
+//                 $allowed_email_admins = explode(' ', $allowed_email_admins);
+//                 if(!empty($allowed_email_admins)){
+//                     global $USER;
+//                     $email = $USER->email;
+//                     if(in_array($email, $allowed_email_admins) !== false){
+//                         $has_capability = true;
+//                     }
+//                 }
+//             }
+//         }
+//     }
+//     if($throwError){
+//         if(!$has_capability){
+//             print_error('Usted no tiene permiso para acceder a esta sección');
+//         }
+//     }else{
+//         return $has_capability;
+//     }
+// }
 
 // Agrega enlace al Dashboard en el menú lateral de Moodle
 function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) {
@@ -386,7 +386,7 @@ function custom_profile_definition_after_data($mform, $userid) {
 function local_hoteles_city_dashboard_get_default_profile_fields(bool $form = false){
     $fields = array(
         'username' => 'Nombre de usuario', 
-        'firstname' => 'Nombre', 
+        'firstname' => 'Nombre (s)', 
         'lastname' => 'Apellido (s)', 
         'email' => 'Dirección Email',
         'address' => 'Dirección', 
@@ -412,6 +412,7 @@ function local_hoteles_city_dashboard_get_default_profile_fields(bool $form = fa
         unset($fields['username']);
         unset($fields['firstname']);
         unset($fields['lastname']);
+        $fields['fullname'] = 'Nombre y apellidos';
     }
     return $fields;
 }
@@ -1224,16 +1225,122 @@ function local_hoteles_city_dashboard_get_user_ids_with_params(int $courseid, ar
 //     return LOCAL_HOTELES_CITY_DASHBOARD_CHARTS;
 // }
 
+/**
+ * Devuelve un menú (clave => valor ... ) de los campos de usuario personalizados
+ */
 function local_hoteles_city_dashboard_get_custom_profile_fields(){
     global $DB;
-    $profileFields = array();
-    foreach($DB->get_records('user_info_field', array(), 'id, name') as $profileField){
-        $profileFields[$profileField->id] = $profileField->shortname;
+    return $DB->get_records_menu('user_info_field', array(), '', 'id, name');
+}
+
+function local_hoteles_city_dashboard_get_paginated_users(array $params, int $courseid = null){
+    global $DB;
+    $draw = $params['draw'];
+    $row = $params['start'];
+    $rowperpage = $params['length']; // Rows display per page
+    $columnIndex = $params['order'][0]['column']; // Column index
+    $columnName = $params['columns'][$columnIndex]['data']; // Column name
+    $columnSortOrder = $params['order'][0]['dir']; // asc or desc
+    $searchValue = $params['search']['value']; // Search value
+
+    ## Search 
+    $searchQuery = " ";
+    $queryParams = array();
+    if($searchValue != ''){
+        $searchValue = "%{$searchValue}%";
+        $searchQuery = " WHERE email like ? or concat(firstname, ' ', lastname) like ? ";
+        array_push($queryParams, $searchValue);
+        array_push($queryParams, $searchValue);
     }
-    return $profileFields;
+
+    ## Total number of records without filtering
+    // $sel = mysqli_query($con,"select count(*) as allcount from {user}");
+    // $records = mysqli_fetch_assoc($sel);
+    // $totalRecords = $records['allcount'];
+    $totalRecords = $DB->count_records('user');//($table, $conditions_array);
+
+    ## Total number of record with filtering
+    // $sel = mysqli_query($con,"select count(*) as allcount from {user} WHERE  ".$searchQuery);
+    // $records = mysqli_fetch_assoc($sel);
+    // $totalRecordwithFilter = $records['allcount'];
+    $totalRecordwithFilter = $DB->count_records_sql("select count(*) from {user} {$searchQuery}", $queryParams);
+
+    ## Fetch records
+    // $empQuery = "select * from employee  ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+    // $empRecords = mysqli_query($con, $empQuery);
+    $records = $DB->get_records_sql("select email, concat(firstname, ' ', lastname) as name, id, '<a href=\"https://www.google.com.mx\">Elemento</a>' AS reg from {user} {$searchQuery} order by email {$columnSortOrder} LIMIT {$row}, {$rowperpage}", $queryParams);
+
+    $data = array();
+
+    // while ($row = mysqli_fetch_assoc($empRecords)) {
+    //     $data[] = array( 
+    //         "email"=>$row['email'],
+    //         "name"=>$row['emp_name'],
+    //         "id"=>$row['gender'],
+    //         "salary"=>$row['salary'],
+    //         "city"=>$row['city']
+    //     );
+    // }
+
+    // foreach ($records as $key => $record) {
+    //     $data[] = array(
+    //         'email' => $record->email,
+    //         'name'  => $record->name,
+    //         'id'    => $record->id,
+    //         'reg'   => '<a href="https://www.google.com.mx">Elemento</a>',
+    //     );
+    // }
+
+    ## Response
+    $response = array(
+        "draw" => intval($draw),
+        "iTotalRecords" => $totalRecordwithFilter,
+        "iTotalDisplayRecords" => $totalRecords,
+        "aaData" => array_values($records)
+    );
+    $json_response = json_encode($response);
+    // _log($response);
+    return $json_response;
+}
+
+/**
+ * Devuelve un arreglo de nombres de campos de la tabla de moodle user. Hay un campo diferente llamado fullname que equivale a CONCAT(firstname, ' ', lastname)
+ * @return array ['firstname','lastname','email' ... ]
+ */
+function local_hoteles_city_dashboard_get_default_report_fields(){
+    if($config = get_config('local_hoteles_city_dashboard', 'reportdefaultfields')){
+        if(!empty($config)){
+            $response = explode(',', $config);
+            if(isset($response['fullname'])){
+                $temp = $response['fullname'];
+                unset($response['fullname']);
+                $response["CONCAT(firstname, ' ', lastname) as fullname"] = $temp;
+            }
+            return $response;
+        }
+    }
+    return array();
+}
+
+/**
+ * Devuelve un arreglo de ids de los campos de usuario
+ * @return array [1,2,3,...]
+ */
+function local_hoteles_city_dashboard_get_custom_report_fields(){
+    if($config = get_config('local_hoteles_city_dashboard', 'reportcustomfields')){
+        if(!empty($config)){
+            $response = explode(',', $config);
+            return $response;
+        }
+    }
+    return array();
 }
 
 if(!function_exists('dd')){
+    /**
+     * Aplica las funciones die(var_dump()) del elemento enviado
+     * @param any $element Elemento para imprimir y terminar la funcionalidad del script
+     */
     function dd($element){
         die(var_dump($element));
     }
@@ -1280,38 +1387,38 @@ if(!function_exists('_print')){
     }
 }
 
-// function local_hoteles_city_dashboard_format_response($data, string $dataname = "data", string $status = 'ok'){
-//     if(is_array($data)){
-//         $count = count($data);
-//     } else {
-//         $count = 1;
-//     }
-//     if(empty($data)){
-//         if($status == 'ok'){
-//             $status = "No data found";
-//         }
-//         $count = 0;
-//     }
-//     $result = array();
-//     $result['status'] = $status;
-//     $result['count'] = $count;
-//     $result[$dataname] = $data;
-//     return json_encode($result);
-// }
+function local_hoteles_city_dashboard_format_response($data, string $dataname = "data", string $status = 'ok'){
+    if(is_array($data)){
+        $count = count($data);
+    } else {
+        $count = 1;
+    }
+    if(empty($data)){
+        if($status == 'ok'){
+            $status = "No data found";
+        }
+        $count = 0;
+    }
+    $result = array();
+    $result['status'] = $status;
+    $result['count'] = $count;
+    $result[$dataname] = $data;
+    return json_encode($result);
+}
 
-// function local_hoteles_city_dashboard_done_successfully($message = 'ok'){
-//     $result = new stdClass();
-//     $result->status  = 'ok';
-//     $result->message = $message;
-//     return json_encode($result);
-// }
+function local_hoteles_city_dashboard_done_successfully($message = 'ok'){
+    $result = new stdClass();
+    $result->status  = 'ok';
+    $result->message = $message;
+    return json_encode($result);
+}
 
-// function local_hoteles_city_dashboard_error_response($message = 'error'){
-//     $result = new stdClass();
-//     $result->status  = 'error';
-//     $result->message = $message;
-//     return json_encode($result);
-// }
+function local_hoteles_city_dashboard_error_response($message = 'error'){
+    $result = new stdClass();
+    $result->status  = 'error';
+    $result->message = $message;
+    return json_encode($result);
+}
 
 function local_hoteles_city_dashboard_get_courses(string $andWhereClause = "", array $andWhereClauseParams = array() ){
     global $DB;
