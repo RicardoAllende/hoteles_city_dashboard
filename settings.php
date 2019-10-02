@@ -67,13 +67,13 @@ if ($hassiteconfig) {
     $name = $lhcd_pluginname . '/reportdefaultfields';
     $title = get_string('reportdefaultfields', $lhcd_pluginname);
     $description = get_string('reportdefaultfields' . '_desc', $lhcd_pluginname);
-    $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $custom_fields);
+    $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $all_default_profile_fields);
     $page->add($setting);
 
     $name = $lhcd_pluginname . '/reportcustomfields';
     $title = get_string('reportcustomfields', $lhcd_pluginname);
     $description = get_string('reportcustomfields' . '_desc', $lhcd_pluginname);
-    $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $all_default_profile_fields);
+    $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $custom_fields);
     $page->add($setting);
     
     $settings->add($page); // Se agrega pestaña a la administración del plugin

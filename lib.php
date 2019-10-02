@@ -383,7 +383,7 @@ function custom_profile_definition_after_data($mform, $userid) {
  * @param bool $form true elimina las opciones username, firstname, lastname
  * @return array
  */
-function local_hoteles_city_dashboard_get_default_profile_fields(bool $form = false){
+function local_hoteles_city_dashboard_get_default_profile_fields(bool $profileForm = false){
     $fields = array(
         'username' => 'Nombre de usuario', 
         'firstname' => 'Nombre (s)', 
@@ -408,11 +408,12 @@ function local_hoteles_city_dashboard_get_default_profile_fields(bool $form = fa
         'url' => 'Página web', 
         'country' => 'País',
     );
-    if($form){
+    if($profileForm){
         unset($fields['username']);
         unset($fields['firstname']);
         unset($fields['lastname']);
-        $fields['fullname'] = 'Nombre y apellidos';
+    // }else{
+    //     $fields['fullname'] = 'Nombre completo'; // Fusión del nombre y apellido
     }
     return $fields;
 }
@@ -1233,7 +1234,13 @@ function local_hoteles_city_dashboard_get_custom_profile_fields(){
     return $DB->get_records_menu('user_info_field', array(), '', 'id, name');
 }
 
+/**
+ * Regresa información para la paginación de usuarios compatible con datatables
+ */
 function local_hoteles_city_dashboard_get_paginated_users(array $params, int $courseid = null){
+    if(empty($params)){
+        return array();
+    }
     global $DB;
     $draw = $params['draw'];
     $row = $params['start'];
@@ -1254,42 +1261,32 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, int $co
     }
 
     ## Total number of records without filtering
-    // $sel = mysqli_query($con,"select count(*) as allcount from {user}");
-    // $records = mysqli_fetch_assoc($sel);
-    // $totalRecords = $records['allcount'];
     $totalRecords = $DB->count_records('user');//($table, $conditions_array);
 
     ## Total number of record with filtering
-    // $sel = mysqli_query($con,"select count(*) as allcount from {user} WHERE  ".$searchQuery);
-    // $records = mysqli_fetch_assoc($sel);
-    // $totalRecordwithFilter = $records['allcount'];
     $totalRecordwithFilter = $DB->count_records_sql("select count(*) from {user} {$searchQuery}", $queryParams);
 
+    $default_fields = local_hoteles_city_dashboard_get_default_report_fields();
+    $custom_fields  = local_hoteles_city_dashboard_get_custom_report_fields();
+
+    $orderBy = " order by {$columnName} {$columnSortOrder} ";
+    if($columnName == 'fullname'){
+        $orderBy = " ORDER BY fullname {$columnSortOrder}";
+    }
+
+    // _log('$default_fields', $default_fields);
+    $select_default = "";
+    if(!empty($default_fields)){
+        $select_default = ', ' . implode(',', $default_fields);
+    }
+    // _log('$custom_fields', $custom_fields);
+    if(!empty($custom_fields)){
+        implode(',', $custom_fields);
+    }
+
     ## Fetch records
-    // $empQuery = "select * from employee  ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
-    // $empRecords = mysqli_query($con, $empQuery);
-    $records = $DB->get_records_sql("select email, concat(firstname, ' ', lastname) as name, id, '<a href=\"https://www.google.com.mx\">Elemento</a>' AS reg from {user} {$searchQuery} order by email {$columnSortOrder} LIMIT {$row}, {$rowperpage}", $queryParams);
-
-    $data = array();
-
-    // while ($row = mysqli_fetch_assoc($empRecords)) {
-    //     $data[] = array( 
-    //         "email"=>$row['email'],
-    //         "name"=>$row['emp_name'],
-    //         "id"=>$row['gender'],
-    //         "salary"=>$row['salary'],
-    //         "city"=>$row['city']
-    //     );
-    // }
-
-    // foreach ($records as $key => $record) {
-    //     $data[] = array(
-    //         'email' => $record->email,
-    //         'name'  => $record->name,
-    //         'id'    => $record->id,
-    //         'reg'   => '<a href="https://www.google.com.mx">Elemento</a>',
-    //     );
-    // }
+    $records = $DB->get_records_sql("select concat(firstname, ' ', lastname) as name {$select_default} from {user} {$searchQuery} order by name {$columnSortOrder}
+                                     LIMIT {$row}, {$rowperpage}", $queryParams);
 
     ## Response
     $response = array(
@@ -1311,11 +1308,11 @@ function local_hoteles_city_dashboard_get_default_report_fields(){
     if($config = get_config('local_hoteles_city_dashboard', 'reportdefaultfields')){
         if(!empty($config)){
             $response = explode(',', $config);
-            if(isset($response['fullname'])){
-                $temp = $response['fullname'];
-                unset($response['fullname']);
-                $response["CONCAT(firstname, ' ', lastname) as fullname"] = $temp;
-            }
+            // if(isset($response['fullname'])){
+            //     $temp = $response['fullname'];
+            //     unset($response['fullname']);
+            //     $response["CONCAT(firstname, ' ', lastname) as fullname"] = $temp;
+            // }
             return $response;
         }
     }
