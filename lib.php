@@ -69,12 +69,12 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
 
 function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions, $user) {
     $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformdefaultfields');
-    _log('userformdefaultfields', $allowed_fields);
+    // _log('userformdefaultfields', $allowed_fields);
     if(empty($allowed_fields)){
         return;
     }
     $allowed_fields = explode(',', $allowed_fields);
-    _log('custom_useredit_shared_definition() allowed fields', $allowed_fields);
+    // _log('custom_useredit_shared_definition() allowed fields', $allowed_fields);
 
     global $CFG, $USER, $DB;
 
@@ -178,11 +178,15 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
         $mform->addElement('editor', 'description_editor', get_string('userdescription'), null, $editoroptions);
         $mform->setType('description_editor', PARAM_CLEANHTML);
         $mform->addHelpButton('description_editor', 'userdescription');
+    // }else{
+    //     $mform->addElement('hidden', 'description_editor');
+    //     $mform->setType('description_editor', PARAM_CLEANHTML);
+    //     // $mform->addHelpButton('description_editor', 'userdescription');
     }
 
     // Edición de imágenes
-    // if(in_array('imagen', $allowed_fields)){
-        if (empty($USER->newadminuser)) {
+    if(get_config('local_hoteles_city_dashboard', 'userformimage')){
+        // if (empty($USER->newadminuser)) {
             $mform->addElement('header', 'moodle_picture', get_string('pictureofuser'));
             $mform->setExpanded('moodle_picture', true);
     
@@ -201,25 +205,25 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
             $mform->addElement('text', 'imagealt', get_string('imagealt'), 'maxlength="100" size="30"');
             $mform->setType('imagealt', PARAM_TEXT);
     
-        }
-    // }
+        // }
+    }
 
     // Display user name fields that are not currenlty enabled here if there are any.
-    $disabledusernamefields = useredit_get_disabled_name_fields($enabledusernamefields);
-    if (count($disabledusernamefields) > 0) {
-        $mform->addElement('header', 'moodle_additional_names', get_string('additionalnames'));
-        foreach ($disabledusernamefields as $allname) {
-            $mform->addElement('text', $allname, get_string($allname), 'maxlength="100" size="30"');
-            $mform->setType($allname, PARAM_NOTAGS);
-        }
-    }
+    // $disabledusernamefields = useredit_get_disabled_name_fields($enabledusernamefields);
+    // if (count($disabledusernamefields) > 0) {
+    //     $mform->addElement('header', 'moodle_additional_names', get_string('additionalnames'));
+    //     foreach ($disabledusernamefields as $allname) {
+    //         $mform->addElement('text', $allname, get_string($allname), 'maxlength="100" size="30"');
+    //         $mform->setType($allname, PARAM_NOTAGS);
+    //     }
+    // }
     if(in_array('interests', $allowed_fields)){ 
-        if (core_tag_tag::is_enabled('core', 'user') and empty($USER->newadminuser)) {
+        // if (core_tag_tag::is_enabled('core', 'user') and empty($USER->newadminuser)) {
             $mform->addElement('header', 'moodle_interests', get_string('interests'));
             $mform->addElement('tags', 'interests', get_string('interestslist'),
                 array('itemtype' => 'user', 'component' => 'core'));
             $mform->addHelpButton('interests', 'interestslist');
-        }
+        // }
     }
 
 
@@ -316,6 +320,7 @@ function custom_profile_definition($mform, $userid = 0) {
         return;
     }
     $allowed_fields = explode(',', $allowed_fields);
+    $any = false;
     foreach ($categories as $categoryid => $fields) {
         // _log('fields', $fields); // QUITAR ESTO
         // Check first if *any* fields will be displayed.
@@ -341,10 +346,15 @@ function custom_profile_definition($mform, $userid = 0) {
                     //     _log($formfield);
                     // }
                 if($first){
-                    $mform->addElement('header', 'category_'.$categoryid, format_string($formfield->get_category_name()));
+                    // $mform->addElement('header', 'category_'.$categoryid, format_string($formfield->get_category_name()));
                     $first = !$first;
                     // _log($formfield);
                     $first = false;
+                }
+                if(!$any){
+                    $mform->addElement('header', 'custom_fields', 'Campos de perfil del usuario');
+                    $mform->setExpanded('custom_fields', true);
+                    $any = true;
                 }
                 $formfield->edit_field($mform);
             }

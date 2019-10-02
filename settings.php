@@ -33,7 +33,7 @@ if ($hassiteconfig) {
     $lhcd_pluginname = 'local_hoteles_city_dashboard';
 
     $settings = new theme_boost_admin_settingspage_tabs($lhcd_pluginname, get_string('pluginname', $lhcd_pluginname));
-    $ADMIN->add('modules', $settings);
+    $ADMIN->add('localplugins', $settings);
 
     $page = new admin_settingpage($lhcd_pluginname . 'tab_userform', get_string('tab_userform', $lhcd_pluginname)); // Inicia pestaña
 
@@ -57,6 +57,8 @@ if ($hassiteconfig) {
     $page->add($setting);
     
     $settings->add($page); // Se agrega pestaña a la administración del plugin
+
+
 
     // $page = new admin_settingpage($lhcd_pluginname . 'tab_userform', get_string('tab_userform', $lhcd_pluginname)); // Inicia pestaña
 

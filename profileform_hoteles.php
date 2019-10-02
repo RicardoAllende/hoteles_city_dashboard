@@ -218,24 +218,24 @@ class profileform_hoteles extends moodleform {
 
         // Print picture.
         // if (empty($USER->newadminuser)) {
-        //     if ($user) {
-        //         $context = context_user::instance($user->id, MUST_EXIST);
-        //         $fs = get_file_storage();
-        //         $hasuploadedpicture = ($fs->file_exists($context->id, 'user', 'icon', 0, '/', 'f2.png') || $fs->file_exists($context->id, 'user', 'icon', 0, '/', 'f2.jpg'));
-        //         if (!empty($user->picture) && $hasuploadedpicture) {
-        //             $imagevalue = $OUTPUT->user_picture($user, array('courseid' => SITEID, 'size' => 64));
-        //         } else {
-        //             $imagevalue = get_string('none');
-        //         }
-        //     } else {
-        //         $imagevalue = get_string('none');
-        //     }
-        //     $imageelement = $mform->getElement('currentpicture');
-        //     $imageelement->setValue($imagevalue);
+            if ($user) {
+                $context = context_user::instance($user->id, MUST_EXIST);
+                $fs = get_file_storage();
+                $hasuploadedpicture = ($fs->file_exists($context->id, 'user', 'icon', 0, '/', 'f2.png') || $fs->file_exists($context->id, 'user', 'icon', 0, '/', 'f2.jpg'));
+                if (!empty($user->picture) && $hasuploadedpicture) {
+                    $imagevalue = $OUTPUT->user_picture($user, array('courseid' => SITEID, 'size' => 64));
+                } else {
+                    $imagevalue = get_string('none');
+                }
+            } else {
+                $imagevalue = get_string('none');
+            }
+            $imageelement = $mform->getElement('currentpicture');
+            $imageelement->setValue($imagevalue);
 
-        //     if ($user && $mform->elementExists('deletepicture') && !$hasuploadedpicture) {
-        //         $mform->removeElement('deletepicture');
-        //     }
+            if ($user && $mform->elementExists('deletepicture') && !$hasuploadedpicture) {
+                $mform->removeElement('deletepicture');
+            }
         // }
 
         // Next the customisable profile fields.

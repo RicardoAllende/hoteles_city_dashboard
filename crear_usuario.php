@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin strings are defined here.
+ * Custom editadvanced page. Based in user\editadvanced.php
  *
  * @package     local_hoteles_city_dashboard
  * @category    string
@@ -34,7 +34,8 @@ require_once($CFG->dirroot.'/user/lib.php');
 // require_once($CFG->dirroot.'/lib/formslib.php');
 
 $id     = optional_param('id', -1, PARAM_INT);    // User id; -1 if creating new user.
-$PAGE->set_url($url = $CFG->wwwroot . '/local/hoteles_city_dashboard.php', array('id' => $id));
+$current_url = new moodle_url($url = $CFG->wwwroot . '/local/hoteles_city_dashboard/crear_usuario.php', array('id' => $id));
+$PAGE->set_url($current_url);
 
 global $DB;
 
@@ -156,11 +157,10 @@ $filemanageroptions = array('maxbytes'       => $CFG->maxbytes,
                              'accepted_types' => 'web_image');
 file_prepare_draft_area($draftitemid, $filemanagercontext->id, 'user', 'newicon', 0, $filemanageroptions);
 $user->imagefile = $draftitemid;
-$mform = new profileform_hoteles(null, array(
+$mform = new profileform_hoteles($current_url, array(
     'editoroptions' => $editoroptions,
     'filemanageroptions' => $filemanageroptions,
     'user' => $user));
-echo $OUTPUT->header();
 if($usernew = $mform->get_data()){
     $usercreated = false;
 
@@ -202,7 +202,16 @@ if($usernew = $mform->get_data()){
         }
         $usercreated = true;
     } else { // Editar usuario ya existente
-        $usernew = file_postupdate_standard_editor($usernew, 'description', $editoroptions, $usercontext, 'user', 'profile', 0);
+        $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformdefaultfields');
+        // _log('userformdefaultfields', $allowed_fields);
+        if(empty($allowed_fields)){
+            $allowed_fields = array();
+        }else{
+            $allowed_fields = explode(',', $allowed_fields);
+        }
+        if(in_array('description', $allowed_fields)){
+            $usernew = file_postupdate_standard_editor($usernew, 'description', $editoroptions, $usercontext, 'user', 'profile', 0);
+        }
         // Pass a true old $user here.
         if (!$authplugin->user_update($user, $usernew)) {
             // Auth update failed.
@@ -241,13 +250,15 @@ if($usernew = $mform->get_data()){
     useredit_update_user_preference($usernew);
 
     // Update tags.
-    if (empty($USER->newadminuser) && isset($usernew->interests)) {
+    if (/*empty($USER->newadminuser) &&*/ isset($usernew->interests)) {
         useredit_update_interests($usernew, $usernew->interests);
     }
 
-    // Update user picture.
-    if (empty($USER->newadminuser)) {
-        core_user::update_picture($usernew, $filemanageroptions);
+    if(get_config('local_hoteles_city_dashboard', 'userformimage')){
+        // Update user picture.
+        // if (empty($USER->newadminuser)) {
+            core_user::update_picture($usernew, $filemanageroptions);
+        // }
     }
 
     // Update mail bounces.
@@ -294,12 +305,12 @@ if($usernew = $mform->get_data()){
             // Admin account is fully configured - set flag here in case the redirect does not work.
             unset_config('adminsetuppending');
             // Redirect to admin/ to continue with installation.
-            die('Redirigiendo a ' . "$CFG->wwwroot/$CFG->admin/");
-            redirect("$CFG->wwwroot/$CFG->admin/");
+            // redirect($current_url);
+            // redirect("$CFG->wwwroot/$CFG->admin/");
         } else if (empty($SITE->fullname)) {
             // Somebody double clicked when editing admin user during install.
-            die('Redirigiendo a ' . "$CFG->wwwroot/$CFG->admin/");
-            redirect("$CFG->wwwroot/$CFG->admin/");
+            // redirect($current_url);
+            // redirect("$CFG->wwwroot/$CFG->admin/");
         } else {
             if ($returnto === 'profile') {
                 if ($course->id != SITEID) {
@@ -310,15 +321,21 @@ if($usernew = $mform->get_data()){
             } else {
                 $returnurl = new moodle_url('/user/preferences.php', array('userid' => $user->id));
             }
-            die('Redirigiendo a ' . $returnurl);
-            redirect($returnurl);
+            // redirect($current_url);
+            // redirect($returnurl);
         }
+        redirect($current_url);
     } else {
         \core\session\manager::gc(); // Remove stale sessions.
-        die('$user->id != $USER->id');
+        redirect($current_url);
         redirect("$CFG->wwwroot/$CFG->admin/user.php");
     }
     // Never reached..
 }
+// $streditmyprofile = get_string('editmyprofile');
+$PAGE->set_title('Administración de usuarios hoteles city');
+echo $OUTPUT->header();
+$userfullname = fullname($user, true);
+echo $OUTPUT->heading($userfullname);
 $mform->display();
 echo $OUTPUT->footer();
