@@ -203,7 +203,6 @@ if($usernew = $mform->get_data()){
         $usercreated = true;
     } else { // Editar usuario ya existente
         $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformdefaultfields');
-        // _log('userformdefaultfields', $allowed_fields);
         if(empty($allowed_fields)){
             $allowed_fields = array();
         }else{

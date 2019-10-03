@@ -27,13 +27,15 @@ require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title('Pruebas hoteles city');
-$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/ejemplo_ajax.php');
+$courseid = optional_param('course', 9, PARAM_INT);
+$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/ejemplo_ajax.php', array('course' => $courseid));
+
 
 echo $OUTPUT->header();
 // foreach (local_hoteles_city_dashboard_get_courses() as $key => $course) {
 //     _print($course->fullname, local_hoteles_city_dashboard_get_course_information($course->id));
 // }
-$report_info = local_hoteles_city_dashboard_get_report_columns();
+$report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_pagination_course, $courseid);
 ?>
 
 <!-- Datatable CSS -->
@@ -68,9 +70,13 @@ $report_info = local_hoteles_city_dashboard_get_report_columns();
             'serverSide': true,
             'serverMethod': 'post',
             'ajax': {
-                'url':'ajax_file.php'
+                'url':'ajax_file.php',
+                data: {
+                    type: 'course',
+                    courseid: <?php echo $courseid; ?>,
+                }
             },
-            lengthMenu: [[10, 20, 100, -1], [10, 20, 100, "Todos los registros"]],
+            lengthMenu: [[10, 15, 20, 100, -1], [10, 15, 20, 100, "Todos los registros"]],
             'dom': 'Bfrtip',
             "pageLength": 10,
             buttons: [

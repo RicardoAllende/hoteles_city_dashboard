@@ -43,12 +43,10 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
 
 function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions, $user) {
     $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformdefaultfields');
-    // _log('userformdefaultfields', $allowed_fields);
     if(empty($allowed_fields)){
         return;
     }
     $allowed_fields = explode(',', $allowed_fields);
-    // _log('custom_useredit_shared_definition() allowed fields', $allowed_fields);
 
     global $CFG, $USER, $DB;
 
@@ -73,7 +71,6 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     }
 
     $enabledusernamefields = useredit_get_enabled_name_fields();
-    // _log('$enabledusernamefields', $enabledusernamefields);
     // Add the enabled additional name fields.
     foreach ($enabledusernamefields as $addname) {
         $mform->addElement('text', $addname,  get_string($addname), 'maxlength="100" size="30"');
@@ -286,7 +283,6 @@ function custom_profile_definition($mform, $userid = 0) {
     $update = has_capability('moodle/user:update', context_system::instance());
 
     $categories = profile_get_user_fields_with_data_by_category($userid);
-    // _log('categorías', $categories); // QUITAR ESTO
     $count = 0;
     // $first = true;
     $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformcustomfields');
@@ -296,7 +292,6 @@ function custom_profile_definition($mform, $userid = 0) {
     $allowed_fields = explode(',', $allowed_fields);
     $any = false;
     foreach ($categories as $categoryid => $fields) {
-        // _log('fields', $fields); // QUITAR ESTO
         // Check first if *any* fields will be displayed.
         // $display = false;
         // foreach ($fields as $formfield) {
@@ -317,12 +312,10 @@ function custom_profile_definition($mform, $userid = 0) {
                 }
                 // while($count < 5){
                     //     $count++;
-                    //     _log($formfield);
                     // }
                 if($first){
                     // $mform->addElement('header', 'category_'.$categoryid, format_string($formfield->get_category_name()));
                     $first = !$first;
-                    // _log($formfield);
                     $first = false;
                 }
                 if(!$any){
@@ -403,7 +396,6 @@ function local_hoteles_city_dashboard_get_whereids_clauses($filters, $fieldname)
     if(empty($filters)){
         return "";
     }
-    // _log('Llegando a local_hoteles_city_dashboard_get_whereids_clauses()', $filters);
     $separator = " AND {$fieldname} IN ";
     return $separator . implode($separator, $filters);
 }
@@ -449,7 +441,6 @@ function local_hoteles_city_dashboard_get_course_information(int $courseid, arra
     $fecha_final = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_final');
 
     $userids = local_hoteles_city_dashboard_get_user_ids_with_params($courseid, $params);
-    _log('local_hoteles_city_dashboard_get_user_ids_with_params()', $userids);
     if(empty($userids)){
         $response->activities = [];
         $response->enrolled_users = 0;
@@ -471,20 +462,20 @@ function local_hoteles_city_dashboard_get_course_information(int $courseid, arra
     return $response;
 }
 
-function local_hoteles_city_dashboard_get_report_columns($prefix = 'user.'){
+DEFINE('local_hoteles_city_dashboard_pagination_course', 1);
+DEFINE('local_hoteles_city_dashboard_pagination_admin', 2);
+function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_information,  $prefix = 'user.'){
     $select_sql = array("concat({$prefix}firstname, ' ', {$prefix}lastname) as name");
     $ajax_names = array("name");
     $visible_names = array('Nombre');
     // array_push($select_sql, 'fullname');
     $default_fields = local_hoteles_city_dashboard_get_default_report_fields();
-    // _log(compact('default_fields'));
     foreach($default_fields as $key => $df){
         array_push($ajax_names, $key);
         array_push($select_sql, $prefix . $key);
         array_push($visible_names, $df);
     }
     $custom_fields = local_hoteles_city_dashboard_get_custom_report_fields();
-    // _log(compact('custom_fields'));
     $underscores = '_';
     foreach ($custom_fields as $key => $cf) {
         $new_key = "custom_" .$key;
@@ -494,6 +485,35 @@ function local_hoteles_city_dashboard_get_report_columns($prefix = 'user.'){
         array_push($visible_names, $cf);
         $underscores .= "_";
     }
+    switch ($type) {
+        case local_hoteles_city_dashboard_pagination_course:
+            global $DB;
+            $name = $DB->get_field('course', 'fullname', array('id' => $custom_information));
+            if($name !== false){
+                array_push($select_sql, "IF( EXISTS( SELECT id FROM {course_completions} AS cc
+                WHERE user.id = cc.userid AND cc.course = {$custom_information} AND cc.timecompleted IS NOT NULL), 'Completado', 'No completado') as completion");
+                // array_push($select_sql, "COALESCE( ( SELECT DATE(FROM_UNIXTIME(timecompleted)) FROM {course_completions} AS cc
+                // WHERE user.id = cc.userid AND cc.course = {$custom_information} AND cc.timecompleted IS NOT NULL), 'No completado') as completion");
+                array_push($ajax_names, "completion");
+                array_push($visible_names, $name);
+
+                array_push($select_sql, "COALESCE( ( SELECT DATE(FROM_UNIXTIME(timecompleted)) FROM {course_completions} AS cc
+                WHERE user.id = cc.userid AND cc.course = {$custom_information} AND cc.timecompleted IS NOT NULL), '-') as completion_date");
+                array_push($ajax_names, "completion_date");
+                array_push($visible_names, 'Fecha');
+
+            }
+            break;
+
+        case local_hoteles_city_dashboard_pagination_course:
+            
+            break;
+        
+        default:
+            # code...
+            break;
+    }
+
     $imploded_sql = implode(', 
     ', $select_sql);
     $ajax_code = "";
@@ -504,8 +524,6 @@ function local_hoteles_city_dashboard_get_report_columns($prefix = 'user.'){
     foreach($visible_names as $vn){
         $table_code .= "<th>{$vn}</th>";
     }
-    // _log($table_code);
-
     $response = new stdClass();
     $response->select_sql = $prefix . 'id, ' . $imploded_sql;
     $response->ajax_code = $ajax_code;
@@ -646,11 +664,13 @@ function local_hoteles_city_dashboard_get_custom_profile_fields(string $ids = ''
 /**
  * Regresa información para la paginación de usuarios compatible con datatables
  */
-function local_hoteles_city_dashboard_get_paginated_users(array $params, int $courseid = null){
+function local_hoteles_city_dashboard_get_paginated_users(array $params){
+    $courseid = local_hoteles_city_dashboard_get_value_from_params($params, 'courseid');
+    _log($params);
+    $enrol_sql_query = " user.id IN " . local_hoteles_city_dashboard_get_enrolled_users_ids($courseid, $desde = '', $hasta = '');
     if(empty($params)){
         return array();
     }
-    _log($params);
     global $DB;
     $draw = $params['draw'];
     $row = $params['start'];
@@ -661,49 +681,57 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, int $co
     $searchValue = $params['search']['value']; // Search value
 
     ## Search 
-    $searchQuery = " ";
+    $searchQuery = " WHERE " . $enrol_sql_query;
     $queryParams = array();
     if($searchValue != ''){
-        $searchValue = "%{$searchValue}%";
-        $searchQuery = " WHERE email like ? or concat(firstname, ' ', lastname) like ? ";
-        array_push($queryParams, $searchValue);
-        array_push($queryParams, $searchValue);
+        if(strpos('.name',$columnName) !== false){
+            $searchValue = "%{$searchValue}%";
+            $searchQuery = " WHERE " . $enrol_sql_query . " HAVING {$columnName} like ?";
+            array_push($queryParams, $searchValue);
+            // array_push($queryParams, $searchValue);
+        }elseif(strpos('user.',$columnName) !== false){
+            $searchValue = "%{$searchValue}%";
+            $searchQuery = " WHERE {$columnName} like ? AND " . $enrol_sql_query;
+            array_push($queryParams, $searchValue);
+        }else{
+            $searchValue = "%{$searchValue}%";
+            $searchQuery = " WHERE $enrol_sql_query HAVING {$columnName} like ?  " ;
+            array_push($queryParams, $searchValue);
+        }
     }
 
-    ## Total number of records without filtering
-    $totalRecords = $DB->count_records('user');//($table, $conditions_array);
 
-    ## Total number of record with filtering
-    $totalRecordwithFilter = $DB->count_records_sql("select count(*) from {user} {$searchQuery}", $queryParams);
 
-    $default_fields = local_hoteles_city_dashboard_get_default_report_fields();
-    $custom_fields  = local_hoteles_city_dashboard_get_custom_report_fields();
+    // $default_fields = local_hoteles_city_dashboard_get_default_report_fields();
+    // $custom_fields  = local_hoteles_city_dashboard_get_custom_report_fields();
 
     $orderBy = " order by {$columnName} {$columnSortOrder} ";
-    if($columnName == 'fullname'){
-        $orderBy = " ORDER BY fullname {$columnSortOrder}";
-    }
 
-    // _log('$default_fields', $default_fields);
-    $select_default = "";
-    if(!empty($default_fields)){
-        $select_default = ', ' . implode(',', $default_fields);
-    }
-    // _log('$custom_fields', $custom_fields);
-    if(!empty($custom_fields)){
-        implode(',', $custom_fields);
-    }
+    // $select_default = "";
+    // if(!empty($default_fields)){
+    //     $select_default = ', ' . implode(',', $default_fields);
+    // }
+    // if(!empty($custom_fields)){
+    //     implode(',', $custom_fields);
+    // }
 
     ## Fetch records
-    $report_info = local_hoteles_city_dashboard_get_report_columns();
-    // _log($report_info);
+    $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_pagination_course, $courseid);
     $select_sql = $report_info->select_sql;
     $limit = " LIMIT {$row}, {$rowperpage}";
     if($rowperpage == -1){
         $limit = "";
     }
-    $records = $DB->get_records_sql("select {$select_sql} from {user} AS user {$searchQuery} order by {$columnName} {$columnSortOrder}
-                                     {$limit}", $queryParams);
+    
+    $query = "SELECT count(*) FROM (SELECT {$select_sql} FROM {user} AS user {$searchQuery} order by {$columnName} {$columnSortOrder}) AS t1";
+    ## Total number of records without filtering
+    $totalRecords = $DB->count_records('user');//($table, $conditions_array);
+    
+    ## Total number of record with filtering
+    $totalRecordwithFilter = $DB->count_records_sql($query, $queryParams);
+    
+    $query = "select {$select_sql} from {user} AS user {$searchQuery} order by {$columnName} {$columnSortOrder} {$limit}";
+    $records = $DB->get_records_sql($query, $queryParams);
 
     ## Response
     $response = array(
@@ -713,7 +741,6 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, int $co
         "aaData" => array_values($records)
     );
     $json_response = json_encode($response);
-    // _log($response);
     return $json_response;
 }
 

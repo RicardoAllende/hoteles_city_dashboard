@@ -36,12 +36,10 @@ if($columnName == 'fullname'){
     $orderBy = " ORDER BY fullname {$columnSortOrder}";
 }
 
-// _log('$default_fields', $default_fields);
 $select_default = "";
 if(!empty($default_fields)){
     $select_default = ', ' . implode(',', $default_fields);
 }
-// _log('$custom_fields', $custom_fields);
 if(!empty($custom_fields)){
     implode(',', $custom_fields);
 }
@@ -59,6 +57,5 @@ $response = array(
     "aaData" => array_values($records)
 );
 $json_response = json_encode($response);
-_log('Desde función', local_hoteles_city_dashboard_get_paginated_users($_POST));//$json_response;
-_log('Similar', $json_response);
+
 echo $json_response;
