@@ -3,6 +3,7 @@
 // include 'config.php';
 include(__DIR__ . '/../../config.php');
 include(__DIR__ . '/lib.php');
+die(local_hoteles_city_dashboard_get_paginated_users($_POST));
 $draw = $_POST['draw'];
 $row = $_POST['start'];
 $rowperpage = $_POST['length']; // Rows display per page

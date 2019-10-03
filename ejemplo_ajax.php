@@ -33,18 +33,16 @@ echo $OUTPUT->header();
 // foreach (local_hoteles_city_dashboard_get_courses() as $key => $course) {
 //     _print($course->fullname, local_hoteles_city_dashboard_get_course_information($course->id));
 // }
-
+$report_info = local_hoteles_city_dashboard_get_report_columns();
 ?>
 
 <!-- Datatable CSS -->
 <link href='//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.0/css/buttons.dataTables.min.css">
 <table id='empTable' class='display dataTable'>    
     <thead>
         <tr>
-            <th>Email</th>
-            <th>Nombre</th>
-            <th>Id</th>
-            <th>Cont</th>
+            <?php echo $report_info->table_code; ?>
         </tr>
     </thead>
 </table>
@@ -72,20 +70,36 @@ echo $OUTPUT->header();
             'ajax': {
                 'url':'ajax_file.php'
             },
+            lengthMenu: [[10, 20, 100, -1], [10, 20, 100, "Todos los registros"]],
             'dom': 'Bfrtip',
-            'buttons': [
-                'copy', 'csv', 'excel', 'pdf', 'print'
+            "pageLength": 10,
+            buttons: [
+                {
+                    extend: 'excel',
+                    text: '<span class="fa fa-file-excel-o"></span> Exportar a excel',
+                    exportOptions: {
+                        modifier: {
+                            search: 'applied',
+                            order: 'applied'
+                        }
+                    }
+                }, 'pageLength'
             ],
             'columns': [
-                { data: 'email' },
-                { data: 'name' },
-                { data: 'id' },
-                { data: 'reg' },
-                // { data: 'city' },
+                <?php echo $report_info->ajax_code; ?>
             ],
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
-            }
+            },
+            language: {
+                buttons: {
+                    pageLength: {
+                        _: "Mostrando %d filas",
+                        '-1': "Mostrando todas las filas"
+                    }
+                }
+            },
+            // buttons: [ { extend: 'excel', action: newExportAction } ],
         });
     });
 </script>

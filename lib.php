@@ -477,57 +477,41 @@ function local_hoteles_city_dashboard_get_report_columns($prefix = 'user.'){
     $visible_names = array('Nombre');
     // array_push($select_sql, 'fullname');
     $default_fields = local_hoteles_city_dashboard_get_default_report_fields();
-    _log(compact('default_fields'));
-    // if(is_array($default_fields)){
-        foreach($default_fields as $key => $df){
-            // $df = 'user.' . $key;
-            // $default_fields[$key] = $df;
-            array_push($ajax_names, $key);
-            array_push($select_sql, $prefix . $key);
-            array_push($visible_names, $df);
-        }
-    // }
-    $custom_fields = local_hoteles_city_dashboard_get_custom_report_fields();
-    _log(compact('custom_fields'));
-    // if(!empty($custom_fields)){
-    //     $custom_ids = implode(',', $custom_fields);
-    //     $custom_fields_menu = local_hoteles_city_dashboard_get_custom_profile_fields($custom_ids);
-    //     if(!empty($custom_fields_menu)){
-            foreach ($custom_fields as $key => $cf) {
-
-                $new_key = "custom_" .$key;
-                array_push($ajax_names, $new_key);
-                array_push($select_sql, $new_key);
-                array_push($visible_names, $cf);
-            
-                // array_push($ajax_names, $cf);
-                // array_push($select_sql, $key);
-            }
-    //     }
-    // }
-    // _log(compact('select_sql'));    
-    $imploded_columns = implode(', ', $select_sql);
-    // $imploded_ajax_names = implode(',')
-    // $imploded_column_names = implode()
-    foreach ($select_sql as $key => $value) {
-        # code...
+    // _log(compact('default_fields'));
+    foreach($default_fields as $key => $df){
+        array_push($ajax_names, $key);
+        array_push($select_sql, $prefix . $key);
+        array_push($visible_names, $df);
     }
+    $custom_fields = local_hoteles_city_dashboard_get_custom_report_fields();
+    // _log(compact('custom_fields'));
+    $underscores = '_';
+    foreach ($custom_fields as $key => $cf) {
+        $new_key = "custom_" .$key;
+        $select_key = " COALESCE((SELECT data FROM {user_info_data} AS {$underscores}uif WHERE {$underscores}uif.userid = user.id AND fieldid = {$key} LIMIT 1), '') AS {$new_key}";
+        array_push($ajax_names, $new_key);
+        array_push($select_sql, $select_key);
+        array_push($visible_names, $cf);
+        $underscores .= "_";
+    }
+    $imploded_sql = implode(', 
+    ', $select_sql);
+    $ajax_code = "";
+    foreach($ajax_names as $an){
+        $ajax_code .= "{data: '{$an}'}, ";
+    }
+    $table_code = "";
+    foreach($visible_names as $vn){
+        $table_code .= "<th>{$vn}</th>";
+    }
+    // _log($table_code);
+
     $response = new stdClass();
-    $response->select_sql = $select_sql;
-    $response->ajax_name = $ajax_names;
-    $response->visible_names = $visible_names;
-    // $response->script = "'select_sql': [
-    //     { data: 'email' },
-    //     { data: 'name' },
-    //     { data: 'id' },
-    //     { data: 'reg' },
-    //     // { data: 'city' },
-    // ]";
+    $response->select_sql = $prefix . 'id, ' . $imploded_sql;
+    $response->ajax_code = $ajax_code;
+    $response->table_code = $table_code;
+
     return $response;
-}
-
-function local_hoteles_city_dashboard_print_report_columns(){
-
 }
 
 function local_hoteles_city_dashboard_get_value_from_params(array $params, string $search, $returnIfNotExists = '', bool $apply_not_empty = true){
@@ -666,6 +650,7 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, int $co
     if(empty($params)){
         return array();
     }
+    _log($params);
     global $DB;
     $draw = $params['draw'];
     $row = $params['start'];
@@ -710,8 +695,15 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, int $co
     }
 
     ## Fetch records
-    $records = $DB->get_records_sql("select user.id, concat(firstname, ' ', lastname) as name {$select_default} from {user} {$searchQuery} order by name {$columnSortOrder}
-                                     LIMIT {$row}, {$rowperpage}", $queryParams);
+    $report_info = local_hoteles_city_dashboard_get_report_columns();
+    // _log($report_info);
+    $select_sql = $report_info->select_sql;
+    $limit = " LIMIT {$row}, {$rowperpage}";
+    if($rowperpage == -1){
+        $limit = "";
+    }
+    $records = $DB->get_records_sql("select {$select_sql} from {user} AS user {$searchQuery} order by {$columnName} {$columnSortOrder}
+                                     {$limit}", $queryParams);
 
     ## Response
     $response = array(
@@ -753,7 +745,7 @@ function local_hoteles_city_dashboard_get_default_report_fields(){
 function local_hoteles_city_dashboard_get_custom_report_fields(){
     if($config = get_config('local_hoteles_city_dashboard', 'reportcustomfields')){
         if(!empty($config)){
-            $menu = local_hoteles_city_dashboard_get_custom_profile_fields();
+            $menu = local_hoteles_city_dashboard_get_custom_profile_fields($config);
             $configs = explode(',', $config);
             $response = array();
             foreach($configs as $r){
