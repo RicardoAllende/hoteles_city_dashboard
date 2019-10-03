@@ -464,13 +464,18 @@ function local_hoteles_city_dashboard_get_course_information(int $courseid, arra
 
 DEFINE('local_hoteles_city_dashboard_pagination_course', 1);
 DEFINE('local_hoteles_city_dashboard_pagination_admin', 2);
-function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_information,  $prefix = 'user.'){
+function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_information, $searched = '', $prefix = 'user.'){
     $select_sql = array("concat({$prefix}firstname, ' ', {$prefix}lastname) as name");
     $ajax_names = array("name");
     $visible_names = array('Nombre');
+    $slim_query = array("id, concat({$prefix}firstname, ' ', {$prefix}lastname) as name");
+    // $slim_query = 
     // array_push($select_sql, 'fullname');
     $default_fields = local_hoteles_city_dashboard_get_default_report_fields();
     foreach($default_fields as $key => $df){
+        if($key == $searched){
+            array_push($slim_query, $prefix . $key);
+        }
         array_push($ajax_names, $key);
         array_push($select_sql, $prefix . $key);
         array_push($visible_names, $df);
@@ -483,6 +488,9 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
         array_push($ajax_names, $new_key);
         array_push($select_sql, $select_key);
         array_push($visible_names, $cf);
+        if($new_key == $searched && $searched != ''){
+            array_push($slim_query, $select_key);
+        }
         $underscores .= "_";
     }
     switch ($type) {
@@ -516,6 +524,8 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
 
     $imploded_sql = implode(', 
     ', $select_sql);
+    $imploded_slim = implode(', 
+    ', $slim_query);
     $ajax_code = "";
     foreach($ajax_names as $an){
         $ajax_code .= "{data: '{$an}'}, ";
@@ -528,6 +538,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
     $response->select_sql = $prefix . 'id, ' . $imploded_sql;
     $response->ajax_code = $ajax_code;
     $response->table_code = $table_code;
+    $response->slim_query = $imploded_slim;
 
     return $response;
 }
@@ -683,8 +694,9 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params){
     ## Search 
     $searchQuery = " WHERE " . $enrol_sql_query;
     $queryParams = array();
+    $searched = '';
     if($searchValue != ''){
-        if(strpos('.name',$columnName) !== false){
+        if(strpos('user.name',$columnName) !== false){
             $searchValue = "%{$searchValue}%";
             $searchQuery = " WHERE " . $enrol_sql_query . " HAVING {$columnName} like ?";
             array_push($queryParams, $searchValue);
@@ -698,34 +710,29 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params){
             $searchQuery = " WHERE $enrol_sql_query HAVING {$columnName} like ?  " ;
             array_push($queryParams, $searchValue);
         }
+        $searched = $columnName;
     }
 
-
-
-    // $default_fields = local_hoteles_city_dashboard_get_default_report_fields();
-    // $custom_fields  = local_hoteles_city_dashboard_get_custom_report_fields();
-
-    $orderBy = " order by {$columnName} {$columnSortOrder} ";
-
-    // $select_default = "";
-    // if(!empty($default_fields)){
-    //     $select_default = ', ' . implode(',', $default_fields);
-    // }
-    // if(!empty($custom_fields)){
-    //     implode(',', $custom_fields);
+    /* Versión con consulta de solamente nombre y email */
+    // if($searchValue != ''){
+    //     $searchValue = "%{$searchValue}%";
+    //     $searchQuery = " WHERE email like ? or concat(firstname, ' ', lastname) like ? AND " . $enrol_sql_query;
+    //     array_push($queryParams, $searchValue);
+    //     array_push($queryParams, $searchValue);
     // }
 
     ## Fetch records
-    $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_pagination_course, $courseid);
+    $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_pagination_course, $courseid, $searched);
     $select_sql = $report_info->select_sql;
+    $select_slim = $report_info->slim_query;
     $limit = " LIMIT {$row}, {$rowperpage}";
     if($rowperpage == -1){
         $limit = "";
     }
     
-    $query = "SELECT count(*) FROM (SELECT {$select_sql} FROM {user} AS user {$searchQuery} order by {$columnName} {$columnSortOrder}) AS t1";
+    $query = "SELECT count(*) FROM (SELECT {$select_slim} FROM {user} AS user {$searchQuery}) AS t1";
     ## Total number of records without filtering
-    $totalRecords = $DB->count_records('user');//($table, $conditions_array);
+    $totalRecords = $DB->count_records_sql('SELECT COUNT(*) FROM {user} AS user WHERE ' . $enrol_sql_query, $queryParams);//($table, $conditions_array);
     
     ## Total number of record with filtering
     $totalRecordwithFilter = $DB->count_records_sql($query, $queryParams);
