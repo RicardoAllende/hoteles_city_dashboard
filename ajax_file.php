@@ -58,5 +58,6 @@ $response = array(
     "aaData" => array_values($records)
 );
 $json_response = json_encode($response);
+_log('Desde función', local_hoteles_city_dashboard_get_paginated_users($_POST));//$json_response;
+_log('Similar', $json_response);
 echo $json_response;
-// echo local_hoteles_city_dashboard_get_paginated_users($_POST);//$json_response;

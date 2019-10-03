@@ -30,7 +30,8 @@ $PAGE->set_title('Pruebas hoteles city');
 $PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/pruebas.php');
 
 echo $OUTPUT->header();
-foreach (local_hoteles_city_dashboard_get_courses() as $key => $course) {
-    _print($course->fullname, local_hoteles_city_dashboard_get_course_information($course->id));
-}
+// foreach (local_hoteles_city_dashboard_get_courses() as $key => $course) {
+//     _print($course->fullname, local_hoteles_city_dashboard_get_course_information($course->id));
+// }
+_print(local_hoteles_city_dashboard_get_report_columns());
 echo $OUTPUT->footer();
