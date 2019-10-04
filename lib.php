@@ -465,10 +465,11 @@ function local_hoteles_city_dashboard_get_course_information(int $courseid, arra
 DEFINE('local_hoteles_city_dashboard_pagination_course', 1);
 DEFINE('local_hoteles_city_dashboard_pagination_admin', 2);
 function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_information, $searched = '', $prefix = 'user.'){
-    $select_sql = array("concat({$prefix}firstname, ' ', {$prefix}lastname) as name");
+    $select_sql = array("concat('<a href=\"crear_usuario.php', ?, 'id=', user.id ,'\" >', {$prefix}firstname, ' ', {$prefix}lastname, ' </a>') as name");
     $ajax_names = array("name");
     $visible_names = array('Nombre');
-    $slim_query = array("id, concat({$prefix}firstname, ' ', {$prefix}lastname) as name");
+    $slim_query = array("id, concat('<a href=\"crear_usuario.php', ?, 'id=', user.id ,'\" >', {$prefix}firstname, ' ', {$prefix}lastname, ' </a>') as name");
+    $dummy_params = 1; // Agregar un parámetro inicial por el ? del enlace
     // $slim_query = 
     // array_push($select_sql, 'fullname');
     $default_fields = local_hoteles_city_dashboard_get_default_report_fields();
@@ -510,11 +511,34 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
                 array_push($ajax_names, "completion_date");
                 array_push($visible_names, 'Fecha');
 
+                array_push($select_sql, "concat('<a class=\"btn btn-info\" href=\"crear_usuario.php', ?, 'id=', user.id ,'\" >Editar</a>') as edit_user");
+                array_push($ajax_names, "edit_user");
+                array_push($visible_names, 'Editar usuario');
+                $dummy_params++;
+
+                array_push($select_sql, "concat('<a class=\"btn btn-info\" href=\"crear_usuario.php', ?, 'id=', user.id ,'\" >Suspender</a>') as suspend_user");
+                array_push($ajax_names, "suspend_user");
+                array_push($visible_names, 'Suspender usuario');
+                $dummy_params++;
+
             }
             break;
 
-        case local_hoteles_city_dashboard_pagination_course:
-            
+        case local_hoteles_city_dashboard_pagination_admin:
+            array_push($select_sql, "concat('<a class=\"btn btn-info\" href=\"crear_usuario.php', ?, 'id=', user.id ,'\" >Editar</a>') as edit_user");
+            array_push($ajax_names, "edit_user");
+            array_push($visible_names, 'Editar usuario');
+            $dummy_params++;
+
+            array_push($select_sql, "concat('<a class=\"btn btn-danger\" href=\"crear_usuario.php', ?, 'id=', user.id ,'\" >Suspender</a>') as suspend_user");
+            array_push($ajax_names, "suspend_user");
+            array_push($visible_names, 'Suspender usuario');
+            $dummy_params++;
+
+            // array_push($select_sql, "concat('<a class=\"btn btn-info\" href=\"crear_usuario.php', ?, 'id=', user.id ,'\" >', {$prefix}firstname, ' ', {$prefix}lastname, ' </a>') as name");
+            // array_push($ajax_names, "edit_user");
+            // array_push($visible_names, 'Editar usuario');
+            // $dummy_params++;
             break;
         
         default:
@@ -539,6 +563,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
     $response->ajax_code = $ajax_code;
     $response->table_code = $table_code;
     $response->slim_query = $imploded_slim;
+    $response->dummy_params = $dummy_params;
 
     return $response;
 }
@@ -693,8 +718,8 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params){
 
     ## Search 
     $searchQuery = " WHERE " . $enrol_sql_query;
-    $queryParams = array();
     $searched = '';
+    $queryParams = array();
     if($searchValue != ''){
         if(strpos('user.name',$columnName) !== false){
             $searchValue = "%{$searchValue}%";
@@ -711,6 +736,11 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params){
             array_push($queryParams, $searchValue);
         }
         $searched = $columnName;
+    }
+    
+    $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_pagination_course, $courseid, $searched);
+    for ($i=0; $i < $report_info->dummy_params; $i++) { 
+        array_push($queryParams, '?'); // Usado para escapar ? en el enlace del usuario
     }
 
     /* Versión con consulta de solamente nombre y email */
