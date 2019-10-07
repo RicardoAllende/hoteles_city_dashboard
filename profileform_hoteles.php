@@ -98,10 +98,6 @@ class profileform_hoteles extends moodleform {
         //     }
         // }
 
-        $mform->addElement('text', 'username', get_string('username'), 'size="20"');
-        $mform->addHelpButton('username', 'username', 'auth');
-        $mform->setType('username', PARAM_RAW);
-
         // if ($userid !== -1) {
         //     $mform->disabledIf('username', 'auth', 'in', $cannotchangeusername);
         // }
@@ -111,19 +107,25 @@ class profileform_hoteles extends moodleform {
         $mform->addElement('hidden', 'auth', 'manual');
         $mform->setType('auth', PARAM_TEXT);
 
-        $mform->addElement('advcheckbox', 'suspended', get_string('suspended', 'auth'));
-        $mform->addHelpButton('suspended', 'suspended', 'auth');
+        $mform->addElement('text', 'username', get_string('username'), 'size="30"');
+        $mform->addHelpButton('username', 'username', 'auth');
+        $mform->setType('username', PARAM_RAW);
 
-        $mform->addElement('checkbox', 'createpassword', get_string('createpassword', 'auth'));
+        if($user->id != -1){
+            $mform->addElement('advcheckbox', 'suspended', get_string('suspended', 'auth'));
+            $mform->addHelpButton('suspended', 'suspended', 'auth');
+        }
+
+        // $mform->addElement('checkbox', 'createpassword', get_string('createpassword', 'auth'));
         // $mform->disabledIf('createpassword', 'auth', 'in', $cannotchangepass);
 
         // if (!empty($CFG->passwordpolicy)) {
         //     $mform->addElement('static', 'passwordpolicyinfo', '', print_password_policy());
         // }
-        $mform->addElement('passwordunmask', 'newpassword', get_string('newpassword'), 'size="20"');
+        $mform->addElement('text', 'newpassword', get_string('newpassword'), 'size="30"');
         $mform->addHelpButton('newpassword', 'newpassword');
-        $mform->setType('newpassword', core_user::get_property_type('password'));
-        $mform->disabledIf('newpassword', 'createpassword', 'checked');
+        $mform->setType('newpassword', PARAM_TEXT);// core_user::get_property_type('password'));
+        // $mform->disabledIf('newpassword', 'createpassword', 'checked');
 
         // $mform->disabledIf('newpassword', 'auth', 'in', $cannotchangepass);
 
@@ -142,9 +144,9 @@ class profileform_hoteles extends moodleform {
         //     }
         // }
 
-        $mform->addElement('advcheckbox', 'preference_auth_forcepasswordchange', get_string('forcepasswordchange'));
-        $mform->addHelpButton('preference_auth_forcepasswordchange', 'forcepasswordchange');
-        $mform->disabledIf('preference_auth_forcepasswordchange', 'createpassword', 'checked');
+        // $mform->addElement('advcheckbox', 'preference_auth_forcepasswordchange', get_string('forcepasswordchange'));
+        // $mform->addHelpButton('preference_auth_forcepasswordchange', 'forcepasswordchange');
+        // $mform->disabledIf('preference_auth_forcepasswordchange', 'createpassword', 'checked');
 
         // Shared fields.
         custom_useredit_shared_definition($mform, $editoroptions, $filemanageroptions, $user);
@@ -218,24 +220,24 @@ class profileform_hoteles extends moodleform {
 
         // Print picture.
         // if (empty($USER->newadminuser)) {
-            if ($user) {
-                $context = context_user::instance($user->id, MUST_EXIST);
-                $fs = get_file_storage();
-                $hasuploadedpicture = ($fs->file_exists($context->id, 'user', 'icon', 0, '/', 'f2.png') || $fs->file_exists($context->id, 'user', 'icon', 0, '/', 'f2.jpg'));
-                if (!empty($user->picture) && $hasuploadedpicture) {
-                    $imagevalue = $OUTPUT->user_picture($user, array('courseid' => SITEID, 'size' => 64));
-                } else {
-                    $imagevalue = get_string('none');
-                }
-            } else {
-                $imagevalue = get_string('none');
-            }
-            $imageelement = $mform->getElement('currentpicture');
-            $imageelement->setValue($imagevalue);
+        //     if ($user) {
+        //         $context = context_user::instance($user->id, MUST_EXIST);
+        //         $fs = get_file_storage();
+        //         $hasuploadedpicture = ($fs->file_exists($context->id, 'user', 'icon', 0, '/', 'f2.png') || $fs->file_exists($context->id, 'user', 'icon', 0, '/', 'f2.jpg'));
+        //         if (!empty($user->picture) && $hasuploadedpicture) {
+        //             $imagevalue = $OUTPUT->user_picture($user, array('courseid' => SITEID, 'size' => 64));
+        //         } else {
+        //             $imagevalue = get_string('none');
+        //         }
+        //     } else {
+        //         $imagevalue = get_string('none');
+        //     }
+        //     $imageelement = $mform->getElement('currentpicture');
+        //     $imageelement->setValue($imagevalue);
 
-            if ($user && $mform->elementExists('deletepicture') && !$hasuploadedpicture) {
-                $mform->removeElement('deletepicture');
-            }
+        //     if ($user && $mform->elementExists('deletepicture') && !$hasuploadedpicture) {
+        //         $mform->removeElement('deletepicture');
+        //     }
         // }
 
         // Next the customisable profile fields.
