@@ -470,6 +470,26 @@ function local_hoteles_city_dashboard_get_course_information(int $courseid, arra
     return $response;
 }
 
+function local_hoteles_city_dashboard_get_activities(int $courseid, string $andwhere = ""){
+    global $DB;
+    $actividades = array();
+    $query  = "SELECT id, CASE ";
+    $tiposDeModulos = $DB->get_records('modules', array('visible' => 1), 'id,name');
+    foreach ($tiposDeModulos as $modulo) {
+        $nombre  = $modulo->name;
+        $alias = 'a'.$modulo->id;
+        $query .= ' WHEN cm.module = '.$modulo->id.' THEN (SELECT '.$alias.'.name FROM {'.$nombre.'} '.$alias.' WHERE '.$alias.'.id = cm.instance) ';
+    }
+    $query .= " END AS name
+    from {course_modules} cm
+    where course = {$courseid} {$andwhere} ";
+    return $DB->get_records_sql_menu($query);
+}
+
+function local_hoteles_city_dashboard_get_tracked_activities(int $courseid){
+    return local_hoteles_city_dashboard_get_activities($courseid, 'AND cm.completion > 0');
+}
+
 DEFINE('local_hoteles_city_dashboard_pagination_course', 1);
 DEFINE('local_hoteles_city_dashboard_pagination_admin', 2);
 DEFINE('local_hoteles_city_dashboard_default_datatables_field', array(
@@ -531,42 +551,38 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
                 array_push($ajax_names, $key_name);
                 array_push($visible_names, 'Fecha');
 
-                $key_name = 'custom_edit_user';
-                $field = "concat('<a class=\"btn btn-info\" href=\"administrar_usuarios.php', ?, 'id=', user.id ,'\" >Editar</a>') as {$key_name}";
-                $field_slim = "'edit' as {$key_name}";
+                $grade_item = local_hoteles_city_dashboard_get_course_grade_item_id($custom_information);
+                $key_name = "custom_grade";
+                $field = "COALESCE( ( SELECT DATE(FROM_UNIXTIME(timecompleted)) FROM {grade_grades} AS gg
+                 JOIN {grade_items} AS gi ON gg.itemid = gi.id WHERE gi.courseid = {$custom_information} AND gi.type = 'course'
+                AND user.id = gg.userid AND AND cc.timecompleted IS NOT NULL), '-') as {$key_name}";
+                $field_slim = $field;
                 array_push($select_sql, $field);
-                array_push($ajax_names, $key_name);
                 array_push($slim_query, $field_slim);
-                array_push($visible_names, 'Editar usuario');
-                $dummy_params++;
-
-                $key_name = "custom_suspend_user";
-                $field = "concat('<a class=\"btn btn-info\" href=\"administrar_usuarios.php', ?, 'id=', user.id ,'\" >Suspender</a>') as {$key_name}";
-                $field_slim = "'suspend' as {$key_name}";
-                array_push($select_sql, $field);
                 array_push($ajax_names, $key_name);
-                array_push($slim_query, $field_slim);
-                array_push($visible_names, 'Suspender usuario');
-                $dummy_params++;
-
+                array_push($visible_names, 'Fecha');
             }
-            break;
-
+            break;    
         case local_hoteles_city_dashboard_pagination_admin:
-            array_push($select_sql, "concat('<a class=\"btn btn-info\" href=\"administrar_usuarios.php', ?, 'id=', user.id ,'\" >Editar</a>') as edit_user");
-            array_push($ajax_names, "edit_user");
+            $key_name = 'custom_edit_user';
+            $field = "concat('<a class=\"btn btn-info\" href=\"administrar_usuarios.php', ?, 'id=', user.id ,'\" >Editar</a>') as {$key_name}";
+            $field_slim = "'edit' as {$key_name}";
+            array_push($select_sql, $field);
+            array_push($ajax_names, $key_name);
+            array_push($slim_query, $field_slim);
             array_push($visible_names, 'Editar usuario');
             $dummy_params++;
 
-            array_push($select_sql, "concat('<a class=\"btn btn-danger\" href=\"administrar_usuarios.php', ?, 'id=', user.id ,'\" >Suspender</a>') as suspend_user");
-            array_push($ajax_names, "suspend_user");
+            $key_name = "custom_suspend_user";
+            $field = "concat('<a class=\"btn btn-info\" href=\"administrar_usuarios.php', ?, 'id=', user.id ,'&suspend=1\", >Suspender</a>') as {$key_name}";
+            $field_slim = "'suspend' as {$key_name}";
+            array_push($select_sql, $field);
+            array_push($ajax_names, $key_name);
+            array_push($slim_query, $field_slim);
             array_push($visible_names, 'Suspender usuario');
             $dummy_params++;
-
-            // array_push($select_sql, "concat('<a class=\"btn btn-info\" href=\"administrar_usuarios.php', ?, 'id=', user.id ,'\" >', {$prefix}firstname, ' ', {$prefix}lastname, ' </a>') as name");
-            // array_push($ajax_names, "edit_user");
-            // array_push($visible_names, 'Editar usuario');
-            // $dummy_params++;
+            $dummy_params++;
+            
             break;
         
         default:
@@ -596,6 +612,11 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
     $response->custom_fields = $custom_fields;
 
     return $response;
+}
+
+function local_hoteles_city_dashboard_get_course_grade_item_id(int $courseid){
+    global $DB;
+    return $DB->get_field('grade_items', 'id', array('courseid' => $courseid, 'itemtype' => 'course'));
 }
 
 function local_hoteles_city_dashboard_get_value_from_params(array $params, string $search, $returnIfNotExists = '', bool $apply_not_empty = true){
@@ -1022,3 +1043,70 @@ function local_hoteles_city_dashboard_get_courses(string $andWhereClause = "", a
     $query = "SELECT id, fullname, shortname FROM {course} where category != 0 {$andWhereClause} order by sortorder";
     return $DB->get_records_sql($query);
 }
+
+/*
+SELECT u.firstname AS 'First' , u.lastname AS 'Last', CONCAT(u.firstname , ' ' , u.lastname) AS 'Display Name', 
+c.fullname AS 'Course', 
+-- cc.name AS 'Category',
+CASE 
+  WHEN gi.itemtype = 'course' 
+   THEN CONCAT(c.fullname, ' - Total')
+  ELSE gi.itemname
+END AS 'Item Name',
+ 
+ROUND(gg.finalgrade,2) AS Grade,
+FROM_UNIXTIME(gg.timemodified) AS TIME
+ 
+FROM mdl_course AS c
+-- JOIN mdl_context AS ctx ON c.id = ctx.instanceid
+-- JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
+JOIN mdl_grade_items AS gi ON gi.courseid = c.id
+JOIN mdl_grade_grades AS gg ON gi.id = gg.itemid
+JOIN mdl_user AS u ON gg.userid = u.id
+-- JOIN mdl_course_categories AS cc ON cc.id = c.category
+ 
+-- WHERE  gi.courseid = c.id AND gi.itemtype = 'course'
+WHERE gi.itemtype = 'course' AND gi.courseid = c.id
+ORDER BY lastname
+
+
+
+SELECT CONCAT( ROUND(gg.finalgrade,2), ' - ', FROM_UNIXTIME(gg.timemodified)) AS Grade
+ 
+FROM mdl_course AS c
+JOIN mdl_context AS ctx ON c.id = ctx.instanceid
+JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
+JOIN mdl_user AS u ON u.id = ra.userid
+JOIN mdl_grade_grades AS gg ON gg.userid = u.id
+JOIN mdl_grade_items AS gi ON gi.id = gg.itemid
+-- JOIN mdl_course_categories AS cc ON cc.id = c.category
+ 
+WHERE  gi.courseid = c.id AND gi.itemtype = 'course'
+
+
+
+
+
+SELECT u.firstname AS 'First' , u.lastname AS 'Last', CONCAT(u.firstname , ' ' , u.lastname) AS 'Display Name', 
+c.fullname AS 'Course', 
+cc.name AS 'Category',
+CASE 
+  WHEN gi.itemtype = 'course' 
+   THEN CONCAT(c.fullname, ' - Total')
+  ELSE gi.itemname
+END AS 'Item Name',
+ 
+ROUND(gg.finalgrade,2) AS Grade,
+FROM_UNIXTIME(gg.timemodified) AS TIME
+ 
+FROM mdl_course AS c
+JOIN mdl_context AS ctx ON c.id = ctx.instanceid
+JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
+JOIN mdl_user AS u ON u.id = ra.userid
+JOIN mdl_grade_grades AS gg ON gg.userid = u.id
+JOIN mdl_grade_items AS gi ON gi.id = gg.itemid
+JOIN mdl_course_categories AS cc ON cc.id = c.category
+ 
+WHERE  gi.courseid = c.id AND gi.itemtype = 'course'
+ORDER BY lastname
+*/
