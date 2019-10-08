@@ -46,3 +46,9 @@ $string['reportcustomfields'] = 'Campos personalizados en reporte';
 $string['reportcustomfields_desc'] = 'Seleccione los campos personalizados a mostrar en el reporte. Presione ctrl para seleccionar varios campos';
 $string['reportdefaultfields'] = 'Campos tabla usuarios en reportes';
 $string['reportdefaultfields_desc'] = 'Seleccione los campos de la tabla {user} de moodle para mostrar en el reporte. Presione ctrl para seleccionar varios campos';
+
+$string['tab_filters'] = 'Permisos de roles';
+$string['filtercustomfields'] = 'Campos personalizados usados como filtros';
+$string['filtercustomfields_desc'] = 'Seleccione los campos personalizados que servirán como filtros. Presione ctrl para seleccionar varios campos';
+$string['filterdefaultfields'] = 'Campos tabla usuarios como filtros';
+$string['filterdefaultfields_desc'] = 'Seleccione los campos de la tabla {user} de moodle para mostrar en el reporte. Presione ctrl para seleccionar varios campos';

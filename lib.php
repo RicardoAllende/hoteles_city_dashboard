@@ -63,7 +63,7 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     $stringman = get_string_manager();
 
     // Add the necessary names.
-    $fields = useredit_get_required_name_fields(); // fullname y lastname
+    $fields = useredit_get_required_name_fields(); // firstname y lastname
     foreach ($fields as $fullname) {
         $mform->addElement('text', $fullname,  get_string($fullname),  'maxlength="100" size="30"');
         if ($stringman->string_exists('missing'.$fullname, 'core')) {
@@ -83,6 +83,7 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     // Add the enabled additional name fields.
     foreach ($enabledusernamefields as $addname) {
         $mform->addElement('text', $addname,  get_string($addname), 'maxlength="100" size="30"');
+        $mform->addRule($addname, $strrequired, 'required');
         $mform->setType($addname, PARAM_NOTAGS);
     }
 
@@ -115,6 +116,7 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
 
     if(in_array('city', $allowed_fields)){
         $mform->addElement('text', 'city', get_string('city'), 'maxlength="120" size="21"');
+        $mform->addRule('', $strrequired, 'required');
         $mform->setType('city', PARAM_TEXT);
         if (!empty($CFG->defaultcity)) {
             $mform->setDefault('city', $CFG->defaultcity);
@@ -125,6 +127,7 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
         $choices = get_string_manager()->get_list_of_countries();
         $choices = array('' => get_string('selectacountry') . '...') + $choices;
         $mform->addElement('select', 'country', get_string('selectacountry'), $choices);
+        $mform->addRule('country', $strrequired, 'required');
         if (!empty($CFG->country)) {
             $mform->setDefault('country', core_user::get_property_default('country'));
         }
@@ -156,12 +159,13 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
 
     if(in_array('description', $allowed_fields)){
         $mform->addElement('editor', 'description_editor', get_string('userdescription'), null, $editoroptions);
+        $mform->addRule('description_editor', $strrequired, 'required');
         $mform->setType('description_editor', PARAM_CLEANHTML);
         $mform->addHelpButton('description_editor', 'userdescription');
-    // }else{
-    //     $mform->addElement('hidden', 'description_editor');
-    //     $mform->setType('description_editor', PARAM_CLEANHTML);
-    //     // $mform->addHelpButton('description_editor', 'userdescription');
+    }else{
+        $mform->addElement('hidden', 'description_editor');
+        $mform->setType('description_editor', PARAM_CLEANHTML);
+        // $mform->addHelpButton('description_editor', 'userdescription');
     }
 
     // Edición de imágenes
@@ -202,6 +206,7 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
             $mform->addElement('header', 'moodle_interests', get_string('interests'));
             $mform->addElement('tags', 'interests', get_string('interestslist'),
                 array('itemtype' => 'user', 'component' => 'core'));
+            $mform->addRule('interests', $strrequired, 'required');
             $mform->addHelpButton('interests', 'interestslist');
         // }
     }
@@ -212,68 +217,80 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
 
     if(in_array('url', $allowed_fields)){ 
         $mform->addElement('text', 'url', get_string('webpage'), 'maxlength="255" size="50"');
+        $mform->addRule('url', $strrequired, 'required');
         $mform->setType('url', core_user::get_property_type('url'));
     }
 
     if(in_array('icq', $allowed_fields)){
         $mform->addElement('text', 'icq', get_string('icqnumber'), 'maxlength="15" size="25"');
         $mform->setType('icq', core_user::get_property_type('icq'));
+        $mform->addRule('icq', $strrequired, 'required');
         $mform->setForceLtr('icq');
     }
 
     if(in_array('skype', $allowed_fields)){
         $mform->addElement('text', 'skype', get_string('skypeid'), 'maxlength="50" size="25"');
         $mform->setType('skype', core_user::get_property_type('skype'));
+        $mform->addRule('skype', $strrequired, 'required');
         $mform->setForceLtr('skype');
     }
 
     if(in_array('aim', $allowed_fields)){
         $mform->addElement('text', 'aim', get_string('aimid'), 'maxlength="50" size="25"');
         $mform->setType('aim', core_user::get_property_type('aim'));
+        $mform->addRule('aim', $strrequired, 'required');
         $mform->setForceLtr('aim');
     }
 
     if(in_array('yahoo', $allowed_fields)){
         $mform->addElement('text', 'yahoo', get_string('yahooid'), 'maxlength="50" size="25"');
         $mform->setType('yahoo', core_user::get_property_type('yahoo'));
+        $mform->addRule('text', $strrequired, 'required');
         $mform->setForceLtr('yahoo');
     }
 
     if(in_array('msn', $allowed_fields)){
         $mform->addElement('text', 'msn', get_string('msnid'), 'maxlength="50" size="25"');
         $mform->setType('msn', core_user::get_property_type('msn'));
+        $mform->addRule('msn', $strrequired, 'required');
         $mform->setForceLtr('msn');
     }
 
     if(in_array('idnumber', $allowed_fields)){
         $mform->addElement('text', 'idnumber', get_string('idnumber'), 'maxlength="255" size="25"');
+        $mform->addRule('idnumber', $strrequired, 'required');
         $mform->setType('idnumber', core_user::get_property_type('idnumber'));
     }
 
     if(in_array('institution', $allowed_fields)){
         $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
+        $mform->addRule('institution', $strrequired, 'required');
         $mform->setType('institution', core_user::get_property_type('institution'));
     }
 
     if(in_array('department', $allowed_fields)){
         $mform->addElement('text', 'department', get_string('department'), 'maxlength="255" size="25"');
+        $mform->addRule('department', $strrequired, 'required');
         $mform->setType('department', core_user::get_property_type('department'));
     }
 
     if(in_array('phone1', $allowed_fields)){
         $mform->addElement('text', 'phone1', get_string('phone1'), 'maxlength="20" size="25"');
         $mform->setType('phone1', core_user::get_property_type('phone1'));
+        $mform->addRule('phone1', $strrequired, 'required');
         $mform->setForceLtr('phone1');
     }
 
     if(in_array('phone2', $allowed_fields)){
         $mform->addElement('text', 'phone2', get_string('phone2'), 'maxlength="20" size="25"');
         $mform->setType('phone2', core_user::get_property_type('phone2'));
+        $mform->addRule('phone2', $strrequired, 'required');
         $mform->setForceLtr('phone2');
     }
 
     if(in_array('address', $allowed_fields)){
         $mform->addElement('text', 'address', get_string('address'), 'maxlength="255" size="25"');
+        $mform->addRule('address', $strrequired, 'required');
         $mform->setType('address', core_user::get_property_type('address'));
     }
 }
@@ -328,11 +345,13 @@ function custom_profile_definition($mform, $userid = 0) {
                     $first = false;
                 }
                 if(!$any){
+                    _log($formfield);
                     $mform->addElement('header', 'custom_fields', 'Campos de perfil del usuario');
                     $mform->setExpanded('custom_fields', true);
                     $any = true;
                 }
                 $formfield->edit_field($mform);
+                $mform->addRule($formfield->inputname, 'Este campo es requerido', 'required');
             }
         }
     }
