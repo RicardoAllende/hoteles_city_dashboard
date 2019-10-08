@@ -104,17 +104,7 @@ class profileform_hoteles extends moodleform {
 
         // $mform->addElement('selectgroups', 'auth', get_string('chooseauthmethod', 'auth'), $authoptions);
         // $mform->addHelpButton('auth', 'chooseauthmethod', 'auth');
-        $mform->addElement('hidden', 'auth', 'manual');
-        $mform->setType('auth', PARAM_TEXT);
-
-        $mform->addElement('text', 'username', get_string('username'), 'size="30"');
-        $mform->addHelpButton('username', 'username', 'auth');
-        $mform->setType('username', PARAM_RAW);
-
-        if($user->id != -1){
-            $mform->addElement('advcheckbox', 'suspended', get_string('suspended', 'auth'));
-            $mform->addHelpButton('suspended', 'suspended', 'auth');
-        }
+        
 
         // $mform->addElement('checkbox', 'createpassword', get_string('createpassword', 'auth'));
         // $mform->disabledIf('createpassword', 'auth', 'in', $cannotchangepass);
@@ -122,9 +112,7 @@ class profileform_hoteles extends moodleform {
         // if (!empty($CFG->passwordpolicy)) {
         //     $mform->addElement('static', 'passwordpolicyinfo', '', print_password_policy());
         // }
-        $mform->addElement('text', 'newpassword', get_string('newpassword'), 'size="30"');
-        $mform->addHelpButton('newpassword', 'newpassword');
-        $mform->setType('newpassword', PARAM_TEXT);// core_user::get_property_type('password'));
+        
         // $mform->disabledIf('newpassword', 'createpassword', 'checked');
 
         // $mform->disabledIf('newpassword', 'auth', 'in', $cannotchangepass);
@@ -150,6 +138,24 @@ class profileform_hoteles extends moodleform {
 
         // Shared fields.
         custom_useredit_shared_definition($mform, $editoroptions, $filemanageroptions, $user);
+        
+        $mform->addElement('hidden', 'auth', 'manual');
+        $mform->setType('auth', PARAM_TEXT);
+
+        $mform->addElement('text', 'username', get_string('username'), 'size="30"');
+        $mform->addHelpButton('username', 'username', 'auth');
+        $mform->addRule('username', $strrequired, 'required');
+        $mform->setType('username', PARAM_RAW);
+
+        if($user->id != -1){
+            $mform->addElement('advcheckbox', 'suspended', get_string('suspended', 'auth'));
+            $mform->addHelpButton('suspended', 'suspended', 'auth');
+        }
+
+        $mform->addElement('text', 'newpassword', get_string('newpassword'), 'size="30"');
+        $mform->addRule('newpassword', $strrequired, 'required');
+        $mform->addHelpButton('newpassword', 'newpassword');
+        $mform->setType('newpassword', PARAM_TEXT);// core_user::get_property_type('password'));
 
         // Next the customisable profile fields.
         custom_profile_definition($mform, $userid);

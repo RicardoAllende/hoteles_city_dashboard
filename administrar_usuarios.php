@@ -34,6 +34,10 @@ require_once($CFG->dirroot.'/user/lib.php');
 // require_once($CFG->dirroot.'/lib/formslib.php');
 
 $id     = optional_param('id', -1, PARAM_INT);    // User id; -1 if creating new user.
+$creating_user = false;
+if($id == -1){
+    $creating_user = true;
+}
 $current_url = new moodle_url($url = $CFG->wwwroot . '/local/hoteles_city_dashboard/administrar_usuarios.php', array('id' => $id));
 $PAGE->set_url($current_url);
 
@@ -337,5 +341,9 @@ echo $OUTPUT->header();
 $userfullname = fullname($user, true);
 echo $OUTPUT->heading($userfullname);
 $mform->display();
-echo "<script src='user.js'></script>";
+if($creating_user){ // Rellenado de formulario
+    echo "<script src='user.js'></script>";
+}
+?>
+<?php
 echo $OUTPUT->footer();

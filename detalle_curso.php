@@ -28,7 +28,7 @@ require_once(__DIR__ . '/lib.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title('Pruebas hoteles city');
 $courseid = optional_param('course', 9, PARAM_INT);
-$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/ejemplo_ajax.php', array('course' => $courseid));
+$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/detalle_curso.php', array('course' => $courseid));
 
 
 echo $OUTPUT->header();
@@ -47,6 +47,11 @@ $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_cit
             <?php echo $report_info->table_code; ?>
         </tr>
     </thead>
+    <tfoot>
+        <tr>
+            <?php echo $report_info->table_code; ?>
+        </tr>
+    </tfoot>
 </table>
 
 <!-- jQuery Library -->
@@ -87,17 +92,51 @@ $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_cit
                         modifier: {
                             search: 'applied',
                             order: 'applied'
-                        }
-                    }
-                }, 'pageLength'
+                        },
+                        columns: [<?php echo $report_info->ajax_printed_rows; ?>],
+                    },
+                },
+                {
+                    extend: 'excel',
+                    text: '<span class="fa fa-file-o"></span> Exportar a CSV',
+                    exportOptions: {
+                        modifier: {
+                            search: 'applied',
+                            order: 'applied'
+                        },
+                        columns: [<?php echo $report_info->ajax_printed_rows; ?>],
+                    },
+                },
+                'pageLength',
             ],
             'columns': [
                 <?php echo $report_info->ajax_code; ?>
             ],
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
-            },
             language: {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json",
+
+                "emptyTable":     "No se encontró información",
+                // "infoFiltered":   "(filtered from _MAX_ total entries)",
+                "loadingRecords": "Cargando...",
+                "processing":     "Procesando...",
+                "search":         "Búsqueda:",
+                // "zeroRecords":    "No matching records found",
+                "paginate": {
+                    "first":      "Primera",
+                    "last":       "Última",
+                    "next":       "Siguiente",
+                    "previous":   "Anterior"
+                },
+                // "decimal":        "",
+                // "info":           "Showing _START_ to _END_ of _TOTAL_ entries",
+                // "infoEmpty":      "Showing 0 to 0 of 0 entries",
+                // "infoPostFix":    "",
+                // "thousands":      ",",
+                // "lengthMenu":     "Show _MENU_ entries",
+                // "aria": {
+                //     "sortAscending":  ": activate to sort column ascending",
+                //     "sortDescending": ": activate to sort column descending"
+                // }
                 buttons: {
                     pageLength: {
                         _: "Mostrando %d filas",
@@ -105,6 +144,8 @@ $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_cit
                     }
                 }
             },
+            // language: {
+            // },
             // buttons: [ { extend: 'excel', action: newExportAction } ],
         });
     });

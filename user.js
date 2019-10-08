@@ -27,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
             
             day = today.getDate();
-            formatted_date += year;
             if(day < 10){
                 formatted_date += ('0' + day);
             }else{
@@ -48,10 +47,10 @@ document.addEventListener("DOMContentLoaded", function() {
             }
     
             str = str.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
-                .replace(/\s+/g, '-') // collapse whitespace and replace by -
-                .replace(/-+/g, '-'); // collapse dashes
+                .replace(/\s+/g, '_') // collapse whitespace and replace by -
+                .replace(/-+/g, '_'); // collapse dashes
     
-            return str.toUpperCase();
+            return str;
         }
     }); 
 });
