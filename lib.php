@@ -640,6 +640,8 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
     $imploded_slim = implode(', 
     ', $slim_query);
     $ajax_code = "";
+    $ajax_printed_rows = '';
+    $count = 0;
     foreach($ajax_names as $an){
         switch($an){
             case 'custom_no_search_suspend_user':
@@ -667,17 +669,24 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
                 }, ";
                 break;
             default:
+                $ajax_printed_rows .= ($count . ',');
                 $ajax_code .= "{data: '{$an}' },";
             break;
         }
+        $count++;
     }
+    // $ajax_code .= "{data: '{$an}', render: function ( data, type, row ) // Ejemplo agregando una columna de alguna ya generada
+    //                 { return 'Otra cosa con el mismo {$an}' + data; } // Ejemplo agregando una columna de alguna ya generada
+    //             }, "; // Ejemplo agregando una columna de alguna ya generada
     $table_code = "";
     foreach($visible_names as $vn){
         $table_code .= "<th>{$vn}</th>";
     }
+    // $table_code .= "<th>Una última columna</th>"; // Ejemplo agregando una columna de alguna ya generada
     $response = new stdClass();
     $response->select_sql = $prefix . 'id, ' . $imploded_sql;
     $response->ajax_code = $ajax_code;
+    $response->ajax_printed_rows = $ajax_printed_rows;
     $response->table_code = $table_code;
     $response->slim_query = $imploded_slim;
     $response->default_fields = $default_fields;

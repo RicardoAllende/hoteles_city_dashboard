@@ -92,9 +92,22 @@ $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_cit
                         modifier: {
                             search: 'applied',
                             order: 'applied'
-                        }
-                    }
-                }, 'pageLength'
+                        },
+                        columns: [<?php echo $report_info->ajax_printed_rows; ?>],
+                    },
+                },
+                {
+                    extend: 'excel',
+                    text: '<span class="fa fa-file-o"></span> Exportar a CSV',
+                    exportOptions: {
+                        modifier: {
+                            search: 'applied',
+                            order: 'applied'
+                        },
+                        columns: [<?php echo $report_info->ajax_printed_rows; ?>],
+                    },
+                },
+                'pageLength',
             ],
             'columns': [
                 <?php echo $report_info->ajax_code; ?>
@@ -114,8 +127,6 @@ $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_cit
                     "next":       "Siguiente",
                     "previous":   "Anterior"
                 },
-
-
                 // "decimal":        "",
                 // "info":           "Showing _START_ to _END_ of _TOTAL_ entries",
                 // "infoEmpty":      "Showing 0 to 0 of 0 entries",
