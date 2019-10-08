@@ -61,19 +61,40 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     </div>
 
     <!-- Filtro -->
-    <div class="input-group margen_filtro">
-        <h5 class="txt_filtro">Filtro: </h5>        
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Hotel
-        </button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">Action</a>
-                <a class="dropdown-item" href="#">Another action</a>
-                <a class="dropdown-item" href="#">Something else here</a>
-                <div role="separator" class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Separated link</a>
-            </div>       
-    </div>
+    <div class="row" style="margin-bottom: 10px;">
+        <div class="col-sm-6" style="padding-left: 20px;">
+            <div class="btn-group">            
+                <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Marca
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <a class="dropdown-item" href="#">Something else here</a>            
+                    <a class="dropdown-item" href="#">Separated link</a>
+                </div>
+            </div>
+        </div> 
+
+        <div class="col-sm-6" style="padding-left: 200px;">    
+            <div class="btn-group">
+                <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Generar Reporte
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">Avances de todos los cursos disponibles en Moodle</a>
+                    <a class="dropdown-item" href="#">Estatus de consulta de cursos</a>
+                    <a class="dropdown-item" href="#">Aprobaciones de cursos, calificaciones obtenidas por curso por persona</a>            
+                    <a class="dropdown-item" href="#">Avances de capacitación en Oficina Central, por direcciones (centro de costos)</a>
+                    <a class="dropdown-item" href="#">Avance de capacitación por curso en Hoteles: por región, por hotel, por persona y por puesto</a>
+                    <a class="dropdown-item" href="#">Avance de capacitación por curso en Oficina Central y por direcciones</a>
+                    <a class="dropdown-item" href="#">Personal activo en City Campus</a>                   
+                    <a class="dropdown-item" href="#">Avance de capacitaciones por curso de Directores Regionales de Operaciones y Subdirectores Regionales de Venta</a>
+                    <a class="dropdown-item" href="#">Avance de capacitación por módulo en los cursos que aplica</a>
+                </div>
+            </div>
+        </div>      
+    </div>  
 
     <!-- Inicia row para cards informativas -->
     <div class="row">
@@ -157,38 +178,6 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     </div>
     <!-- Termina row para cards informativas -->   
 
-    <!-- Gráfica comparativa -->
-    <div class="row" style="justify-content: center;">
-        <div class="col-sm-6">
-            <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Comparativa</h6>
-                    <div class="dropdown no-arrow">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-                            <div class="dropdown-header">Dropdown Header:</div>
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                    <!-- <div class="chart-container">  -->
-                        <!-- <div class="chart-area">                                           -->
-                                <canvas id="chart_comparativa_regionales"></canvas>                                           
-                        <!-- </div> -->
-                    <!-- </div>    -->
-                </div>
-            </div>
-              
-        </div>
-    </div>
 
     
     <div class="row" style="justify-content: center;">
@@ -197,7 +186,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
                 <div class="card shadow mb-4">
                     <!-- Card Header - Dropdown -->
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">Hotel 1</a></h6>
+                        <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">Avance global de capacitación</a></h6>
                         <div class="dropdown no-arrow">
                             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -225,7 +214,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
                 <div class="card shadow mb-4">
                     <!-- Card Header - Dropdown -->
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">Hotel 2</a></h6>
+                        <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">Avance por regiones</a></h6>
                         <div class="dropdown no-arrow">
                             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -255,7 +244,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
                 <div class="card shadow mb-4">
                     <!-- Card Header - Dropdown -->
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">Hotel 3</a></h6>
+                        <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">Avance de capacitación de la Oficina Central</a></h6>
                         <div class="dropdown no-arrow">
                             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -283,7 +272,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
                 <div class="card shadow mb-4">
                     <!-- Card Header - Dropdown -->
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">Hotel 4</a></h6>
+                        <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">Avance en capacitación por hoteles</a></h6>
                         <div class="dropdown no-arrow">
                             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -321,7 +310,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
     <!-- Gráfica comparativa -->
-    <script>
+    <!-- <script>
     var ctx = document.getElementById('chart_comparativa_regionales');
     var chart = new Chart(ctx, {
     // The type of chart we want to create
@@ -348,7 +337,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
         
     }
     });
-    </script>
+    </script> -->
 
     <!-- Gráfica 1 -->
     <script>
@@ -359,17 +348,21 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
 
     // The data for our dataset
     data: {
-        labels: ['Variable1', 'Variable2'],
-        datasets: [{
-            label: 'A',           
-            borderColor: 'rgb(255, 99, 132)',
-            data: [35, 40, 0],
-        }]
+    labels: ['Centro', 'Suites', 'Plus', 'Express', 'Junior', 'OC'],
+    datasets: [{
+        label: 'Aprobados',
+        backgroundColor: '#1cc88a',       
+        data: [15, 40, 30, 26, 12, 34, 0],
+    },{
+        label: 'No Aprobados',
+        backgroundColor: '#e74a3b',       
+        data: [5, 45, 26, 31, 41, 10, 0],
+    }]
     },
 
     // Configuration options go here
     options: {
-        
+    
     }
     });
     </script>
@@ -383,19 +376,23 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
 
     // The data for our dataset
     data: {
-        labels: ['Variable1', 'Variable2'],
-        datasets: [{
-            label: 'A',            
-            borderColor: 'rgb(255, 99, 132)',
-            data: [15, 40, 0],
-        }]
-    },
+    labels: ['NO', 'NE', 'CO', 'Metro', 'Sur', 'SE', 'LA'],
+    datasets: [{
+        label: 'Aprobados',            
+        //borderColor: '#1cc88a',
+        data: [15, 40, 26, 31, 41, 10, 19, 0],
+    },{
+        label: 'No Aprobados',            
+        //borderColor: '#e74a3b',
+        data: [5, 45, 30, 26, 12, 34, 5, 0],
+    }]
+},
 
-    // Configuration options go here
-    options: {
-        
-    }
-    });
+// Configuration options go here
+options: {
+    
+}
+});
     </script>
 
     <!-- Gráfica 3 -->
@@ -407,15 +404,19 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
 
     // The data for our dataset
     data: {
-        labels: ['Variable1', 'Variable2'],
-        datasets: [{
-            label: 'A',            
-            borderColor: 'rgb(255, 99, 132)',
-            data: [15, 40, 0],
-        }]
+    labels: ['OP', 'CH', 'BR', 'TI', 'FI', 'LE', 'AD', 'FR', 'DE'],
+    datasets: [{
+        label: 'Aprobados',            
+        //borderColor: 'yellow',
+        data: [15, 40, 26, 31, 41, 10, 19, 0],
+    },{
+        label: 'No Aprobados',            
+        //borderColor: '#e74a3b',
+        data: [5, 45, 30, 26, 12, 34, 5, 0],
+    }]
     },
 
-    // Configuration options go here
+// Configuration options go here
     options: {
         
     }
@@ -427,21 +428,21 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     var ctx = document.getElementById('myAreaChart4');
     var chart = new Chart(ctx, {
     // The type of chart we want to create
-    type: 'bar',
+    type: 'horizontalBar',
 
     // The data for our dataset
     data: {
-        labels: ['Variable1', 'Variable2'],
+        labels: ['EVD', 'JVD', 'GV', 'ALL', 'CA', 'JM', 'CO', 'CXC'],
         datasets: [{
             label: 'A',            
-            borderColor: 'rgb(255, 99, 132)',
-            data: [15, 40, 0],
+            //borderColor: 'rgb(255, 99, 132)',
+            data: [15, 40, 12, 30, 26, 50, 1, 9, 0],
         }]
     },
 
     // Configuration options go here
     options: {
-        
+        legend: { display: false },
     }
     });
     </script>

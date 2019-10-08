@@ -63,7 +63,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
   <!-- Custom styles for this page -->
   <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet"> 
     <div style="padding: 1rem;">
-            <a href="seccion_regionales_iframe.php" class="reportes_btn" role="button" aria-pressed="true">Volver a sección</a>
+    <a href="dashboard.php" class="btn btn-primary" role="button" aria-pressed="true">Crear</a>
     </div>         
           <!-- DataTales Example -->
           <div class="card shadow mb-4">
@@ -71,84 +71,59 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
               <h6 class="m-0 font-weight-bold text-primary">Reporte</h6>
             </div>
             <div class="card-body">
-              <div class="table-responsive">
+              <div class="table-responsive" style="text-align: center;">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
                       <th>Nombre de usuario</th>
-                      <th>Nombre</th>
-                      <th>Puesto</th>
-                      <th>Hotel</th>
-                      <th>Curso</th>
-                      <th>Calificación</th>
-                      <th>Fecha</th>
+                      <th>Status</th>
+                      <th>Alta</th>
+                      <th>Baja</th>
+                      <th>Editar</th>                                           
                     </tr>
-                  </thead>
-                  <tfoot>
-                    <tr>
-                      <th>Nombre de usuario</th>
-                      <th>Nombre</th>
-                      <th>Puesto</th>
-                      <th>Hotel</th>
-                      <th>Curso</th>
-                      <th>Calificación</th>
-                      <th>Fecha</th>
-                    </tr>
-                  </tfoot>
+                  </thead>                  
                   <tbody>
                     <tr>
                       <td>Tiger</td>
-                      <td>Tiger Nixon</td>
-                      <td>Gerente</td>
-                      <td>Hotel 61</td>
-                      <td>Curso 1</td>
-                      <td>9</td>
-                      <td>2011/04/25</td>
+                      <td>Activo</td>
+                      <td><a href="dashboard.php" class="btn btn-success" role="button" aria-pressed="true">Alta</a></td>
+                      <td><a href="dashboard.php" class="btn btn-danger" role="button" aria-pressed="true">Baja</a></td>
+                      <td><a href="dashboard.php" class="btn btn-warning" role="button" aria-pressed="true">Editar</a></td>                      
                     </tr>                    
                     <tr>
                       <td>Jenette</td>
-                      <td>Jenette Caldwell</td>
-                      <td>Gerente</td>
-                      <td>Hotel 30</td>
-                      <td>Curso 3</td>
-                      <td>9</td>
-                      <td>2011/09/03</td>
+                      <td>Activo</td>
+                      <td><a href="dashboard.php" class="btn btn-success" role="button" aria-pressed="true">Alta</a></td>
+                      <td><a href="dashboard.php" class="btn btn-danger" role="button" aria-pressed="true">Baja</a></td>
+                      <td><a href="dashboard.php" class="btn btn-warning" role="button" aria-pressed="true">Editar</a></td>                       
                     </tr>                    
                     <tr>
                       <td>Shou</td>
-                      <td>Shou Itou</td>
-                      <td>Gerente</td>
-                      <td>Hotel 20</td>
-                      <td>Curso 2</td>
-                      <td>10</td>
-                      <td>2011/08/14</td>                      
+                      <td>Activo</td>
+                      <td><a href="dashboard.php" class="btn btn-success" role="button" aria-pressed="true">Alta</a></td>
+                      <td><a href="dashboard.php" class="btn btn-danger" role="button" aria-pressed="true">Baja</a></td>
+                      <td><a href="dashboard.php" class="btn btn-warning" role="button" aria-pressed="true">Editar</a></td>                                             
                     </tr>
                     <tr>
                       <td>Michelle</td>
-                      <td>Michelle House</td>
-                      <td>Gerente</td>
-                      <td>Hotel 37</td>
-                      <td>Curso 7</td>
-                      <td>10</td>
-                      <td>2011/06/02</td>                      
+                      <td>Activo</td>
+                      <td><a href="dashboard.php" class="btn btn-success" role="button" aria-pressed="true">Alta</a></td>
+                      <td><a href="dashboard.php" class="btn btn-danger" role="button" aria-pressed="true">Baja</a></td>
+                      <td><a href="dashboard.php" class="btn btn-warning" role="button" aria-pressed="true">Editar</a></td>                                              
                     </tr>                   
                     <tr>
                       <td>Hope</td>
-                      <td>Hope Fuentes</td>
-                      <td>Recamarero</td>
-                      <td>Hotel 41</td>
-                      <td>Curso 4</td>
-                      <td>9</td>
-                      <td>2010/02/12</td>                      
+                      <td>Activo</td>
+                      <td><a href="dashboard.php" class="btn btn-success" role="button" aria-pressed="true">Alta</a></td>
+                      <td><a href="dashboard.php" class="btn btn-danger" role="button" aria-pressed="true">Baja</a></td>
+                      <td><a href="dashboard.php" class="btn btn-warning" role="button" aria-pressed="true">Editar</a></td>                                             
                     </tr>                   
                     <tr>
                       <td>Sakura</td>
-                      <td>Sakura Yamamoto</td>
-                      <td>Gerente</td>
-                      <td>Hotel 37</td>
-                      <td>Curso 13</td>
-                      <td>10</td>
-                      <td>2009/08/19</td>                      
+                      <td>Activo</td>
+                      <td><a href="dashboard.php" class="btn btn-success" role="button" aria-pressed="true">Alta</a></td>
+                      <td><a href="dashboard.php" class="btn btn-danger" role="button" aria-pressed="true">Baja</a></td>
+                      <td><a href="dashboard.php" class="btn btn-warning" role="button" aria-pressed="true">Editar</a></td>                                              
                     </tr>                   
                   </tbody>
                 </table>
