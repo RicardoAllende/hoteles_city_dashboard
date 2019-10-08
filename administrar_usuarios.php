@@ -34,7 +34,7 @@ require_once($CFG->dirroot.'/user/lib.php');
 // require_once($CFG->dirroot.'/lib/formslib.php');
 
 $id     = optional_param('id', -1, PARAM_INT);    // User id; -1 if creating new user.
-$current_url = new moodle_url($url = $CFG->wwwroot . '/local/hoteles_city_dashboard/crear_usuario.php', array('id' => $id));
+$current_url = new moodle_url($url = $CFG->wwwroot . '/local/hoteles_city_dashboard/administrar_usuarios.php', array('id' => $id));
 $PAGE->set_url($current_url);
 
 global $DB;
@@ -253,12 +253,12 @@ if($usernew = $mform->get_data()){
         useredit_update_interests($usernew, $usernew->interests);
     }
 
-    if(get_config('local_hoteles_city_dashboard', 'userformimage')){
-        // Update user picture.
-        // if (empty($USER->newadminuser)) {
-            core_user::update_picture($usernew, $filemanageroptions);
-        // }
-    }
+    // if(get_config('local_hoteles_city_dashboard', 'userformimage')){
+    //     // Update user picture.
+    //     // if (empty($USER->newadminuser)) {
+    //         core_user::update_picture($usernew, $filemanageroptions);
+    //     // }
+    // }
 
     // Update mail bounces.
     useredit_update_bounces($user, $usernew);
@@ -337,4 +337,5 @@ echo $OUTPUT->header();
 $userfullname = fullname($user, true);
 echo $OUTPUT->heading($userfullname);
 $mform->display();
+echo "<script src='user.js'></script>";
 echo $OUTPUT->footer();
