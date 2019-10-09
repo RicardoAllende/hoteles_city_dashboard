@@ -31,6 +31,11 @@ $PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/pruebas.php');
 
 echo $OUTPUT->header();
 global $DB;
+
+$cadena = optional_param('string', 'Alguna cadena con espacios', PARAM_TEXT);
+_print ($cadena);
+_print (local_dominosdashboard_create_slug($cadena));
+
 // dd($DB->get_field('course', 'fullname', array('id' => -1)));
 // foreach (local_hoteles_city_dashboard_get_courses() as $key => $course) {
 //     _print($course->fullname, local_hoteles_city_dashboard_get_course_information($course->id));

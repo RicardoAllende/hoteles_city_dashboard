@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     require(['jquery'], function ($) {
+        $('.ocultar-elemento').hide();
         var firstname_ = $('#id_firstname');
         var lastname_ = $('#id_lastname');
         $(('#id_firstname, #id_lastname')).on('input', function(){
@@ -10,16 +11,14 @@ document.addEventListener("DOMContentLoaded", function() {
             $('#id_newpassword').val(default_username);
         });
         var today = new Date();
-        function generate_username(first, last){
-
-        }
         function get_formatted_date(){
             formatted_date = "";
             
             year = today.getFullYear().toString().substr(2);
             formatted_date += year;
             
-            month = today.getMonth();
+            month = today.getMonth(); 
+            month++; // January is 0
             if(month < 10){
                 formatted_date += ('0' + month);
             }else{
