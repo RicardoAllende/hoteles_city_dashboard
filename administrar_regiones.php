@@ -42,14 +42,21 @@ $catalogues = local_hoteles_city_dashboard_get_catalogues();
 // _log(compact('catalogues'));
 $institutions = $catalogues['institutions'];
 $hasInstitutions = count($catalogues) > 0;
-$departments = $catalogues['departments'];
-$hasDepartments = count($departments) > 0;
+// $regions = $catalogues['departments'];
+$regions = local_hoteles_city_dashboard_get_regions();
+if(is_array($regions)){
+    $hasRegions = count($regions) > 0;
+}else{
+    $hasRegions = false;
+}
 ?>
-<link rel="stylesheet" href="estilos.css">
+<link rel="stylesheet" href="estilos_city.css">
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="https://rawgit.com/notifyjs/notifyjs/master/dist/notify.js"></script>
 <div>
     <?php 
         foreach ($regions as $region) {
-            echo "<button>{$region}</button>";
+            echo "<button class='btn btn-primary' data-toggle='modal' data-target='#addRegion'>{$region}</button>&nbsp;&nbsp;";
         }
     ?>
 </div>
@@ -75,11 +82,11 @@ $hasDepartments = count($departments) > 0;
                 <th scope="col" class="text-center">6</th>
             </tr> -->
             <?php 
-            if($hasInstitutions){
+            if($hasRegions){
                 echo '<tr>';
                 echo '<td scope="col" class="text-center">Institución \ Región</th>';
-                foreach($institutions as $key => $institution){
-                    echo "<th scope=\"col\" class=\"text-center\">{$institution}</th>";
+                foreach($regions as $key => $region){
+                    echo "<th scope=\"col\" class=\"text-center\">{$region}</th>";
                 }
                 echo '</tr>';
             }
@@ -87,13 +94,13 @@ $hasDepartments = count($departments) > 0;
         </thead>
         <tbody id="listado_kpis">
             <?php 
-                if($hasDepartments){
-                    foreach ($departments as $department) {
+                if($hasInstitutions){
+                    foreach ($institutions as $institution) {
                         echo '<tr>';
-                        echo "<td scope=\"col\" class=\"text-center\">{$department}</td>";
-                        foreach($institutions as $intitution){
-                            $ins = local_hoteles_city_dashboard_slug($institution);
-                            echo "<td><input onclick='editInstitution(\"{$department}\", \"{$institution}\")'
+                        echo "<td scope=\"col\" class=\"text-center\">{$institution}</td>";
+                        $ins = local_hoteles_city_dashboard_slug($institution);
+                        foreach($regions as $region){
+                            echo "<td><input onclick='editInstitution(\"{$region}\", \"{$institution}\")'
                              type='radio' name='{$ins}' value='huey'></td>";
                         }
                         echo '</tr>';
@@ -113,14 +120,14 @@ $hasDepartments = count($departments) > 0;
             <div class="modal-body">
                 <form id="form_kpi" name="form_kpi">
                     <div class="form-group">
-                        <label for="kpi_name" class="col-form-label">Nombre de la región:</label>
-                        <input type="text" class="form-control" id="kpi_name" name="kpi_name">
+                        <label for="region_name" class="col-form-label">Nombre de la región:</label>
+                        <input type="text" class="form-control" id="region_name" name="region_name">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" onclick="agregarKPI()" class="btn btn-primary">Agregar región</button>
+                <button type="button" onclick="agregarRegion()" class="btn btn-primary">Agregar región</button>
             </div>
         </div>
     </div>
@@ -131,15 +138,51 @@ $hasDepartments = count($departments) > 0;
     // kpi_key = $('#kpi_key').val();
     // kpi_type = $('#kpi_type').val();
 
-    document.addEventListener("DOMContentLoaded", function() {
-        // document.getElementById('region-main').style.width = "100%";
-        require(['jquery'], function ($) {
+    // document.addEventListener("DOMContentLoaded", function() {
+    //     // document.getElementById('region-main').style.width = "100%";
+    //     require(['jquery'], function ($) {
             function editInstitution(department, institution){
                 console.log('department', department);
                 console.log('institution', institution);
             }
-        });
-    });
+            function agregarRegion() {
+                informacion = Array();
+                name = $('#region_name').val();
+                informacion.push({name: 'request_type', value: 'create_region'});
+                informacion.push({name: 'name', value: name});
+                $.ajax({
+                    type: "POST",
+                    url: "services.php",
+                    data: informacion,
+                    // dataType: "json"
+                })
+                .done(function(data) {
+                    console.log('La información obtenida es: ', data);
+                    // return;
+                    if(data == 'ok'){
+                        alert('Insertado con éxito');
+                        // ocultarModal();
+                    }else{ // Se trata de un error
+                        alert(data, 'error');
+                    }
+                    recargar();
+                })
+                .fail(function(error, error2) {
+                    alert('Error')
+                    console.log(error, error2);
+                    // alert(data, 'error');
+                    // alert('Por favor, inténtelo de nuevo');
+                    // ocultarModal();
+                });
+            }
+
+            function recargar(){
+                setTimeout(function(){
+                    window.location.href = window.location.href;
+                }, 1500);
+            }
+    //     });
+    // });
 
     // function crearClave(){
     //     $('#kpi_key').val(string_to_slug($('#kpi_name').val()));

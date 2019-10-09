@@ -1151,7 +1151,63 @@ function local_hoteles_city_dashboard_get_catalogues(){
 
 function local_hoteles_city_dashboard_get_regions(){
     global $DB;
-    return $DB->get_records('dashboard_region');
+    return $DB->get_records_menu('dashboard_region', array(), '', 'id, name');
+}
+
+function local_hoteles_city_dashboard_create_region(array $params){
+    try{
+        global $DB;
+        $name = local_hoteles_city_dashboard_get_value_from_params($params, 'name', false, true);
+        if(local_hoteles_city_dashboard_has_empty($name)){
+            _log('Datos vacíos en creación de kpi');
+            return 'Hay datos vacíos';
+        }
+        $existent = $DB->record_exists('dashboard_region', array('name' => $name));
+        if($existent){
+            return "Ya existe esta región";
+        }
+        $kpi = new stdClass();
+        $kpi->name = $name;
+        $kpi->active = 1;
+        $insertion = $DB->insert_record('dashboard_region', $kpi);
+        return "ok";
+    }catch(Exception $e){
+        _log('Error al crear kpi', $e);
+        return 'Por favor, inténtelo de nuevo';
+    }
+}
+
+function local_hoteles_city_dashboard_relate_region_institution(array $params){
+    try{
+        global $DB;
+        $name = local_hoteles_city_dashboard_get_value_from_params($params, 'name', false, true);
+        if(local_hoteles_city_dashboard_has_empty($name)){
+            _log('Datos vacíos en creación de kpi');
+            return 'Hay datos vacíos';
+        }
+        $existent = $DB->record_exists('dashboard_region', array('name' => $name));
+        if($existent){
+            return "Ya existe esta región";
+        }
+        $kpi = new stdClass();
+        $kpi->name = $name;
+        $insertion = $DB->insert_record('dashboard_region', $kpi);
+        return "ok";
+    }catch(Exception $e){
+        _log('Error al crear kpi', $e);
+        return 'Por favor, inténtelo de nuevo';
+    }
+}
+
+function local_hoteles_city_dashboard_has_empty(... $params){
+    foreach($params as $param){
+        if(empty($param)){
+            // if($param !== 0){ // Acepta el 0 como valor válido
+                return true;
+            // }
+        }
+    }
+    return false;
 }
 
 function local_hoteles_city_dashboard_get_custom_catalogue(int $fieldid){

@@ -85,6 +85,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
         case 'create_kpi':
             die(local_hoteles_city_dashboard_create_kpi($params = $_POST));
         break;
+        case 'create_region':
+            die(local_hoteles_city_dashboard_create_region($params = $_POST));
+        break;
         default:
             die(local_hoteles_city_dashboard_error_response("request_type not allowed"));
             break;
