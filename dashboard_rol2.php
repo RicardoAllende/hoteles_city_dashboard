@@ -62,29 +62,17 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
 
     <!-- Filtro -->
     <div class="row" style="margin-bottom: 10px;">
-        <div class="col-sm-6" style="padding-left: 20px;">
-            <div class="btn-group">            
-                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Marca
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>            
-                    <a class="dropdown-item" href="#">Separated link</a>
-                </div>
-            </div>
-        </div> 
+        
 
-        <div class="col-sm-6" style="text-align: end;">    
+        <div class="col-sm-12" style="text-align: end;">    
             <div class="btn-group dropleft">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Generar Reporte
                 </button>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Avances de todos los cursos disponibles en Moodle</a>
-                    <a class="dropdown-item" href="#">Estatus de consulta de cursos</a>
-                    <a class="dropdown-item" href="#">Aprobaciones de cursos, calificaciones obtenidas por curso por persona</a>            
+                    <a class="dropdown-item" href="data-table-bar.php">Avances de todos los cursos disponibles en Moodle</a>
+                    <a class="dropdown-item" href="data-table-pie.php">Estatus de consulta de cursos</a>
+                    <a class="dropdown-item" href="data-table-tendencia.php">Aprobaciones de cursos, calificaciones obtenidas por curso por persona</a>            
                     <a class="dropdown-item" href="#">Avances de capacitación en Oficina Central, por direcciones (centro de costos)</a>
                     <a class="dropdown-item" href="#">Avance de capacitación por curso en Hoteles: por región, por hotel, por persona y por puesto</a>
                     <a class="dropdown-item" href="#">Avance de capacitación por curso en Oficina Central y por direcciones</a>
