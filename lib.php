@@ -157,16 +157,14 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     //     $mform->addElement('select', 'theme', get_string('preferredtheme'), $choices);
     // }
 
-    if(in_array('description', $allowed_fields)){
-        $mform->addElement('editor', 'description_editor', get_string('userdescription'), null, $editoroptions);
-        $mform->addRule('description_editor', $strrequired, 'required');
-        $mform->setType('description_editor', PARAM_CLEANHTML);
-        $mform->addHelpButton('description_editor', 'userdescription');
-    }else{
-        $mform->addElement('hidden', 'description_editor');
-        $mform->setType('description_editor', PARAM_CLEANHTML);
-        // $mform->addHelpButton('description_editor', 'userdescription');
+    $class = '';
+    if(!in_array('description', $allowed_fields)){
+        $class = 'class = "ocultar-elemento d-none hidden-xl-down"';
     }
+    _log('Clase del input type description', $class);
+    $mform->addElement('editor', 'description_editor', get_string('userdescription'), $class, $editoroptions);
+    $mform->setType('description_editor', PARAM_CLEANHTML);
+    $mform->addHelpButton('description_editor', 'userdescription');
 
     // Edición de imágenes
     // if(get_config('local_hoteles_city_dashboard', 'userformimage')){
@@ -345,7 +343,7 @@ function custom_profile_definition($mform, $userid = 0) {
                     $first = false;
                 }
                 if(!$any){
-                    _log($formfield);
+                    // _log($formfield);
                     $mform->addElement('header', 'custom_fields', 'Campos de perfil del usuario');
                     $mform->setExpanded('custom_fields', true);
                     $any = true;
