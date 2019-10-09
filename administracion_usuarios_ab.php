@@ -74,7 +74,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
   </div>
   <!-- Botón regresar a Dashboard -->
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
-      <div class="input-group margen_filtro">
+      <div class="input-group margen_filtro" style="padding-left: 165px;">
       <a href="dashboard.php" class="btn btn-primary" role="button" aria-pressed="true">Crear</a>      
       </div>    
   </div>
@@ -92,7 +92,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
               </div>
               <div class="card-body">
                 <div class="table-responsive">
-                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" style="text-align: center;">
                     <thead>
                       <tr>
                         <th>Nombre de usuario</th>
@@ -149,8 +149,8 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
                       <tr>
                         <td>Airi Satou</td>
                         <td>Desactivo</td>
-                        <td><a href="dashboard.php" class="btn btn-success" role="button" aria-pressed="true">Alta</a></td>
-                        <td><a href="dashboard.php" class="btn btn-danger" role="button" aria-pressed="true">Baja</a></td>                        
+                        <td><a href="form.php" class="btn btn-success" role="button" aria-pressed="true">Alta</a></td>
+                        <td><a href="form_baja.php" class="btn btn-danger" role="button" aria-pressed="true">Baja</a></td>                        
                         <!-- <td>2008/11/28</td>
                         <td>$162,700</td> -->
                       </tr>
