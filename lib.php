@@ -46,6 +46,10 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
     }
 }
 
+function local_hoteles_city_dashboard_user_has_access(){
+    return true;
+}
+
 function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions, $user) {
     $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformdefaultfields');
     if(empty($allowed_fields)){
@@ -1138,15 +1142,48 @@ function local_hoteles_city_dashboard_get_courses(string $andWhereClause = "", a
 
 function local_hoteles_city_dashboard_get_catalogues(){
     global $DB;
-    $institutions = $DB->get_records_sql_menu('SELECT distinct institution, institution as i FROM {user}'); // Hoteles
-    $departments  = $DB->get_records_sql_menu('SELECT distinct department, department as i FROM {user}'); // Puestos
+    $institutions = $DB->get_records_sql_menu("SELECT distinct institution, institution as i FROM {user}
+     WHERE suspended = 0 AND deleted = 0 AND institution != ''"); // Hoteles
+    $departments  = $DB->get_records_sql_menu("SELECT distinct department, department as i FROM {user}
+     WHERE suspended = 0 AND deleted = 0 AND department != ''"); // Puestos
     return compact('institutions', 'departments');
+}
+
+function local_hoteles_city_dashboard_get_regions(){
+    global $DB;
+    return $DB->get_records('dashboard_region');
 }
 
 function local_hoteles_city_dashboard_get_custom_catalogue(int $fieldid){
     global $DB;
     $query = "SELECT DISTINCT data, data FROM {user_info_data} where fieldid = {$fieldid} group by data order by data ASC";
     return $DB->get_records_sql_menu($query);
+}
+
+function local_hoteles_city_dashboard_slug(string $text){
+    // replace non letter or digits by -
+    $text = preg_replace('~[^\pL\d]+~u', '_', $text);
+
+    // transliterate
+    $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+
+    // remove unwanted characters
+    $text = preg_replace('~[^-\w]+~', '', $text);
+
+    // trim
+    $text = trim($text, '_');
+
+    // remove duplicate -
+    $text = preg_replace('~-+~', '_', $text);
+
+    // lowercase
+    $text = strtolower($text);
+
+    if (empty($text)) {
+        return 'n-a';
+    }
+
+    return $text;
 }
 
 /*

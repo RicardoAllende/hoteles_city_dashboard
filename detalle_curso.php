@@ -41,7 +41,7 @@ $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_cit
 <!-- Datatable CSS -->
 <link href='//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.0/css/buttons.dataTables.min.css">
-<table id='empTable' class='display dataTable'>    
+<table id='empTable' class='display dataTable table table-bordered'>    
     <thead>
         <tr>
             <?php echo $report_info->table_code; ?>
