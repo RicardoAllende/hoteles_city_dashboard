@@ -1136,6 +1136,19 @@ function local_hoteles_city_dashboard_get_courses(string $andWhereClause = "", a
     return $DB->get_records_sql($query);
 }
 
+function local_hoteles_city_dashboard_get_catalogues(){
+    global $DB;
+    $institutions = $DB->get_records_sql_menu('SELECT distinct institution, institution as i FROM {user}'); // Hoteles
+    $departments  = $DB->get_records_sql_menu('SELECT distinct department, department as i FROM {user}'); // Puestos
+    return compact('institutions', 'departments');
+}
+
+function local_hoteles_city_dashboard_get_custom_catalogue(int $fieldid){
+    global $DB;
+    $query = "SELECT DISTINCT data, data FROM {user_info_data} where fieldid = {$fieldid} group by data order by data ASC";
+    return $DB->get_records_sql_menu($query);
+}
+
 /*
 SELECT u.firstname AS 'First' , u.lastname AS 'Last', CONCAT(u.firstname , ' ' , u.lastname) AS 'Display Name', 
 c.fullname AS 'Course', 
