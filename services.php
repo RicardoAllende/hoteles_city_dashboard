@@ -88,6 +88,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
         case 'create_region':
             die(local_hoteles_city_dashboard_create_region($params = $_POST));
         break;
+        case 'relate_region_institution':
+            die(local_hoteles_city_dashboard_relate_region_institution($params = $_POST));
+        break;
+        case 'update_region':
+            die(local_hoteles_city_dashboard_update_region($params = $_POST));
+        break;
+        case 'get_region_institutions':
+            $regionid = isset($_POST['region']) ? $_POST['region'] : '';
+            die(local_hoteles_city_dashboard_get_region_insitutions($regionid));
+        break;
         default:
             die(local_hoteles_city_dashboard_error_response("request_type not allowed"));
             break;

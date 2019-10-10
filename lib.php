@@ -1151,13 +1151,13 @@ function local_hoteles_city_dashboard_get_catalogues(){
 
 function local_hoteles_city_dashboard_get_regions(){
     global $DB;
-    return $DB->get_records_menu('dashboard_region', array(), '', 'id, name');
+    return $DB->get_records('dashboard_region');
 }
 
 function local_hoteles_city_dashboard_create_region(array $params){
     try{
         global $DB;
-        $name = local_hoteles_city_dashboard_get_value_from_params($params, 'name', false, true);
+        $name = local_hoteles_city_dashboard_get_value_from_params($params, 'name', false);
         if(local_hoteles_city_dashboard_has_empty($name)){
             _log('Datos vacíos en creación de kpi');
             return 'Hay datos vacíos';
@@ -1166,13 +1166,13 @@ function local_hoteles_city_dashboard_create_region(array $params){
         if($existent){
             return "Ya existe esta región";
         }
-        $kpi = new stdClass();
-        $kpi->name = $name;
-        $kpi->active = 1;
-        $insertion = $DB->insert_record('dashboard_region', $kpi);
+        $region = new stdClass();
+        $region->name = $name;
+        $region->active = 1;
+        $insertion = $DB->insert_record('dashboard_region', $region);
         return "ok";
     }catch(Exception $e){
-        _log('Error al crear kpi', $e);
+        _log('Error al crear región', $e);
         return 'Por favor, inténtelo de nuevo';
     }
 }
@@ -1180,23 +1180,96 @@ function local_hoteles_city_dashboard_create_region(array $params){
 function local_hoteles_city_dashboard_relate_region_institution(array $params){
     try{
         global $DB;
-        $name = local_hoteles_city_dashboard_get_value_from_params($params, 'name', false, true);
-        if(local_hoteles_city_dashboard_has_empty($name)){
-            _log('Datos vacíos en creación de kpi');
-            return 'Hay datos vacíos';
+        $regionid = local_hoteles_city_dashboard_get_value_from_params($params, 'id', false);
+        $institution = local_hoteles_city_dashboard_get_value_from_params($params, 'institution', false);
+        if(local_hoteles_city_dashboard_has_empty($regionid, $institution)){
+            _log('Datos vacíos en creación de kpi', $params);
+            return 'Por favor llene todos los campos';
         }
-        $existent = $DB->record_exists('dashboard_region', array('name' => $name));
-        if($existent){
-            return "Ya existe esta región";
+        $record = $DB->get_record('dashboard_region_ins', array('regionid' => $regionid));
+        if($record === false){ // Inexistent
+            $record = new stdClass();
+            $record->regionid = $regionid;
+            $record->institution = $institution;
+            $record->active = 1;
+            $insertion = $DB->insert_record('dashboard_region_ins', $record);
+        }else{
+            if($institution != $record->institution ){
+                $record->institution = $institution;
+                $record->active = 1;
+                $update = $DB->update_record('dashboard_region_ins', $record);
+            }
         }
-        $kpi = new stdClass();
-        $kpi->name = $name;
-        $insertion = $DB->insert_record('dashboard_region', $kpi);
         return "ok";
     }catch(Exception $e){
-        _log('Error al crear kpi', $e);
+        _log('Error al relacionar región con institución', $e);
         return 'Por favor, inténtelo de nuevo';
     }
+}
+
+function local_hoteles_city_dashboard_update_region(array $params){
+    try{
+        $id = local_hoteles_city_dashboard_get_value_from_params($params, 'id', false);
+        if(empty($id)) return "No se encontró región";
+        $delete = local_hoteles_city_dashboard_get_value_from_params($params, 'delete', false);
+        
+        global $DB;
+        if($delete){
+            $DB->delete_records('dashboard_region', array('id' => $id));
+            $firstRegionId = $DB->get_field_sql('SELECT id FROM {dashboard_region} WHERE active = 1 LIMIT 1');
+            if($firstRegionId !== false){
+                $DB->execute('UPDATE {dashboard_region_ins} SET regionid = ? WHERE region_id = ?', array($firstRegionId, $id));
+            }
+            return "Eliminada";
+        }
+        $name = local_hoteles_city_dashboard_get_value_from_params($params, 'name', false);
+        $change_status = local_hoteles_city_dashboard_get_value_from_params($params, 'change_status', false);
+        if(empty($name) && empty($change_status)) return "Por favor, agregue un nombre a la región e inténtelo de nuevo";
+        $region = $DB->get_record('dashboard_region', array('id' => $id));
+        if(empty($region)) return "No se encontró la región";
+        // if(local_hoteles_city_dashboard_has_empty($regionid, $institution)){
+        //     _log('Datos vacíos en creación de kpi', $params);
+        //     return 'Por favor llene todos los campos';
+        // }
+        $region->name = $name;
+        if($change_status) { $region->active = !$region->active; _log('Cambiando el estado'); }
+        // $record = $DB->get_record('dashboard_region_ins', array('regionid' => $regionid));
+        $insertion = $DB->update_record('dashboard_region', $region);
+        // if($record === false){ // Inexistent
+        //     $relation = new stdClass();
+        //     $relation->regionid = $regionid;
+        //     $relation->institution = $institution;
+        //     $relation->active = 1;
+        // }else{
+        //     if($institution != $record->institution ){
+        //         $relation->institution = $institution;
+        //         $relation->active = 1;
+        //         $update = $DB->update_record('dashboard_region_ins', $record);
+        //     }
+        // }
+        return "ok";
+    }catch(Exception $e){
+        _log('Error al relacionar región con institución', $e);
+        return 'Por favor, inténtelo de nuevo';
+    }
+}
+
+// function local_hoteles_city_dashboard_
+
+/**
+ * Devuelve las unidades operativas correspondientes (institutions) de la región
+ * @param int $regionid Id de la región que se desean ver las unidades operativas
+ * @return string Unidades operativas correspondientes a la región
+ */
+function local_hoteles_city_dashboard_get_region_insitutions($regionid){
+    $default = "Sin unidades operativos";
+    if(empty($regionid)) return $default;
+    global $DB;
+    $regions = $DB->get_fieldset_sql('SELECT region FROM {dashboard_region_ins} WHERE regionid = ? LIMIT 1', array($regionid));
+    if($regions){
+        return implode(', ', $regions);
+    }
+    return $default;
 }
 
 function local_hoteles_city_dashboard_has_empty(... $params){
