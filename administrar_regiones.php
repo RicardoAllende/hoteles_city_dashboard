@@ -44,6 +44,7 @@ $institutions = $catalogues['institutions'];
 $hasInstitutions = count($catalogues) > 0;
 // $regions = $catalogues['departments'];
 $regions = local_hoteles_city_dashboard_get_regions();
+$relationships = local_hoteles_city_dashboard_get_region_institution_relationships();
 if(is_array($regions)){
     $hasRegions = count($regions) > 0;
 }else{
@@ -93,8 +94,14 @@ if(is_array($regions)){
                         echo "<td scope=\"col\" class=\"text-center\">{$institution}</td>";
                         $ins = local_hoteles_city_dashboard_slug($institution);
                         foreach($regions as $regionid => $region){
+                            $checked = "";
+                            if(isset($relationships[$region->id])){
+                                if($relationships[$region->id] == $institution){
+                                    $checked = "checked";
+                                }
+                            }
                             $class = (!$region->active) ? " gray-row " : "";
-                            echo "<td class='{$class}'><input type='radio' onclick='relateRegionInstitution(\"{$region->id}\", \"{$institution}\")' name='{$ins}'></td>";
+                            echo "<td class='{$class}'><input type='radio' {$checked} onclick='relateRegionInstitution(\"{$region->id}\", \"{$institution}\")' name='{$ins}'></td>";
                         }
                         echo '</tr>';
                     }
@@ -137,6 +144,7 @@ if(is_array($regions)){
                     <div class="form-group">
                         <label for="region_name_e" class="col-form-label">Actualizar nombre:</label>
                         <input type="text" class="form-control" id="region_name_e" name="region_name_e">
+                        <br>
                         <p id="region-description"></p>
                     </div>
                 </form>
@@ -215,12 +223,12 @@ if(is_array($regions)){
                     data: informacion,
                 })
                 .done(function(data) {
-                    console.log('La información obtenida es: ', data);
+                    console.log('show_region La información obtenida es: ', data);
                     $('#region-description').html('Regiones disponibles: ' + data);
                 })
                 .fail(function(error, error2) {
                     $('#region-description').html('Regiones disponibles: ');
-                    console.log(error, error2);
+                    console.log('show_region Errores', error, error2);
                 });
 
                 $('#showRegion').modal();
@@ -269,9 +277,10 @@ if(is_array($regions)){
             function update_region(){
                 regionid = editing;
                 informacion = Array();
+                name = $('#region_name_e').val();
                 informacion.push({name: 'request_type', value: 'update_region'});
                 informacion.push({name: 'id', value: regionid});
-                informacion.push({name: 'name', value: 1});
+                informacion.push({name: 'name', value: name});
 
                 $.ajax({
                     type: "POST",

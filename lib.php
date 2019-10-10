@@ -165,7 +165,6 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     if(!in_array('description', $allowed_fields)){
         $class = 'class = "ocultar-elemento d-none hidden-xl-down"';
     }
-    _log('Clase del input type description', $class);
     $mform->addElement('editor', 'description_editor', get_string('userdescription'), $class, $editoroptions);
     $mform->setType('description_editor', PARAM_CLEANHTML);
     $mform->addHelpButton('description_editor', 'userdescription');
@@ -547,7 +546,6 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
         }
         $underscores .= "_";
     }
-    _log(compact('slim_query'));
     switch ($type) {
         case local_hoteles_city_dashboard_pagination_course:
             global $DB;
@@ -902,7 +900,7 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params){
     $query = 'SELECT COUNT(*) FROM {user} AS user WHERE ' . $enrol_sql_query;
     // _sql('Sin filtro ', $query, $queryParams);
     $totalRecords = $DB->count_records_sql($query);//($table, $conditions_array);
-    _log('Elementos totales', $totalRecords);    
+    // _log('Elementos totales', $totalRecords);    
     if($searchValue != ''){
         if($columnName == 'name'){ // Campo por defecto name
         // if(strpos('user.name',$columnName) !== false){
@@ -925,7 +923,7 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params){
     $queryParamsFilter = array($searchValue);
     
     $totalRecordwithFilter = $DB->count_records_sql($query, $queryParamsFilter);
-    _log('Elementos filtrados', $totalRecordwithFilter);
+    // _log('Elementos filtrados', $totalRecordwithFilter);
     // _sql('Filtrados ', $query, $queryParamsFilter);
     
     ## Consulta de los elementos
@@ -1159,7 +1157,7 @@ function local_hoteles_city_dashboard_create_region(array $params){
         global $DB;
         $name = local_hoteles_city_dashboard_get_value_from_params($params, 'name', false);
         if(local_hoteles_city_dashboard_has_empty($name)){
-            _log('Datos vacíos en creación de kpi');
+            // _log('Datos vacíos en creación de región', $params);
             return 'Hay datos vacíos';
         }
         $existent = $DB->record_exists('dashboard_region', array('name' => $name));
@@ -1232,7 +1230,7 @@ function local_hoteles_city_dashboard_update_region(array $params){
         //     return 'Por favor llene todos los campos';
         // }
         $region->name = $name;
-        if($change_status) { $region->active = !$region->active; _log('Cambiando el estado'); }
+        if($change_status) { $region->active = !$region->active; }
         // $record = $DB->get_record('dashboard_region_ins', array('regionid' => $regionid));
         $insertion = $DB->update_record('dashboard_region', $region);
         // if($record === false){ // Inexistent
@@ -1254,7 +1252,10 @@ function local_hoteles_city_dashboard_update_region(array $params){
     }
 }
 
-// function local_hoteles_city_dashboard_
+function local_hoteles_city_dashboard_get_region_institution_relationships(){
+    global $DB;
+    return $DB->get_records_sql_menu('SELECT regionid, institution FROM {dashboard_region_ins}');
+}
 
 /**
  * Devuelve las unidades operativas correspondientes (institutions) de la región
@@ -1265,7 +1266,7 @@ function local_hoteles_city_dashboard_get_region_insitutions($regionid){
     $default = "Sin unidades operativos";
     if(empty($regionid)) return $default;
     global $DB;
-    $regions = $DB->get_fieldset_sql('SELECT region FROM {dashboard_region_ins} WHERE regionid = ? LIMIT 1', array($regionid));
+    $regions = $DB->get_fieldset_sql('SELECT institution FROM {dashboard_region_ins} WHERE regionid = ?', array($regionid));
     if($regions){
         return implode(', ', $regions);
     }
