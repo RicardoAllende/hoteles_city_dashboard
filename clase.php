@@ -45,12 +45,12 @@
 
         let persona = new Persona('Isay',23);
 
-        persona.saludar();
+        //persona.saludar();
 
         
     </script>
     
-  <script>
+  <!-- <script>
         class Car {
           constructor(brand) {
             this.carname = brand;
@@ -86,7 +86,7 @@
                   "</div>"+    
               "</div>"+
       "</div>";
-    </script> 
+    </script>  -->
   <!-- Bootstrap core JavaScript-->
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
