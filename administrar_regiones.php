@@ -42,14 +42,22 @@ $catalogues = local_hoteles_city_dashboard_get_catalogues();
 // _log(compact('catalogues'));
 $institutions = $catalogues['institutions'];
 $hasInstitutions = count($catalogues) > 0;
-$departments = $catalogues['departments'];
-$hasDepartments = count($departments) > 0;
+// $regions = $catalogues['departments'];
+$regions = local_hoteles_city_dashboard_get_regions();
+$relationships = local_hoteles_city_dashboard_get_region_institution_relationships();
+if(is_array($regions)){
+    $hasRegions = count($regions) > 0;
+}else{
+    $hasRegions = false;
+}
 ?>
-<link rel="stylesheet" href="estilos.css">
+<link rel="stylesheet" href="estilos_city.css">
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="sweetalert/sweetalert2.all.min.js"></script>
 <div>
     <?php 
-        foreach ($regions as $region) {
-            echo "<button>{$region}</button>";
+        foreach ($regions as $id => $region) {
+            echo "<button class='btn btn-primary' onclick='show_region({$region->id}, \"{$region->name}\", $region->active)'>{$region->name}</button>&nbsp;&nbsp;";
         }
     ?>
 </div>
@@ -65,36 +73,35 @@ $hasDepartments = count($departments) > 0;
 <div class="table-responsive">
     <table class="table table-hover text-center">
         <thead>
-            <!-- <tr>
-                <th scope="col" class="text-center">Hotel / Institución</th>
-                <th scope="col" class="text-center">1</th>
-                <th scope="col" class="text-center">2</th>
-                <th scope="col" class="text-center">3</th>
-                <th scope="col" class="text-center">4</th>                
-                <th scope="col" class="text-center">5</th>
-                <th scope="col" class="text-center">6</th>
-            </tr> -->
             <?php 
-            if($hasInstitutions){
+            if($hasRegions){
                 echo '<tr>';
                 echo '<td scope="col" class="text-center">Institución \ Región</th>';
-                foreach($institutions as $key => $institution){
-                    echo "<th scope=\"col\" class=\"text-center\">{$institution}</th>";
+                foreach($regions as $key => $region){
+                    $status = (!$region->active) ? "(Deshabilitada)" : "";
+                    $class = (!$region->active) ? " gray-row " : "";
+                    echo "<th scope=\"col\" class=\"text-center {$class}\">{$region->name} {$status}</th>";
                 }
                 echo '</tr>';
             }
             ?>
         </thead>
         <tbody id="listado_kpis">
-            <?php 
-                if($hasDepartments){
-                    foreach ($departments as $department) {
+            <?php
+                if($hasInstitutions){
+                    foreach ($institutions as $institution) {
                         echo '<tr>';
-                        echo "<td scope=\"col\" class=\"text-center\">{$department}</td>";
-                        foreach($institutions as $intitution){
-                            $ins = local_hoteles_city_dashboard_slug($institution);
-                            echo "<td><input onclick='editInstitution(\"{$department}\", \"{$institution}\")'
-                             type='radio' name='{$ins}' value='huey'></td>";
+                        echo "<td scope=\"col\" class=\"text-center\">{$institution}</td>";
+                        $ins = local_hoteles_city_dashboard_slug($institution);
+                        foreach($regions as $regionid => $region){
+                            $checked = "";
+                            if(isset($relationships[$region->id])){
+                                if($relationships[$region->id] == $institution){
+                                    $checked = "checked";
+                                }
+                            }
+                            $class = (!$region->active) ? " gray-row " : "";
+                            echo "<td class='{$class}'><input type='radio' {$checked} onclick='relateRegionInstitution(\"{$region->id}\", \"{$institution}\")' name='{$ins}'></td>";
                         }
                         echo '</tr>';
                     }
@@ -113,209 +120,310 @@ $hasDepartments = count($departments) > 0;
             <div class="modal-body">
                 <form id="form_kpi" name="form_kpi">
                     <div class="form-group">
-                        <label for="kpi_name" class="col-form-label">Nombre de la región:</label>
-                        <input type="text" class="form-control" id="kpi_name" name="kpi_name">
+                        <label for="region_name" class="col-form-label">Nombre de la región:</label>
+                        <input type="text" class="form-control" id="region_name" name="region_name">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" onclick="agregarKPI()" class="btn btn-primary">Agregar región</button>
+                <button type="button" onclick="createRegion()" class="btn btn-primary">Agregar región</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showRegion" tabindex="-1" role="dialog" aria-labelledby="showRegionLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="showRegionLabel"></h5>
+            </div>
+            <div class="modal-body">
+                <form id="form_kpi" name="form_kpi">
+                    <div class="form-group">
+                        <label for="region_name_e" class="col-form-label">Actualizar nombre:</label>
+                        <input type="text" class="form-control" id="region_name_e" name="region_name_e">
+                        <br>
+                        <p id="region-description"></p>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="delete_region()" data-dismiss="modal">Eliminar Región</button>
+                <button type="button" class="btn btn-secondary" onclick="disable_region()" id="change_region" data-dismiss="modal">Cancelar</button>
+                <button type="button" onclick="update_region()" class="btn btn-primary">Guardar los cambios</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // kpi_name = $('#kpi_name').val();
-    // kpi_key = $('#kpi_key').val();
-    // kpi_type = $('#kpi_type').val();
-
-    document.addEventListener("DOMContentLoaded", function() {
-        // document.getElementById('region-main').style.width = "100%";
-        require(['jquery'], function ($) {
-            function editInstitution(department, institution){
-                console.log('department', department);
-                console.log('institution', institution);
-            }
-        });
+    var editing;
+    var Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
     });
 
-    // function crearClave(){
-    //     $('#kpi_key').val(string_to_slug($('#kpi_name').val()));
-    // }
+    // document.addEventListener("DOMContentLoaded", function() {
+    //     require(['jquery'], function ($) {
+            function createRegion() {
+                informacion = Array();
+                name = $('#region_name').val();
+                informacion.push({name: 'request_type', value: 'create_region'});
+                informacion.push({name: 'name', value: name});
+                $.ajax({
+                    type: "POST",
+                    url: "services.php",
+                    data: informacion,
+                    // dataType: "json"
+                })
+                .done(function(data) {
+                    console.log('La información obtenida es: ', data);
+                    // return;
+                    if(data == 'ok'){
+                        Swal.fire('Insertado con éxito');
+                        // ocultarModal();
+                    }else{ // Se trata de un error
+                        Swal.fire(data);
+                    }
+                    reloadPage();
+                })
+                .fail(function(error, error2) {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Oops...',
+                        text: 'Ocurrió un error al crear la región',
+                        footer: 'Por favor, inténtelo de nuevo'
+                    });
+                    console.log(error, error2);
+                });
+            }
 
-    // var listado_kpis;
-    // function cargarKPIS(){
-    //     $('#listado_kpis').html(``);
-    //     // informacion = $('#form_kpi').serializeArray();
-    //     // informacion.push({name: 'request_type', value: 'create_kpi'});
-    //     $.ajax({
-    //         type: "POST",
-    //         url: "services.php",
-    //         data: {
-    //             request_type: 'kpi_list'
-    //         },
-    //         // dataType: "json"
-    //     })
-    //     .done(function(data) {
-    //         console.log(data);
-    //         listado_kpis = JSON.parse(data);
-    //         listado_kpis = listado_kpis.data;
-    //         keys = Object.keys(listado_kpis);
-    //         for (var index = 0; index < keys.length; index++) {
-    //             var element = keys[index];
-    //             var kpi = listado_kpis[element];
-    //             imprimirKPI(kpi);
-    //         }
-    //         // data = JSON.stringify(data));
-    //         console.log('Terminado');
-    //         // listado_kpis = data;
-            
-    //     })
-    //     .fail(function(error, error2) {
-    //         console.log('Fallo', error, error2);
+            function show_region(id, name, enabled){
+                editing = id;
+                regionid = id;
+                $('#showRegionLabel').html(name);
+                if(enabled = 1){
+                    $('#change_region').html('Deshabilitar región');
+                }else{
+                    $('#change_region').html('Habilitar región');
+                }
+                $('#region_name_e').val(name);
+
+                informacion = Array();
+                informacion.push({name: 'request_type', value: 'get_region_institutions'});
+                informacion.push({name: 'region', value: regionid});
+
+                $.ajax({
+                    type: "POST",
+                    url: "services.php",
+                    data: informacion,
+                })
+                .done(function(data) {
+                    console.log('show_region La información obtenida es: ', data);
+                    $('#region-description').html('Regiones disponibles: ' + data);
+                })
+                .fail(function(error, error2) {
+                    $('#region-description').html('Regiones disponibles: ');
+                    console.log('show_region Errores', error, error2);
+                });
+
+                $('#showRegion').modal();
+            }
+
+            function disable_region(){
+                regionid = editing;
+                name = $('#region_name_e').val();
+                if(name == ''){
+                    Swal.fire('Por favor ingrese un nombre');
+                }
+                informacion = Array();
+                informacion.push({name: 'request_type', value: 'update_region'});
+                informacion.push({name: 'id', value: regionid});
+                informacion.push({name: 'name', value: name});
+                informacion.push({name: 'change_status', value: 1});
+
+                $.ajax({
+                    type: "POST",
+                    url: "services.php",
+                    data: informacion,
+                    // dataType: "json"
+                })
+                .done(function(data) {
+                    console.log('La información obtenida es: ', data);
+                    // return;
+                    if(data == 'ok'){
+                        Swal.fire('Cambios guradados correctamente');
+                        // ocultarModal();
+                    }else{ // Se trata de un error
+                        Swal.fire(data);
+                    }
+                    reloadPage();
+                })
+                .fail(function(error, error2) {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Oops...',
+                        text: 'Ocurrió un error al crear la región',
+                        footer: 'Por favor, inténtelo de nuevo'
+                    });
+                    console.log(error, error2);
+                });
+            }
+
+            function update_region(){
+                regionid = editing;
+                informacion = Array();
+                name = $('#region_name_e').val();
+                informacion.push({name: 'request_type', value: 'update_region'});
+                informacion.push({name: 'id', value: regionid});
+                informacion.push({name: 'name', value: name});
+
+                $.ajax({
+                    type: "POST",
+                    url: "services.php",
+                    data: informacion,
+                    // dataType: "json"
+                })
+                .done(function(data) {
+                    console.log('La información obtenida es: ', data);
+                    // return;
+                    if(data == 'ok'){
+                        Swal.fire('Cambios guradados correctamente');
+                        // ocultarModal();
+                    }else{ // Se trata de un error
+                        Swal.fire(data);
+                    }
+                    reloadPage();
+                })
+                .fail(function(error, error2) {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Oops...',
+                        text: 'Ocurrió un error al crear la región',
+                        footer: 'Por favor, inténtelo de nuevo'
+                    });
+                    console.log(error, error2);
+                    // alert(data, 'error');
+                    // alert('Por favor, inténtelo de nuevo');
+                    // ocultarModal();
+                });
+            }
+
+            function delete_region(){
+                regionid = editing;
+                Swal.fire({
+                    title: '¿Está seguro de eliminar esta región?',
+                    text: "No se pueden recuperar los datos. También puede deshabilitar esta región",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Lo entiendo, eliminar',
+                    cancelButtonText: 'Cancelar',
+                }).then(function (result) {
+                    if (result.value) {
+                        informacion = Array();
+                        name = $('#region_name').val();
+                        informacion.push({name: 'request_type', value: 'update_region'});
+                        informacion.push({name: 'regionid', value: regionid});
+                        informacion.push({name: 'delete', value: 1});
+                        $.ajax({
+                            type: "POST",
+                            url: "services.php",
+                            data: informacion,
+                            // dataType: "json"
+                        })
+                        .done(function(data) {
+                            console.log('La información obtenida es: ', data);
+                            // return;
+                            if(data == 'ok'){
+                                // Swal.fire('Guardado');
+                                Swal.fire({
+                                    position: 'bottom-end',
+                                    type: 'success',
+                                    title: 'Eliminado correctamente',
+                                    showConfirmButton: false,
+                                    timer: 1000
+                                });
+                                // ocultarModal();
+                            }else{ // Se trata de un error
+                                Swal.fire(data);
+                            }
+                            reloadPage();
+                        })
+                        .fail(function(error, error2) {
+                            Swal.fire({
+                                type: 'error',
+                                title: 'Oops...',
+                                text: 'Ocurrió un error al eliminar esta región',
+                                footer: 'Por favor, inténtelo de nuevo'
+                            });
+                            console.log(error, error2);
+                        });
+                    }
+                });
+            }
+
+            function relateRegionInstitution(regionid, institution){
+                informacion = Array();
+                informacion.push({name: 'request_type', value: 'relate_region_institution'});
+                informacion.push({name: 'id', value: regionid});
+                informacion.push({name: 'institution', value: institution});
+                $.ajax({
+                    type: "POST",
+                    url: "services.php",
+                    data: informacion,
+                    // dataType: "json"
+                })
+                .done(function(data) {
+                    console.log('La información obtenida es: ', data);
+                    // return;
+                    if(data == 'ok'){
+                        // Swal.fire('Guardado');
+                        Toast.fire({
+                            type: 'success',
+                            title: 'Guardado correctamente'
+                        });
+                        // Swal.fire({
+                        //     position: 'bottom-end',
+                        //     type: 'success',
+                        //     title: 'Guardado correctamente',
+                        //     showConfirmButton: false,
+                        //     timer: 1000
+                        // });
+                    }else{ // Se trata de un error
+                        Toast.fire({
+                            type: 'warning',
+                            title: 'Signed in successfully'
+                        })
+                    }
+                })
+                .fail(function(error, error2) {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Oops...',
+                        text: 'Ocurrió un error al crear la región',
+                        footer: 'Por favor, inténtelo de nuevo'
+                    });
+                    console.log(error, error2);
+                    // alert(data, 'error');
+                    // alert('Por favor, inténtelo de nuevo');
+                    // ocultarModal();
+                });
+            }
+
+            function reloadPage(){
+                setTimeout(function(){
+                    window.location.href = window.location.href;
+                }, 1500);
+            }
     //     });
-    // }
+    // });
 
-    // function imprimirKPI(kpi){
-    //     console.log(kpi);
-    //     formname = "kpi_edit_" + kpi.id;
-    //     $('#listado_kpis').append(`
-    //         <tr>
-    //         <form id='${formname}' name='${formname}'></form>
-    //             <input type='hidden' form='${formname}' name='id' value='${kpi.id}' >
-    //             <th scope="row" class='text-center'>
-    //             <input type='text' form='${formname}' name='kpi_key' initialvalue='${kpi.kpi_key}' value='${kpi.kpi_key}'
-    //             id='key_edit_${kpi.id}' class='form-control '>
-    //             </th>
-    //             <td><input type='text' form='${formname}' name='kpi_name' value='${kpi.name}' class='form-control'></td>
-    //             <td>
-    //                 <select form='${formname}' name="kpi_type" id='type_selected_${kpi.id}' class="form-control">
-    //                     <option value="Porcentaje">Porcentaje</option>
-    //                     <option value="Número entero">Número entero</option>
-    //                     <option value="Texto">Texto</option>
-    //                 </select>
-    //             </td>
-    //             <td>
-    //                 <select form='${formname}' name="kpi_enabled" id='type_enabled_${kpi.id}' class="form-control">
-    //                     <option value="0">Deshabilitado</option>
-    //                     <option value="1">Habilitado</option>
-    //                 </select>
-    //             </td>
-    //             <td><button onclick="editarKPI('#${formname}', ${kpi.id})" class='btn btn-info'>Editar</button></td>
-    //             <td><button onclick='eliminarKPI(${kpi.id})' class='btn btn-danger'>Eliminar</button></td>
-    //         </tr>
-    //     `);
-    //     $(`#type_selected_${kpi.id}`).val(kpi.type);
-    //     $(`#type_enabled_${kpi.id}`).val(kpi.enabled);
-    // }
-
-    // /*
-    //     <td>${kpi.enabled == 0 ? `<button class='btn btn-primary' onclick="inhabilitarKPI(${kpi.id})">Habilitar KPI</button>` : `<button class='btn btn-danger' onclick="habilitarKPI(${kpi.id})">Deshabilitar KPI</button>` }</td>
-    //  */
-
-    // function editarKPI(formname, id){
-    //     informacion = $(formname).serializeArray();
-    //     informacion.push({name: 'request_type', value: 'update_kpi'});
-    //     $.ajax({
-    //         type: "POST",
-    //         url: "services.php",
-    //         data: informacion,
-    //         // dataType: "json"
-    //     })
-    //     .done(function(data) {
-    //         console.log('La información obtenida es: ', data);
-    //         if(data == 'ok'){
-    //             cargarKPIS();
-    //         }else{ // Se trata de un error
-    //             var key_input = $('#key_edit_' + id)
-    //             key_input.val(key_input.attr('initialvalue'));
-    //             alert(data);
-    //         }
-    //     })
-    //     .fail(function(error, error2) {
-    //         alert('Por favor, inténtelo de nuevo');
-    //     });
-    // }
-    
-    // function string_to_slug (str) {
-    //     str = str.replace(/^\s+|\s+$/g, ''); // trim
-    //     str = str.toLowerCase();
-    
-    //     // remove accents, swap ñ for n, etc
-    //     var from = "àáäâèéëêìíïîòóöôùúüûñç·/-,:;";
-    //     var to   = "aaaaeeeeiiiioooouuuunc______";
-    //     for (var i=0, l=from.length ; i<l ; i++) {
-    //         str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
-    //     }
-
-    //     str = str.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
-    //         .replace(/\s+/g, '-') // collapse whitespace and replace by -
-    //         .replace(/-+/g, '-'); // collapse dashes
-
-    //     return str.toUpperCase();
-    // }
-
-    // function ocultarModal(){
-    //     $('#addRegion').modal('hide');
-    // }
-    
-    // var informacion;
-    // function agregarKPI(kpi) {
-    //     informacion = $('#form_kpi').serializeArray();
-    //     informacion.push({name: 'request_type', value: 'create_kpi'});
-    //     $.ajax({
-    //         type: "POST",
-    //         url: "services.php",
-    //         data: informacion,
-    //         // dataType: "json"
-    //     })
-    //     .done(function(data) {
-    //         console.log('La información obtenida es: ', data);
-    //         // return;
-    //         if(data == 'ok'){
-    //             cargarKPIS();
-    //             alert('Insertado con éxito');
-    //             ocultarModal();
-    //         }else{ // Se trata de un error
-    //             alert(data);
-    //         }
-    //     })
-    //     .fail(function(error, error2) {
-    //         alert('Por favor, inténtelo de nuevo');
-    //         ocultarModal();
-    //     });
-    // }
-
-    // function eliminarKPI(kpi) {
-    //     if(confirm('¿Está seguro que desea eliminar este KPI?')){
-    //         $.ajax({
-    //             type: "POST",
-    //             url: "services.php",
-    //             data: {
-    //                 request_type: 'delete_kpi',
-    //                 id: kpi
-    //             },
-    //             // dataType: "json"
-    //         })
-    //         .done(function(data) {
-    //             console.log('La información obtenida es: ', data);
-    //             // return;
-    //             if(data == 'ok'){ 
-    //                 cargarKPIS();
-    //                 alert('Eliminado con éxito');
-    //             }else{ // Se trata de un error
-    //                 alert(data);
-    //             }
-    //         })
-    //         .fail(function(error, error2) {
-    //             alert('Por favor, inténtelo de nuevo');
-    //         });
-    //     }
-    //     // informacion = $('#form_kpi').serializeArray();
-    //     // informacion.push({name: 'request_type', value: 'create_kpi'});
-    // }
 </script>
 <?php
 echo $OUTPUT->footer();
