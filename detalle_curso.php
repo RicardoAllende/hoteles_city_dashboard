@@ -144,6 +144,9 @@ $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_cit
                     }
                 }
             },
+            "columnDefs": [
+                { "targets": [<?php echo $report_info->ajax_link_fields; ?>], "orderable": false }
+            ]
             // language: {
             // },
             // buttons: [ { extend: 'excel', action: newExportAction } ],
