@@ -52,23 +52,24 @@ if(is_array($regions)){
 }
 ?>
 <link rel="stylesheet" href="estilos_city.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="sweetalert/sweetalert2.all.min.js"></script>
-<div>
-    <?php 
-        foreach ($regions as $id => $region) {
-            echo "<button class='btn btn-primary' onclick='show_region({$region->id}, \"{$region->name}\", $region->active)'>{$region->name}</button>&nbsp;&nbsp;";
-        }
-    ?>
-</div>
-<div class="row" style="padding-bottom: 2%;">
-    <div class="col-sm-8" style="text-align: right;">
-        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#addRegion">Agregar nueva región</button>
-    </div>
-    <div class="col-sm-8" style="text-align: left;">
+<div class="row" style="padding-bottom: 2%; padding-top: 2%;">
+    <div class="col-sm-6" style="text-align: left;">
         <a class="btn btn-primary btn-lg" href="<?php echo $settingsurl; ?>">Configuraciones del plugin</a>
     </div>
+    <div class="col-sm-6" style="text-align: right;">
+        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#addRegion">Agregar nueva región</button>
+    </div>
 </div>
+<!-- <div>
+    <?php 
+        foreach ($regions as $id => $region) {
+            echo "<button class='btn btn-info' onclick='show_region({$region->id}, \"{$region->name}\", $region->active)'>{$region->name}</button>&nbsp;&nbsp;";
+        }
+    ?>
+</div> -->
 
 <div class="table-responsive">
     <table class="table table-hover text-center">
@@ -80,7 +81,10 @@ if(is_array($regions)){
                 foreach($regions as $key => $region){
                     $status = (!$region->active) ? "(Deshabilitada)" : "";
                     $class = (!$region->active) ? " gray-row " : "";
-                    echo "<th scope=\"col\" class=\"text-center {$class}\">{$region->name} {$status}</th>";
+                    echo "<th scope=\"col\" class=\"text-center {$class}\"><button class='btn btn-info'
+                        onclick='show_region({$region->id}, \"{$region->name}\", $region->active)'>
+                        {$region->name} {$status}&nbsp;<i class='fas fa-edit'></i></button>
+                    </th>";
                 }
                 echo '</tr>';
             }
@@ -97,6 +101,11 @@ if(is_array($regions)){
                             $checked = "";
                             if(isset($relationships[$region->id])){
                                 if($relationships[$region->id] == $institution){
+                                    $checked = "checked";
+                                }
+                            }
+                            if(isset($relationships[$institution])){
+                                if($relationships[$institution] == $region->id){
                                     $checked = "checked";
                                 }
                             }
@@ -206,7 +215,7 @@ if(is_array($regions)){
                 editing = id;
                 regionid = id;
                 $('#showRegionLabel').html(name);
-                if(enabled = 1){
+                if(enabled == 1){
                     $('#change_region').html('Deshabilitar región');
                 }else{
                     $('#change_region').html('Habilitar región');
@@ -224,10 +233,10 @@ if(is_array($regions)){
                 })
                 .done(function(data) {
                     console.log('show_region La información obtenida es: ', data);
-                    $('#region-description').html('Regiones disponibles: ' + data);
+                    $('#region-description').html('Hoteles disponibles: ' + data);
                 })
                 .fail(function(error, error2) {
-                    $('#region-description').html('Regiones disponibles: ');
+                    $('#region-description').html('Hoteles disponibles: ');
                     console.log('show_region Errores', error, error2);
                 });
 
@@ -256,7 +265,7 @@ if(is_array($regions)){
                     console.log('La información obtenida es: ', data);
                     // return;
                     if(data == 'ok'){
-                        Swal.fire('Cambios guradados correctamente');
+                        Swal.fire('Región deshabilitada correctamente');
                         // ocultarModal();
                     }else{ // Se trata de un error
                         Swal.fire(data);
@@ -292,7 +301,7 @@ if(is_array($regions)){
                     console.log('La información obtenida es: ', data);
                     // return;
                     if(data == 'ok'){
-                        Swal.fire('Cambios guradados correctamente');
+                        Swal.fire('Región editada correctamente');
                         // ocultarModal();
                     }else{ // Se trata de un error
                         Swal.fire(data);
@@ -317,7 +326,7 @@ if(is_array($regions)){
                 regionid = editing;
                 Swal.fire({
                     title: '¿Está seguro de eliminar esta región?',
-                    text: "No se pueden recuperar los datos. También puede deshabilitar esta región",
+                    text: "Después de eliminar esta región no se podrán recuperar los datos",
                     type: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -329,7 +338,7 @@ if(is_array($regions)){
                         informacion = Array();
                         name = $('#region_name').val();
                         informacion.push({name: 'request_type', value: 'update_region'});
-                        informacion.push({name: 'regionid', value: regionid});
+                        informacion.push({name: 'id', value: regionid});
                         informacion.push({name: 'delete', value: 1});
                         $.ajax({
                             type: "POST",

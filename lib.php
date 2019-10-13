@@ -1184,7 +1184,7 @@ function local_hoteles_city_dashboard_relate_region_institution(array $params){
             _log('Datos vacíos en creación de kpi', $params);
             return 'Por favor llene todos los campos';
         }
-        $record = $DB->get_record('dashboard_region_ins', array('regionid' => $regionid));
+        $record = $DB->get_record('dashboard_region_ins', compact('institution'));
         if($record === false){ // Inexistent
             $record = new stdClass();
             $record->regionid = $regionid;
@@ -1192,8 +1192,8 @@ function local_hoteles_city_dashboard_relate_region_institution(array $params){
             $record->active = 1;
             $insertion = $DB->insert_record('dashboard_region_ins', $record);
         }else{
-            if($institution != $record->institution ){
-                $record->institution = $institution;
+            if($regionid != $record->regionid ){
+                $record->regionid = $regionid;
                 $record->active = 1;
                 $update = $DB->update_record('dashboard_region_ins', $record);
             }
@@ -1254,7 +1254,7 @@ function local_hoteles_city_dashboard_update_region(array $params){
 
 function local_hoteles_city_dashboard_get_region_institution_relationships(){
     global $DB;
-    return $DB->get_records_sql_menu('SELECT regionid, institution FROM {dashboard_region_ins}');
+    return $DB->get_records_sql_menu('SELECT institution, regionid FROM {dashboard_region_ins}');
 }
 
 /**
@@ -1263,12 +1263,13 @@ function local_hoteles_city_dashboard_get_region_institution_relationships(){
  * @return string Unidades operativas correspondientes a la región
  */
 function local_hoteles_city_dashboard_get_region_insitutions($regionid){
-    $default = "Sin unidades operativos";
+    $default = "Sin unidades operativas";
     if(empty($regionid)) return $default;
     global $DB;
-    $regions = $DB->get_fieldset_sql('SELECT institution FROM {dashboard_region_ins} WHERE regionid = ?', array($regionid));
+    $regions = $DB->get_records_sql_menu('SELECT id, institution FROM {dashboard_region_ins} WHERE regionid = ?', array($regionid));
     if($regions){
-        return implode(', ', $regions);
+        $regions = implode(', ', $regions);
+        return $regions;
     }
     return $default;
 }
