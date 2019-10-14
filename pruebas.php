@@ -34,6 +34,7 @@ global $DB;
 
 _print(list($enrolledsql, $params) = get_enrolled_sql(
     context_course::instance(8)));
+_print(get_config('local_hoteles_city_dashboard'));
 // $cadena = optional_param('string', 'Alguna cadena con espacios', PARAM_TEXT);
 // _print ($cadena);
 // _print (local_dominosdashboard_create_slug($cadena));

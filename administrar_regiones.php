@@ -50,6 +50,7 @@ if (is_array($regions)) {
 } else {
     $hasRegions = false;
 }
+echo local_hoteles_city_dashboard_print_theme_variables();
 ?>
 <link rel="stylesheet" href="estilos_city.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
@@ -58,17 +59,23 @@ if (is_array($regions)) {
 
 <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
-        <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
+        <a class="nav-link" id="regions-tab" data-toggle="tab" href="#regions-settings" role="tab" aria-controls="Regiones" aria-selected="true">Regiones</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link show active" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+        <a class="nav-link show active" id="signin-tab" data-toggle="tab" href="#signin-settins" role="tab" aria-controls="profile" aria-selected="false">Campos del registro</a>
+    </li>
+    <!-- <li class="nav-item">
+        <a class="nav-link" id="signin-tab" data-toggle="tab" href="#sigin-settings" role="tab" aria-controls="Registro" aria-selected="false">Campos de registro de usuario</a>
+    </li> -->
+    <li class="nav-item">
+        <a class="nav-link" id="report-tab" data-toggle="tab" href="#report-settings" role="tab" aria-controls="Reporte" aria-selected="false">Campos que aparecen el reporte</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact</a>
+        <a class="nav-link" id="theme-tab" data-toggle="tab" href="#theme-settings" role="tab" aria-controls="Tema" aria-selected="false">Colores del tema</a>
     </li>
 </ul>
 <div class="tab-content" id="myTabContent">
-    <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
+    <div class="tab-pane fade" id="regions-settings" role="tabpanel" aria-labelledby="regions-tab">
         <div class="row" style="padding-bottom: 2%; padding-top: 2%;">
             <div class="col-sm-6" style="text-align: left;">
                 <a class="btn btn-primary btn-lg" href="<?php echo $settingsurl; ?>">Configuraciones del plugin</a>
@@ -127,7 +134,7 @@ if (is_array($regions)) {
             </table>
         </div>
     </div>
-    <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+    <div class="tab-pane fade show active" id="signin-settins" role="tabpanel" aria-labelledby="signin-tab">
         <h4>Basic multi-select</h4>
         <select class="custom-select" id="basic" multiple="multiple">
             <option value="cheese">Cheese</option>
@@ -138,8 +145,67 @@ if (is_array($regions)) {
             <option value="onions">Onions</option>
         </select>
     </div>
-    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-        
+    <div class="tab-pane fade" id="report-settings" role="tabpanel" aria-labelledby="report-tab">
+        Reportes <br>
+        <div class="form-group">
+            <label for="exampleFormControlInput1">Email address</label>
+            <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+        </div>
+        <div class="form-group">
+            <label for="exampleFormControlSelect1">Example select</label>
+            <select class="form-control" id="exampleFormControlSelect1">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleFormControlSelect2">Example multiple select</label>
+            <select multiple class="form-control" id="exampleFormControlSelect2">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleFormControlTextarea1">Example textarea</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="theme-settings" role="tabpanel" aria-labelledby="report-tab">
+        Colores del tema <br>
+        <div class="form-group">
+            <label for="exampleFormControlInput1">Email address</label>
+            <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+        </div>
+        <div class="form-group">
+            <label for="exampleFormControlSelect1">Example select</label>
+            <select class="form-control" id="exampleFormControlSelect1">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleFormControlSelect2">Example multiple select</label>
+            <select multiple class="form-control" id="exampleFormControlSelect2">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleFormControlTextarea1">Example textarea</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+        </div>
     </div>
 </div>
 <script src="vendor/jquery/jquery.min.js"></script>
@@ -201,14 +267,10 @@ if (is_array($regions)) {
         showConfirmButton: false,
         timer: 3000
     });
-    document.addEventListener("DOMContentLoaded", function() {
-    });
-    $(document).ready(function(){
+    document.addEventListener("DOMContentLoaded", function() {});
+    $(document).ready(function() {
         setTimeout(function() {
-                $('#home-tab').click();
-            // $('#profile-tab').click();
-            // setTimeout(function(){
-            // }, 500);
+            $('#regions-tab').click();
         }, 250);
         $('#basic').multiselect({
             templates: {

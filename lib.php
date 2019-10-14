@@ -516,6 +516,35 @@ function local_hoteles_city_dashboard_get_tracked_activities(int $courseid){
 }
 
 DEFINE('local_hoteles_city_dashboard_pagination_course', 1);
+DEFINE('local_hoteles_city_dashboard_theme_colors', [
+    'Primary' => "#4e73df",
+    'Success' => "#1cc88a",
+    'Info' => "#36b9cc",
+    'Warning' => "#f6c23e",
+    'Danger' => "#e74a3b",
+    'Secondary' => "#858796",
+    'color_aprobados' => "#1cc88a",
+    'color_no_aprobado' => "#e74a3b",
+    'color_variable_extra' => "#36b9cc",
+]);
+
+function local_hoteles_city_dashboard_print_theme_variables(){
+    $config = get_config('local_hoteles_city_dashboard');
+    $config = (array) $config;
+    $script = "<script>";
+    $stylesheet = "<style>";
+    foreach (local_hoteles_city_dashboard_theme_colors as $name => $value) {
+        if(!empty($config[$name])) $value = $config[$name];
+        $script .= " {$name} = '{$value}'; ";
+        $stylesheet .= " .{$name} { background-color: {$value} !important; } ";
+    }
+    $script .= "</script>";
+    $stylesheet .= "</style>";
+    echo $stylesheet;
+    echo $script;
+    // _log(compact('stylesheet', 'script'));
+}
+
 DEFINE('local_hoteles_city_dashboard_pagination_admin', 2);
 function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_information, $searched = '', $prefix = 'user.'){
     $select_sql = array("concat({$prefix}id, '||', {$prefix}firstname, {$prefix}lastname ) as name");
