@@ -52,7 +52,9 @@ if (is_array($regions)) {
 }
 ?>
 <link rel="stylesheet" href="estilos_city.css">
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
+<script src="bootstrap/bootstrap-multiselect.css"></script>
+<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
 
 <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
@@ -125,11 +127,24 @@ if (is_array($regions)) {
             </table>
         </div>
     </div>
-    <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">Segunda pestaña</div>
-    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">Tercera pestaña</div>
+    <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <h4>Basic multi-select</h4>
+        <select class="custom-select" id="basic" multiple="multiple">
+            <option value="cheese">Cheese</option>
+            <option value="tomatoes">Tomatoes</option>
+            <option value="mozarella">Mozzarella</option>
+            <option value="mushrooms">Mushrooms</option>
+            <option value="pepperoni">Pepperoni</option>
+            <option value="onions">Onions</option>
+        </select>
+    </div>
+    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+        
+    </div>
 </div>
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="sweetalert/sweetalert2.all.min.js"></script>
+<script src="bootstrap/bootstrap-multiselect.min.js"></script>
 
 <div class="modal fade" id="addRegion" tabindex="-1" role="dialog" aria-labelledby="addRegionLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -195,6 +210,12 @@ if (is_array($regions)) {
             // setTimeout(function(){
             // }, 500);
         }, 250);
+        $('#basic').multiselect({
+            templates: {
+                li: '<li><a href="javascript:void(0);"><label class="pl-2"></label></a></li>'
+            }
+        });
+        $('#basic').hide(); // Si no se oculta en bootstrap alpha 4
     });
     // document.addEventListener("DOMContentLoaded", function() {
     //     require(['jquery'], function ($) {
