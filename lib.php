@@ -1223,7 +1223,7 @@ function local_hoteles_city_dashboard_update_region(array $params){
             $DB->delete_records('dashboard_region', array('id' => $id));
             $firstRegionId = $DB->get_field_sql('SELECT id FROM {dashboard_region} WHERE active = 1 LIMIT 1');
             if($firstRegionId !== false){
-                $DB->execute('UPDATE {dashboard_region_ins} SET regionid = ? WHERE region_id = ?', array($firstRegionId, $id));
+                $DB->execute('UPDATE {dashboard_region_ins} SET regionid = ? WHERE regionid = ?', array($firstRegionId, $id));
             }
             return "Eliminada";
         }
