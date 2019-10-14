@@ -547,7 +547,7 @@ function local_hoteles_city_dashboard_print_theme_variables(){
 
 DEFINE('local_hoteles_city_dashboard_pagination_admin', 2);
 function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_information, $searched = '', $prefix = 'user.'){
-    $select_sql = array("concat({$prefix}id, '||', {$prefix}firstname, {$prefix}lastname ) as name");
+    $select_sql = array("concat({$prefix}id, '||', {$prefix}firstname, ' ', {$prefix}lastname ) as name");
     $ajax_names = array("name");
     $visible_names = array('Nombre');
     $slim_query = array("id");
@@ -585,13 +585,21 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
                 $field = "IF( EXISTS( SELECT id FROM {course_completions} AS cc WHERE user.id = cc.userid 
                 AND cc.course = {$custom_information} AND cc.timecompleted IS NOT NULL), 'Completado', 'No completado') as {$key_name}";
                 array_push($select_sql, $field);
-                // array_push($select_sql, "COALESCE( ( SELECT DATE(FROM_UNIXTIME(timecompleted)) FROM {course_completions} AS cc
-                // WHERE user.id = cc.userid AND cc.course = {$custom_information} AND cc.timecompleted IS NOT NULL), 'No completado') as completion");
                 array_push($ajax_names, $key_name);
                 if($key_name == $searched){
                     array_push($slim_query, $field);
                 }
                 array_push($visible_names, $name);
+
+                $key_name = 'custom_completion_date';
+                $field = "COALESCE( EXISTS( SELECT DATE(FROM_UNIXTIME(cc.timecompleted)) FROM {course_completions} AS cc WHERE user.id = cc.userid 
+                AND cc.course = {$custom_information} AND cc.timecompleted IS NOT NULL), '-') as {$key_name}";
+                array_push($select_sql, $field);
+                array_push($ajax_names, $key_name);
+                if($key_name == $searched){
+                    array_push($slim_query, $field);
+                }
+                array_push($visible_names, 'Fecha de completado');
 
                 $grade_item = local_hoteles_city_dashboard_get_course_grade_item_id($custom_information);
 
@@ -607,7 +615,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
                     array_push($ajax_names, $key_name);
                     array_push($visible_names, 'Calificación actual');
 
-                    $key_name = "custom_completion_date";
+                    $key_name = "custom_grade_date";
                     $field = "COALESCE( ( SELECT DATE(FROM_UNIXTIME(gg.timemodified)) FROM {grade_grades} AS gg
                     WHERE user.id = gg.userid AND gg.itemid = {$grade_item}), '-') as {$key_name}";
                     $field_slim = $field;
@@ -616,7 +624,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
                         array_push($slim_query, $field_slim);
                     }
                     array_push($ajax_names, $key_name);
-                    array_push($visible_names, 'Fecha');
+                    array_push($visible_names, 'Fecha de calificación');
 
                     // grade/report/grader/index.php?id=6 // Agregar libro de calificaciones // https://durango.aprendiendo.org.mx/grade/report/user/index.php?userid=8&id=6
                     

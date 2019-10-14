@@ -27,8 +27,9 @@ require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title('Pruebas hoteles city');
-$courseid = optional_param('course', 9, PARAM_INT);
-$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/detalle_curso.php', array('course' => $courseid));
+$courseid = optional_param('courseid', 9, PARAM_INT);
+$course = $DB->get_record('course', array('id' => $courseid), 'id, fullname', MUST_EXIST);
+$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/detalle_curso.php', array('courseid' => $courseid));
 
 
 echo $OUTPUT->header();
