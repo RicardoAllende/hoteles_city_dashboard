@@ -1335,7 +1335,7 @@ function local_hoteles_city_dashboard_update_region(array $params){
 
 function local_hoteles_city_dashboard_get_region_institution_relationships(){
     global $DB;
-    return $DB->get_records_sql_menu('SELECT institution, regionid FROM {dashboard_region_ins}');
+    return $DB->get_records('dashboard_region_ins');
 }
 
 /**

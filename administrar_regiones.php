@@ -114,16 +114,13 @@ echo local_hoteles_city_dashboard_print_theme_variables();
                             echo '<tr>';
                             echo "<td scope=\"col\" class=\"text-center\">{$institution}</td>";
                             $ins = local_hoteles_city_dashboard_slug($institution);
-                            foreach ($regions as $regionid => $region) {
+                            foreach ($regions as $region) {
                                 $checked = "";
-                                if (isset($relationships[$region->id])) {
-                                    if ($relationships[$region->id] == $institution) {
-                                        $checked = "checked";
-                                    }
-                                }
-                                if (isset($relationships[$institution])) {
-                                    if ($relationships[$institution] == $region->id) {
-                                        $checked = "checked";
+                                foreach($relationships as $rel){
+                                    if(empty($checked)){
+                                        if($rel->regionid == $region->id && $rel->institution == $institution){
+                                            $checked = "checked";
+                                        }
                                     }
                                 }
                                 $class = (!$region->active) ? " gray-row " : "";
