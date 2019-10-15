@@ -24,29 +24,84 @@
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class PintarCard{
-    constructor(card, titulo, tipo_grafica, data, col){
-        this.card = card, // Div padre
-        this.titulo = titulo, //Título de la gráfica        
-        this.div_graf = card + Date.now(); //Div donde se imprime la card con la gráfica
-        this.tipo_grafica = tipo_grafica, // Tipo de gráfica
-        this.data = data, //Datos de la gráfica
-        this.col = col //Tamaño de la col donde se imprime la card
+function regresaInfo(){
+    //informacion = $('#filter_form').serializeArray();
+    informacion = [];
+            informacion.push({name: 'request_type', value: 'course_list'});
+            //informacion.push({name: 'type', value: currentTab});
+            //dateBegining = Date.now();
+            // $('#local_dominosdashboard_content').html('Cargando la información');
+            $.ajax({
+                type: "POST",
+                url: "services.php",
+                data: informacion,
+                dataType: "json"
+            })
+            .done(function(data) {
+                isCourseLoading = false;
+                console.log('Data obtenida', data);
+                // respuesta = JSON.parse(JSON.stringify(data));
+                // respuesta = respuesta.data;
+                // console.log('Imprimiendo la respuesta', respuesta);
+                // dateEnding = Date.now();
+                // // $('#local_dominosdashboard_content').html('<pre>' + JSON.stringify(data, undefined, 2) + '</pre>');
+                // console.log(`Tiempo de respuesta de API al obtener json para listado de cursos ${dateEnding - dateBegining} ms`);
+                // render_div = "#ldm_tab_" + currentTab;
+                // var cosa = generarGraficasTodosLosCursos(render_div, respuesta, tituloPestana);
+                // setTimeout(function(){
+                //     if(cosa == true){
+                //         showPage("ldm_tab_" + currentTab);
+                //     }
+                // },1000)
+                //var card= new PintarCard();
+                //showPage("graficas");             
+               
+                
+                
+            })
+            .fail(function(error, error2) {
+                isCourseLoading = false;
+                console.log(error);
+                console.log(error2);
+            });
+            // if(indicator !== undefined){
+            //     obtenerFiltros(indicator);
+            // }
+}
+
+//Loader
+// var myVar;
+
+// function loaderGeneral() {
+//   myVar = setTimeout(showPage, 50);
+// }
+
+// function showPage(id_div) {
+//   document.getElementById("loader").style.display = "none";
+//   //document.getElementById(id_div).style.display = "block";
+// }
+
+
+class GraphicsDashboard{
+    constructor(div_print_card, title, type_graph, data_graph, col_size_graph){
+        this.div_print_card = div_print_card, // Div padre
+        this.title = title, //Título de la gráfica        
+        this.div_graph = div_print_card + Date.now(); //Div donde se imprime la card con la gráfica
+        this.type_graph = type_graph, // Tipo de gráfica
+        this.data_graph = data_graph, //Datos de la gráfica
+        this.col_size_graph = col_size_graph //Tamaño de la col donde se imprime la card
     }    
     
-    imprimirDiv(){
-        document.write(`<div class="col-sm-12" id="${this.card}"></div>`);
-       
-    }
+    
 
-    imprimirCard(){        
+    printCard(){        
         
-        $(this.card).append(`
-                <div class="col-sm-${this.col}">
+        $("#"+this.div_print_card).append(`
+                <div class="col-sm-${this.col_size_graph}">
                 <div class="card shadow mb-4">
                     <!-- Card Header - Dropdown -->
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">${this.titulo}</a></h6>
+                        <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">${this.title}</a></h6>
                         <div class="dropdown no-arrow">
                             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -63,7 +118,7 @@ class PintarCard{
                     <!-- Card Body -->
                     <div class="card-body">
                         <div class="">                  
-                            <canvas id="${this.div_graf}"></canvas>                  
+                            <canvas id="${this.div_graph}"></canvas>                  
                         </div>
                     </div>    
                 </div>
@@ -72,10 +127,10 @@ class PintarCard{
         
     }    
 
-    infoGrafica(){
-        switch (this.tipo_grafica) {
+    infoGraph(){
+        switch (this.type_graph) {
             case 'bar-agrupadas':
-                    var ctx = document.getElementById(this.div_graf);
+                    var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                         // The type of chart we want to create
                         type: 'bar',
@@ -103,7 +158,7 @@ class PintarCard{
                 break;
                 
             case 'horizontalBar':
-                    var ctx = document.getElementById(this.div_graf);
+                    var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                     // The type of chart we want to create
                     type: 'horizontalBar',
@@ -127,7 +182,7 @@ class PintarCard{
                 break;
 
             case 'pie': 
-                    var ctx = document.getElementById(this.div_graf);
+                    var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                     type: 'pie',
                     data: {
@@ -145,7 +200,7 @@ class PintarCard{
                 break;
                 
             case 'line': //Tendencia
-                    var ctx = document.getElementById(this.div_graf);
+                    var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                     // The type of chart we want to create
                     type: 'line',
@@ -175,7 +230,7 @@ class PintarCard{
                 break;
 
             case 'bar': 
-                    var ctx = document.getElementById(this.div_graf);
+                    var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                     // The type of chart we want to create
                     type: 'bar',
@@ -194,7 +249,9 @@ class PintarCard{
                 break;
                 
             case 'burbuja': 
-                    var ctx = document.getElementById(this.div_graf);
+            console.log('DIV GRAF');
+            console.log(this.div_graph);
+                    var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                         type: 'bubble',
                         data: {
@@ -270,20 +327,21 @@ class PintarCard{
                 break;
         }
         
-    }
-    
+    }    
 }
 
-var hotel = new PintarCard('#bloque_cards','Avance global de capacitación','burbuja', '', 5);
-hotel.imprimirDiv();
-hotel.imprimirCard();
-hotel.infoGrafica();
+var hotel = new GraphicsDashboard('contenedor','Avance global','burbuja', '', 5);
+hotel.printCard();
+hotel.infoGraph();
 
+// var hotel2 = new PintarCard('contenedor2','Avance global de capacitación','burbuja', '', 5);
+// hotel2.printCard();
+// hotel2.infoGraph();
  
 
 
 //document.getElementById("card").innerHTML = hotel.txtdiv();
-//document.getElementById("card").innerHTML = hotel.imprimirCard();
+//document.getElementById("card").innerHTML = hotel.printCard();
 
 
 

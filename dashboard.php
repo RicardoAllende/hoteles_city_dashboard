@@ -45,16 +45,35 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">    
-    <link rel="stylesheet" href="css/jquery.loadingModal.css">
-    <link href="estilos_city.css" rel="stylesheet">
-    <!-- <script src="hoteles_city_scripts.js"></script> -->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <!-- Custom styles for this page -->
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+    <script src="vendor/chart.js/Chart.min.js"></script>
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">    
+    <!-- <link rel="stylesheet" href="css/jquery.loadingModal.css"> -->
+    <link href="estilos_city.css" rel="stylesheet">
+    <!-- <script src="hoteles_city_scripts.js"></script> -->    
+    
     <?php echo local_hoteles_city_dashboard_print_theme_variables(); ?>
 </head>
-<body style="background-color: #ecedf1;">
+<body style="background-color: #ecedf1;" >
+
+<!-- onload="loaderGeneral()" -->
+<!-- <div id="loader"></div> -->
 
     <!-- Título -->
     <div>
@@ -65,7 +84,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     <div class="row" style="margin-bottom: 10px;">
         <div class="col-sm-6" style="padding-left: 20px;">
             <div class="btn-group">            
-                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="button" class="btn Primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Marca
                 </button>
                 <div class="dropdown-menu">
@@ -79,7 +98,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
 
         <div class="col-sm-6" style="text-align: end;">    
             <div class="btn-group dropleft">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="button" class="btn Primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Generar Reporte
                 </button>
                 <div class="dropdown-menu">
@@ -106,7 +125,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             <div class="card-body">
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Número de hoteles</div>
+                <div class="txt_primary text-uppercase mb-1">Número de hoteles</div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800">40,000</div>
                 </div>
                 <div class="col-auto">
@@ -123,7 +142,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             <div class="card-body">
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Cantidad de usuarios</div>
+                <div class="txt_warning text-uppercase mb-1">Cantidad de usuarios</div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800">15,000</div>
                 </div>
                 <div class="col-auto">
@@ -140,7 +159,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             <div class="card-body">
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Aprobados</div>
+                <div class="txt_success text-uppercase mb-1">Aprobados</div>
                 <div class="row no-gutters align-items-center">
                     <div class="col-auto">
                     <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">90%</div>
@@ -162,11 +181,11 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
 
         <!-- Card No aprobados-->
         <div class="col-sm-3 mb-4">
-        <div class="card border-left-danger shadow h-100 py-2">
+        <div class="card border_left_color shadow h-100 py-2">
             <div class="card-body">
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">No aprobados</div>
+                <div class="txt_danger text-uppercase mb-1">No aprobados</div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
                 </div>
                 <div class="col-auto">
@@ -180,7 +199,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     <!-- Termina row para cards informativas -->   
 
 
-    
+    <div id="graficas">
     <div class="row" style="justify-content: center;">
         <!-- Gráfica 1 -->
         <div class="col-sm-4">
@@ -296,7 +315,10 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
                 </div>
         </div>
     </div>
-        
+    </div>  
+    <div id="contenedor"></div>
+    <div id="contenedor2"></div>
+     
     
     
     
@@ -307,7 +329,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
     <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js" integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU" crossorigin="anonymous"></script> -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script src="js/jquery.loadingModal.js"></script>
+    <!-- <script src="js/jquery.loadingModal.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
     <!-- Gráfica comparativa -->
@@ -482,7 +504,7 @@ options: {
                 // tituloPestana = $('#tab-selector').children('option:selected').html();
                 // $('#tab-selector').change(function(){ tituloPestana = $(this).children('option:selected').html(); obtenerInformacion(); });
                 obtenerInformacion();
-                obtenerFiltros();
+                //obtenerFiltros();
         });
         var dateBegining;
         var dateEnding;
@@ -549,22 +571,9 @@ options: {
 
         
         
-    </script>
-    <!-- <script src="hoteles_city_scripts.js"></script> -->
+    </script>   
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
-
-    <!-- Page level plugins -->
-    <script src="vendor/chart.js/Chart.min.js"></script>
-        
+    <script src="classes.js"></script>        
         
 </body>
 </html>
