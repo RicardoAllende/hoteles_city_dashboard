@@ -552,7 +552,7 @@ function local_hoteles_city_dashboard_print_theme_variables(){
     foreach (local_hoteles_city_dashboard_theme_colors as $name => $value) {
         if(!empty($config[$name])) $value = $config[$name];
         $script .= " {$name} = '{$value}'; ";
-        $stylesheet .= " .{$name} { background-color: {$value} !important; } ";
+        $stylesheet .= " .{$name} { background-color: {$value} !important; color: #ffffff } ";
     }
     $script .= "</script>";
     $stylesheet .= "</style>";
@@ -899,6 +899,8 @@ function local_hoteles_city_dashboard_get_user_ids_with_params(int $courseid, ar
 
 /**
  * Devuelve un menú (clave => valor ... ) de los campos de usuario personalizados
+ * @param string $ids ids de los campos personalizados. Ejemplo: 1,2,3
+ * @return array|false Menú de los campos de usuario personalizados o false si no se encuentran
  */
 function local_hoteles_city_dashboard_get_custom_profile_fields(string $ids = ''){
     global $DB;

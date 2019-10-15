@@ -50,6 +50,9 @@ if (is_array($regions)) {
 } else {
     $hasRegions = false;
 }
+$default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields(true);
+$all_default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields();
+$custom_fields = local_hoteles_city_dashboard_get_custom_profile_fields();
 echo local_hoteles_city_dashboard_print_theme_variables();
 ?>
 <link rel="stylesheet" href="estilos_city.css">
@@ -62,7 +65,7 @@ echo local_hoteles_city_dashboard_print_theme_variables();
         <a class="nav-link" id="regions-tab" data-toggle="tab" href="#regions-settings" role="tab" aria-controls="Regiones" aria-selected="true">Regiones</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link show active" id="signin-tab" data-toggle="tab" href="#signin-settins" role="tab" aria-controls="profile" aria-selected="false">Campos del registro</a>
+        <a class="nav-link show active" id="signin-tab" data-toggle="tab" href="#signin-settings" role="tab" aria-controls="profile" aria-selected="false">Alta de usuarios</a>
     </li>
     <!-- <li class="nav-item">
         <a class="nav-link" id="signin-tab" data-toggle="tab" href="#sigin-settings" role="tab" aria-controls="Registro" aria-selected="false">Campos de registro de usuario</a>
@@ -134,7 +137,18 @@ echo local_hoteles_city_dashboard_print_theme_variables();
             </table>
         </div>
     </div>
-    <div class="tab-pane fade show active" id="signin-settins" role="tabpanel" aria-labelledby="signin-tab">
+    <div class="tab-pane fade show active" id="signin-settings" role="tabpanel" aria-labelledby="signin-tab">
+        <?php
+        echo "<select class=\"\" multiple=\"multiple\">";
+        foreach ($default_profile_fields as $key => $value) {
+            echo "<option value=\"{$key}\">{$value}</option>";
+        }
+        echo "</select>";
+
+        foreach ($default_profile_fields as $key => $value) {
+            
+        }
+         ?>
         <h4>Basic multi-select</h4>
         <select class="custom-select" id="basic" multiple="multiple">
             <option value="cheese">Cheese</option>

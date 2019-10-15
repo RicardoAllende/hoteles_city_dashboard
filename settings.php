@@ -48,11 +48,6 @@ if ($hassiteconfig) {
     $setting = new admin_setting_configmultiselect($name, $title, $description, $default, $default_profile_fields);
     $page->add($setting);
     
-    // $name = new lang_string('userformimage', $lhcd_pluginname);
-    // $description = new lang_string('userformimage_desc', $lhcd_pluginname);
-    // $setting = new admin_setting_configcheckbox($lhcd_pluginname . '/userformimage', $name, $description, 0);
-    // $page->add($setting);
-
     $name = $lhcd_pluginname . '/userformcustomfields';
     $title = get_string('userformcustomfields', $lhcd_pluginname);
     $description = get_string('userformcustomfields' . '_desc', $lhcd_pluginname);
