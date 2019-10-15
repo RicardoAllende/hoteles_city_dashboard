@@ -81,10 +81,10 @@ echo local_hoteles_city_dashboard_print_theme_variables();
     <div class="tab-pane fade" id="regions-settings" role="tabpanel" aria-labelledby="regions-tab">
         <div class="row" style="padding-bottom: 2%; padding-top: 2%;">
             <div class="col-sm-6" style="text-align: left;">
-                <a class="btn btn-primary btn-lg" href="<?php echo $settingsurl; ?>">Configuraciones del plugin</a>
+                <a class="btn Primary btn-lg" href="<?php echo $settingsurl; ?>">Configuraciones del plugin</a>
             </div>
             <div class="col-sm-6" style="text-align: right;">
-                <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#addRegion">Agregar nueva región</button>
+                <button type="button" class="btn Primary btn-lg" data-toggle="modal" data-target="#addRegion">Agregar nueva región</button>
             </div>
         </div>
 
@@ -98,7 +98,7 @@ echo local_hoteles_city_dashboard_print_theme_variables();
                         foreach ($regions as $key => $region) {
                             $status = (!$region->active) ? "(Deshabilitada)" : "";
                             $class = (!$region->active) ? " gray-row " : "";
-                            echo "<th scope=\"col\" class=\"text-center {$class}\"><button class='btn btn-info'
+                            echo "<th scope=\"col\" class=\"text-center {$class}\"><button class='btn Info'
                         onclick='show_region({$region->id}, \"{$region->name}\", $region->active)'>
                         {$region->name} {$status}&nbsp;<i class='fas fa-edit'></i></button>
                     </th>";
@@ -242,7 +242,7 @@ echo local_hoteles_city_dashboard_print_theme_variables();
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" onclick="createRegion()" class="btn btn-primary">Agregar región</button>
+                <button type="button" onclick="createRegion()" class="btn Primary">Agregar región</button>
             </div>
         </div>
     </div>
@@ -267,7 +267,7 @@ echo local_hoteles_city_dashboard_print_theme_variables();
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" onclick="delete_region()" data-dismiss="modal">Eliminar Región</button>
                 <button type="button" class="btn btn-secondary" onclick="disable_region()" id="change_region" data-dismiss="modal">Cancelar</button>
-                <button type="button" onclick="update_region()" class="btn btn-primary">Guardar los cambios</button>
+                <button type="button" onclick="update_region()" class="btn Primary">Guardar los cambios</button>
             </div>
         </div>
     </div>
