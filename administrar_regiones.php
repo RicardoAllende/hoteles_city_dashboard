@@ -41,7 +41,7 @@ echo $OUTPUT->header();
 $catalogues = local_hoteles_city_dashboard_get_catalogues();
 // _log(compact('catalogues'));
 $institutions = $catalogues['institutions'];
-$hasInstitutions = count($catalogues) > 0;
+$hasInstitutions = count($institutions) > 0;
 // $regions = $catalogues['departments'];
 $regions = local_hoteles_city_dashboard_get_regions();
 $relationships = local_hoteles_city_dashboard_get_region_institution_relationships();

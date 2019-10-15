@@ -42,16 +42,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
             }
             break;
         case 'course_list':
-            if(isset($_POST['type'])){
-                die(local_hoteles_city_dashboard_format_response(local_hoteles_city_dashboard_get_courses_overview($_POST['type'], $_POST)));
-            }else{
-                die(local_hoteles_city_dashboard_error_response('type (int) not found'));
-            }
+            die(local_hoteles_city_dashboard_format_response(local_hoteles_city_dashboard_get_courses_overview($_POST)));
             break;
         case 'competencies': 
             die(local_hoteles_city_dashboard_format_response(local_hoteles_city_dashboard_get_all_user_competencies($_POST)));
             break;
-        case 'user_catalogues':
+        case 'catalogues':
             die(local_hoteles_city_dashboard_format_response(local_hoteles_city_dashboard_get_user_catalogues($_POST)));
             break;
         case 'course_historics':

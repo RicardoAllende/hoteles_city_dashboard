@@ -46,6 +46,22 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
     }
 }
 
+/**
+ * @return array
+ */
+function local_hoteles_city_dashboard_get_courses_overview(array $params = array()){
+    $courses = local_hoteles_city_dashboard_get_courses();
+    foreach($courses as $course){
+        $course_information = local_hoteles_city_dashboard_get_course_information($course->id, $params);        
+        if(empty($course_information)){
+            continue;
+        }
+        array_push($courses_in_order, $course_information);
+    }
+    usort($courses_in_order, function ($a, $b) {return $a->percentage < $b->percentage;});
+    return ['type' => 'course_list', 'result' => $courses_in_order];
+}
+
 function local_hoteles_city_dashboard_user_has_access(){
     return true;
 }
@@ -263,17 +279,17 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
         $mform->setType('idnumber', core_user::get_property_type('idnumber'));
     }
 
-    if(in_array('institution', $allowed_fields)){
+    // if(in_array('institution', $allowed_fields)){
         $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
         $mform->addRule('institution', $strrequired, 'required');
         $mform->setType('institution', core_user::get_property_type('institution'));
-    }
+    // }
 
-    if(in_array('department', $allowed_fields)){
+    // if(in_array('department', $allowed_fields)){
         $mform->addElement('text', 'department', get_string('department'), 'maxlength="255" size="25"');
         $mform->addRule('department', $strrequired, 'required');
         $mform->setType('department', core_user::get_property_type('department'));
-    }
+    // }
 
     if(in_array('phone1', $allowed_fields)){
         $mform->addElement('text', 'phone1', get_string('phone1'), 'maxlength="20" size="25"');
@@ -393,8 +409,8 @@ function local_hoteles_city_dashboard_get_default_profile_fields(bool $profileFo
         'yahoo' => 'ID Yahoo', 
         'aim' => 'ID AIM', 
         'msn' => 'ID MSN', 
-        'department' => 'Departamento',
-        'institution' => 'Institución', 
+        // 'department' => 'Departamento',
+        // 'institution' => 'Institución', 
         'interests' => 'Intereses', 
         'idnumber' => 'Número de ID', 
         // 'lang', 
@@ -1179,7 +1195,7 @@ function local_hoteles_city_dashboard_error_response($message = 'error'){
 function local_hoteles_city_dashboard_get_courses(string $andWhereClause = "", array $andWhereClauseParams = array() ){
     global $DB;
     $query = "SELECT id, fullname, shortname FROM {course} where category != 0 {$andWhereClause} order by sortorder";
-    return $DB->get_records_sql($query);
+    return $DB->get_records_sql($query, $andWhereClauseParams);
 }
 
 function local_hoteles_city_dashboard_get_catalogues(){
@@ -1188,7 +1204,26 @@ function local_hoteles_city_dashboard_get_catalogues(){
      WHERE suspended = 0 AND deleted = 0 AND institution != ''"); // Hoteles
     $departments  = $DB->get_records_sql_menu("SELECT distinct department, department as i FROM {user}
      WHERE suspended = 0 AND deleted = 0 AND department != ''"); // Puestos
+    $filtercustomfields = local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filtercustomfields'));
+    
+    $filterdefaultfields = local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filterdefaultfields'));
+
+    // "SELECT data from {user_info_data} as uid_ WHERE uid_.fieldid = {$fieldid} AND uid_.userid = uid.userid {$_allow_empty} (SELECT data as menu_value FROM {user_info_data} where fieldid = {$fieldid} {$andWhereSql} {$allow_empty} group by data) ";
     return compact('institutions', 'departments');
+}
+
+function local_hoteles_city_dashboard_get_array_from_config($config){
+    if($config === false){
+        return array();
+    }
+    if(empty($config)){
+        return array();
+    }
+    try{
+        return explode(',', $config);
+    }catch(Exception $e){
+        return array();
+    }
 }
 
 function local_hoteles_city_dashboard_get_regions(){
