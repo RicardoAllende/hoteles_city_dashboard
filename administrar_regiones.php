@@ -39,8 +39,9 @@ echo $OUTPUT->header();
 // Institution -> hotel
 // Department -> puesto
 $catalogues = local_hoteles_city_dashboard_get_catalogues();
+// _print('Catálogos devueltos', $catalogues);
 // _log(compact('catalogues'));
-$institutions = $catalogues['institutions'];
+$institutions = $catalogues['institution'];
 $hasInstitutions = count($institutions) > 0;
 // $regions = $catalogues['departments'];
 $regions = local_hoteles_city_dashboard_get_regions();
@@ -54,6 +55,9 @@ $default_profile_fields = local_hoteles_city_dashboard_get_default_profile_field
 $all_default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields();
 $custom_fields = local_hoteles_city_dashboard_get_custom_profile_fields();
 echo local_hoteles_city_dashboard_print_theme_variables();
+$configs = get_config('local_hoteles_city_dashboard');
+$configs = (array) $configs;
+$pluginname = "local_hoteles_city_dashboard";
 ?>
 <link rel="stylesheet" href="estilos_city.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
@@ -67,17 +71,17 @@ echo local_hoteles_city_dashboard_print_theme_variables();
     <li class="nav-item">
         <a class="nav-link show active" id="signin-tab" data-toggle="tab" href="#signin-settings" role="tab" aria-controls="profile" aria-selected="false">Alta de usuarios</a>
     </li>
-    <!-- <li class="nav-item">
-        <a class="nav-link" id="signin-tab" data-toggle="tab" href="#sigin-settings" role="tab" aria-controls="Registro" aria-selected="false">Campos de registro de usuario</a>
-    </li> -->
     <li class="nav-item">
         <a class="nav-link" id="report-tab" data-toggle="tab" href="#report-settings" role="tab" aria-controls="Reporte" aria-selected="false">Campos que aparecen el reporte</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" id="theme-tab" data-toggle="tab" href="#theme-settings" role="tab" aria-controls="Tema" aria-selected="false">Colores del tema</a>
+        <a class="nav-link" id="report-tab" data-toggle="tab" href="#filter-settings" role="tab" aria-controls="Reporte" aria-selected="false">Campos utilizados como filtros</a>
     </li>
+    <!-- <li class="nav-item">
+        <a class="nav-link" id="theme-tab" data-toggle="tab" href="#theme-settings" role="tab" aria-controls="Tema" aria-selected="false">Colores del tema</a>
+    </li> -->
 </ul>
-<div class="tab-content" id="myTabContent">
+<div class="tab-content" id="settings_hoteles_city_dashboard">
     <div class="tab-pane fade" id="regions-settings" role="tabpanel" aria-labelledby="regions-tab">
         <div class="row" style="padding-bottom: 2%; padding-top: 2%;">
             <div class="col-sm-6" style="text-align: left;">
@@ -136,93 +140,62 @@ echo local_hoteles_city_dashboard_print_theme_variables();
     </div>
     <div class="tab-pane fade show active" id="signin-settings" role="tabpanel" aria-labelledby="signin-tab">
         <?php
-        echo "<select class=\"\" multiple=\"multiple\">";
-        foreach ($default_profile_fields as $key => $value) {
-            echo "<option value=\"{$key}\">{$value}</option>";
-        }
-        echo "</select>";
+        $name = 'userformdefaultfields';    
+        $title = get_string('userformdefaultfields', 'local_hoteles_city_dashboard');
+        $description = get_string('userformdefaultfields' . '_desc', $pluginname);
+        $default = !empty($configs[$name]) ? $configs[$name] : "";
+        echo local_hoteles_city_dashboard_print_multiselect($name, $title, $description, $default, $default_profile_fields);
 
-        foreach ($default_profile_fields as $key => $value) {
-            
-        }
+        $name = 'userformcustomfields';
+        $title = get_string('userformcustomfields', $pluginname);
+        $description = get_string('userformcustomfields' . '_desc', $pluginname);
+        echo local_hoteles_city_dashboard_print_multiselect($name, $title, $description, $default, $custom_fields);
          ?>
-        <h4>Basic multi-select</h4>
-        <select class="custom-select" id="basic" multiple="multiple">
-            <option value="cheese">Cheese</option>
-            <option value="tomatoes">Tomatoes</option>
-            <option value="mozarella">Mozzarella</option>
-            <option value="mushrooms">Mushrooms</option>
-            <option value="pepperoni">Pepperoni</option>
-            <option value="onions">Onions</option>
-        </select>
+        <div class="row" style="text-align: right;"><div class="col-sm-9"><button onclick="saveAllChanges()" class="btn Primary">Guardar cambios</button></div></div>
     </div>
     <div class="tab-pane fade" id="report-settings" role="tabpanel" aria-labelledby="report-tab">
-        Reportes <br>
-        <div class="form-group">
-            <label for="exampleFormControlInput1">Email address</label>
-            <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-        </div>
-        <div class="form-group">
-            <label for="exampleFormControlSelect1">Example select</label>
-            <select class="form-control" id="exampleFormControlSelect1">
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="exampleFormControlSelect2">Example multiple select</label>
-            <select multiple class="form-control" id="exampleFormControlSelect2">
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="exampleFormControlTextarea1">Example textarea</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-        </div>
+        <?php 
+        $name = 'reportdefaultfields';
+        $title = get_string('reportdefaultfields', $pluginname);
+        $description = get_string('reportdefaultfields' . '_desc', $pluginname);
+        $default = !empty($configs[$name]) ? $configs[$name] : "";
+        echo local_hoteles_city_dashboard_print_multiselect($name, $title, $description, $default, $all_default_profile_fields);
+    
+        $name = 'reportcustomfields';
+        $title = get_string('reportcustomfields', $pluginname);
+        $description = get_string('reportcustomfields' . '_desc', $pluginname);
+        echo local_hoteles_city_dashboard_print_multiselect($name, $title, $description, $default, $custom_fields);
+        ?>
+        <div class="row" style="text-align: right;"><div class="col-sm-9"><button onclick="saveAllChanges()" class="btn Primary">Guardar cambios</button></div></div>
     </div>
-    <div class="tab-pane fade" id="theme-settings" role="tabpanel" aria-labelledby="report-tab">
-        Colores del tema <br>
-        <div class="form-group">
-            <label for="exampleFormControlInput1">Email address</label>
-            <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-        </div>
-        <div class="form-group">
-            <label for="exampleFormControlSelect1">Example select</label>
-            <select class="form-control" id="exampleFormControlSelect1">
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="exampleFormControlSelect2">Example multiple select</label>
-            <select multiple class="form-control" id="exampleFormControlSelect2">
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="exampleFormControlTextarea1">Example textarea</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-        </div>
+    <div class="tab-pane fade" id="filter-settings" role="tabpanel" aria-labelledby="report-tab">
+        <?php 
+        $name = 'filterdefaultfields';
+        $title = get_string('filterdefaultfields', $pluginname);
+        $description = get_string('filterdefaultfields' . '_desc', $pluginname);
+        $default = !empty($configs[$name]) ? $configs[$name] : "";
+        echo local_hoteles_city_dashboard_print_multiselect($name, $title, $description, $default, $all_default_profile_fields);
+    
+        $name = 'filtercustomfields';
+        $title = get_string('filtercustomfields', $pluginname);
+        $description = get_string('filtercustomfields' . '_desc', $pluginname);
+        echo local_hoteles_city_dashboard_print_multiselect($name, $title, $description, $default, $custom_fields);
+        ?>
+        <div class="row" style="text-align: right;"><div class="col-sm-9"><button onclick="saveAllChanges()" class="btn Primary">Guardar cambios</button></div></div>
     </div>
-</div>
+    <!-- <div class="tab-pane fade" id="theme-settings" role="tabpanel" aria-labelledby="theme-settings">
+        <?php 
+            // $name = 'color';
+            // $title = 'Color';
+            // $description = "Seleccione el color";
+            // $default = !empty($configs[$name]) ? $configs[$name] : "";
+            // echo local_hoteles_city_dashboard_print_colorselect($name, $title, $description, $default);
+        ?>
+    </div> -->
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="sweetalert/sweetalert2.all.min.js"></script>
 <script src="bootstrap/bootstrap-multiselect.min.js"></script>
-
+<form id="hoteles_city_dashboard" name="hoteles_city_dashboard"></form>
 <div class="modal fade" id="addRegion" tabindex="-1" role="dialog" aria-labelledby="addRegionLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -283,12 +256,22 @@ echo local_hoteles_city_dashboard_print_theme_variables();
         setTimeout(function() {
             $('#regions-tab').click();
         }, 250);
-        $('#basic').multiselect({
-            templates: {
-                li: '<li><a href="javascript:void(0);"><label class="pl-2"></label></a></li>'
+        $('.multiselect-setting').each(function(index, element){
+            default_selection = $(this).attr('default');
+            if(typeof default_selection === 'string'){
+                if(default_selection != ""){
+
+                }
             }
+            console.log(default_selection);
+            // if(element.id )
         });
-        $('#basic').hide(); // Si no se oculta en bootstrap alpha 4
+        // $('.multiselect-setting').multiselect({
+        //     templates: {
+        //         li: '<li><a href="javascript:void(0);"><label class="pl-2"></label></a></li>'
+        //     }
+        // });
+        // $('').hide(); // Si no se oculta en bootstrap alpha 4
     });
     // document.addEventListener("DOMContentLoaded", function() {
     //     require(['jquery'], function ($) {
@@ -594,6 +577,11 @@ echo local_hoteles_city_dashboard_print_theme_variables();
         setTimeout(function() {
             window.location.href = window.location.href;
         }, 1000);
+    }
+
+    // form
+    function saveAllChanges(){
+        $('.hoteles_city_dashboard_input').each()
     }
     //     });
     // });

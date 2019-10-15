@@ -286,9 +286,21 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     // }
 
     // if(in_array('department', $allowed_fields)){
-        $mform->addElement('text', 'department', get_string('department'), 'maxlength="255" size="25"');
+        $departments = local_hoteles_city_dashboard_get_catalogues(array('department'));
+        $departments = $departments['department'];
+        $mform->addElement('select', 'department', get_string('department'), $departments);
         $mform->addRule('department', $strrequired, 'required');
         $mform->setType('department', core_user::get_property_type('department'));
+    // }
+
+    // if(in_array('country', $allowed_fields)){
+    //     $choices = get_string_manager()->get_list_of_countries();
+    //     $choices = array('' => get_string('selectacountry') . '...') + $choices;
+    //     $mform->addElement('select', 'country', get_string('selectacountry'), $choices);
+    //     $mform->addRule('country', $strrequired, 'required');
+    //     if (!empty($CFG->country)) {
+    //         $mform->setDefault('country', core_user::get_property_default('country'));
+    //     }
     // }
 
     if(in_array('phone1', $allowed_fields)){
@@ -563,9 +575,9 @@ function local_hoteles_city_dashboard_print_theme_variables(){
 
 DEFINE('local_hoteles_city_dashboard_pagination_admin', 2);
 function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_information, $searched = '', $prefix = 'user.'){
-    $select_sql = array("concat({$prefix}id, '||', {$prefix}firstname, ' ', {$prefix}lastname ) as name");
-    $ajax_names = array("name");
-    $visible_names = array('Nombre');
+    $select_sql = array("concat({$prefix}id, '||', {$prefix}firstname, ' ', {$prefix}lastname ) as name, institution, department");
+    $ajax_names = array("name", 'institution', 'department');
+    $visible_names = array('Nombre', 'Unidad operativa', 'Puesto');
     $slim_query = array("id");
     // $slim_query = 
     // array_push($select_sql, 'fullname');
@@ -1200,18 +1212,49 @@ function local_hoteles_city_dashboard_get_courses(string $andWhereClause = "", a
     return $DB->get_records_sql($query, $andWhereClauseParams);
 }
 
-function local_hoteles_city_dashboard_get_catalogues(){
+function local_hoteles_city_dashboard_get_catalogues($only = array()){
     global $DB;
-    $institutions = $DB->get_records_sql_menu("SELECT distinct institution, institution as i FROM {user}
-     WHERE suspended = 0 AND deleted = 0 AND institution != ''"); // Hoteles
-    $departments  = $DB->get_records_sql_menu("SELECT distinct department, department as i FROM {user}
-     WHERE suspended = 0 AND deleted = 0 AND department != ''"); // Puestos
+    $returnAll = empty($only);
+    $response = array();
+    $required_keys = array('institution' => 'institution', 'department' => 'department');
+    foreach ($required_keys as $key => $value) {
+        if($returnAll || in_array($key, $only)){ // de la tabla usuarios
+            $result = $DB->get_records_sql_menu("SELECT distinct {$key}, {$key} as i FROM {user}
+            WHERE suspended = 0 AND deleted = 0 AND {$key} != ''"); // Puestos
+            if(!$returnAll && isset($required_keys[$key])) unset($required_keys[$key]);
+            if($result){
+                $response[$key] = $result;
+            }
+        }
+    }
+
+    if(!$returnAll && empty($only)) return $response;
+    
     $filtercustomfields = local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filtercustomfields'));
+    foreach ($filtercustomfields as $key => $value) {
+        if($returnAll || in_array($key, $only)){ // de la tabla usuarios
+            $result  = $DB->get_records_sql_menu("SELECT distinct {$key}, {$key} as i FROM {user}
+            WHERE suspended = 0 AND deleted = 0 AND {$key} != ''"); // Puestos
+            if(!$returnAll && isset($required_keys[$key])) unset($required_keys[$key]);
+            if($result){
+                $response[$key] = $result;
+            }
+        }
+    }
+
+    if(!$returnAll && empty($only)) return $response;
     
     $filterdefaultfields = local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filterdefaultfields'));
-
+    foreach ($filterdefaultfields as $key => $value) {
+        $allow_empty = " AND uid_.data != '' AND uid_.data IS NOT NULL ";
+        $result = $DB->get_records_sql_menu("SELECT DISTINCT data, data from {user_info_data} as uid_ WHERE uid_.fieldid = {$key} {$allow_empty}");
+        
+        if($result){
+            $response[$key] = $result;
+        }
+    }
     // "SELECT data from {user_info_data} as uid_ WHERE uid_.fieldid = {$fieldid} AND uid_.userid = uid.userid {$_allow_empty} (SELECT data as menu_value FROM {user_info_data} where fieldid = {$fieldid} {$andWhereSql} {$allow_empty} group by data) ";
-    return compact('institutions', 'departments');
+    return $response;
 }
 
 function local_hoteles_city_dashboard_get_array_from_config($config){
@@ -1338,6 +1381,47 @@ function local_hoteles_city_dashboard_get_region_institution_relationships(){
     return $DB->get_records('dashboard_region_ins');
 }
 
+function local_hoteles_city_dashboard_print_multiselect(string $name, string $title = "", $description = "", string $default, array $menu){
+    $class = 'multiselect-setting';
+    $element = "";
+    $element .= "<select class=\"{$class} hoteles_city_dashboard_input\" default=\"{$default}\" form='hoteles_city_dashboard' multiple=\"multiple\" id=\"{$name}\" name=\"{$name}\">";
+    $original_default = $default;
+    if(!empty($default)){
+        $default = explode(',', $default);
+    }else{
+        $default = array();
+    }
+    
+    foreach ($menu as $key => $value) {
+        $selected = "";
+        if(in_array($key, $default)){
+            $selected = "selected";
+        }
+        $element .= "<option {$selected} value=\"{$key}\">{$value}</option>";
+    }
+    $element .= "</select>";
+    return local_hoteles_city_dashboard_create_form_part($element, $title, $description, $original_default, $name);
+}
+
+function local_hoteles_city_dashboard_print_colorselect(string $name, string $title = "", $description = "", string $default){
+    $element = "<input type='color' form='hoteles_city_dashboard' class=\" hoteles_city_dashboard_input \" id=\"{$name}\" name=\"{$name}\">";
+    return local_hoteles_city_dashboard_create_form_part($element, $title, $description, $default, $name);
+}
+
+function local_hoteles_city_dashboard_create_form_part($content, $title, $description, $default, $name = ""){
+    if(empty($default)){
+        $default = " Ninguno(a)";
+    }
+    return "<div class=\"form-group row\">
+                <label class=\"col-sm-3 form-label text-sm-right col-form-label\" for=\"{$name}\">{$title}</label>
+                <div class=\"col-sm-9\">
+                    {$content}
+                    <div class='form-defaultinfo text-muted' >Valor por defecto: {$default}</div>
+                    <p>{$description}</p>
+                </div>
+            </div>";
+}
+
 /**
  * Devuelve las unidades operativas correspondientes (institutions) de la región
  * @param int $regionid Id de la región que se desean ver las unidades operativas
@@ -1397,70 +1481,3 @@ function local_hoteles_city_dashboard_slug(string $text){
 
     return $text;
 }
-
-/*
-SELECT u.firstname AS 'First' , u.lastname AS 'Last', CONCAT(u.firstname , ' ' , u.lastname) AS 'Display Name', 
-c.fullname AS 'Course', 
--- cc.name AS 'Category',
-CASE 
-  WHEN gi.itemtype = 'course' 
-   THEN CONCAT(c.fullname, ' - Total')
-  ELSE gi.itemname
-END AS 'Item Name',
- 
-ROUND(gg.finalgrade,2) AS Grade,
-FROM_UNIXTIME(gg.timemodified) AS TIME
- 
-FROM mdl_course AS c
--- JOIN mdl_context AS ctx ON c.id = ctx.instanceid
--- JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
-JOIN mdl_grade_items AS gi ON gi.courseid = c.id
-JOIN mdl_grade_grades AS gg ON gi.id = gg.itemid
-JOIN mdl_user AS u ON gg.userid = u.id
--- JOIN mdl_course_categories AS cc ON cc.id = c.category
- 
--- WHERE  gi.courseid = c.id AND gi.itemtype = 'course'
-WHERE gi.itemtype = 'course' AND gi.courseid = c.id
-ORDER BY lastname
-
-
-
-SELECT CONCAT( ROUND(gg.finalgrade,2), ' - ', FROM_UNIXTIME(gg.timemodified)) AS Grade
- 
-FROM mdl_course AS c
-JOIN mdl_context AS ctx ON c.id = ctx.instanceid
-JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
-JOIN mdl_user AS u ON u.id = ra.userid
-JOIN mdl_grade_grades AS gg ON gg.userid = u.id
-JOIN mdl_grade_items AS gi ON gi.id = gg.itemid
--- JOIN mdl_course_categories AS cc ON cc.id = c.category
- 
-WHERE  gi.courseid = c.id AND gi.itemtype = 'course'
-
-
-
-
-
-SELECT u.firstname AS 'First' , u.lastname AS 'Last', CONCAT(u.firstname , ' ' , u.lastname) AS 'Display Name', 
-c.fullname AS 'Course', 
-cc.name AS 'Category',
-CASE 
-  WHEN gi.itemtype = 'course' 
-   THEN CONCAT(c.fullname, ' - Total')
-  ELSE gi.itemname
-END AS 'Item Name',
- 
-ROUND(gg.finalgrade,2) AS Grade,
-FROM_UNIXTIME(gg.timemodified) AS TIME
- 
-FROM mdl_course AS c
-JOIN mdl_context AS ctx ON c.id = ctx.instanceid
-JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
-JOIN mdl_user AS u ON u.id = ra.userid
-JOIN mdl_grade_grades AS gg ON gg.userid = u.id
-JOIN mdl_grade_items AS gi ON gi.id = gg.itemid
-JOIN mdl_course_categories AS cc ON cc.id = c.category
- 
-WHERE  gi.courseid = c.id AND gi.itemtype = 'course'
-ORDER BY lastname
-*/
