@@ -63,7 +63,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
 
   <!-- Custom styles for this page -->
   <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-
+  <?php echo local_hoteles_city_dashboard_print_theme_variables(); ?>
 </head>
 
 <body style="background-color: #ecedf1;">
