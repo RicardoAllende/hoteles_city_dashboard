@@ -51,6 +51,7 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
  */
 function local_hoteles_city_dashboard_get_courses_overview(array $params = array()){
     $courses = local_hoteles_city_dashboard_get_courses();
+    $courses_in_order = array();
     foreach($courses as $course){
         $course_information = local_hoteles_city_dashboard_get_course_information($course->id, $params);        
         if(empty($course_information)){
