@@ -25,7 +25,7 @@
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function regresaInfo(){
-    showModal();
+    //showModal();
     //informacion = $('#filter_form').serializeArray();
     informacion = [];
             informacion.push({name: 'request_type', value: 'course_list'});
@@ -97,14 +97,14 @@ function regresaInfo(){
 // Modal
 
 
-function showModal() {   
-    window.$("#modal_loader").modal("show");
-}
+// function showModal() {   
+//     $('#modal_loader').modal('show');
+// }
 
-function showPage(id_div) {
-  document.getElementById("modal").style.display = "none";
-  //document.getElementById(id_div).style.display = "block";
-}
+// function showPage(id_div) {
+//   document.getElementById("modal").style.display = "none";
+//   //document.getElementById(id_div).style.display = "block";
+// }
 
 
 class GraphicsDashboard{
