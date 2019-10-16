@@ -29,7 +29,8 @@ if ($hassiteconfig) {
     // TODO: Define the plugin settings page.
     // https://docs.moodle.org/dev/Admin_settings
 
-    $ADMIN->add('localplugins', new admin_externalpage('local_hoteles_city_dashboard', get_string('pluginname', 'local_hoteles_city_dashboard'), $CFG->wwwroot . '/blocks/sub_gamification/administrar-usuarios.php'));
+    $ADMIN->add('modules', new admin_externalpage('local_hoteles_city_dashboard', get_string('pluginname', 'local_hoteles_city_dashboard'),
+     $CFG->wwwroot . '/local/hoteles_city_dashboard/administrar_regiones.php'));
 
     // require_once(__DIR__ . '/lib.php');
     // $lhcd_pluginname = 'local_hoteles_city_dashboard';
