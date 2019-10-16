@@ -46,6 +46,62 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
     }
 }
 
+function local_hoteles_city_dashboard_get_dashboard_roles(){
+    return array(
+        local_hoteles_city_dashboard_gerente_ao         => "Gerente Aprendizaje Organizacional",
+        local_hoteles_city_dashboard_coordinador_ao     => "Coordinador Aprendizaje Organizacional",
+        local_hoteles_city_dashboard_director_regional  => "Director regional",
+        local_hoteles_city_dashboard_personal_elearning => "Personal Elearning",
+        local_hoteles_city_dashboard_administrador      => "Administrador del dashboard",
+    );
+}
+
+DEFINE('local_hoteles_city_dashboard_gerente_ao', 1);
+DEFINE('local_hoteles_city_dashboard_coordinador_ao', 2);
+DEFINE('local_hoteles_city_dashboard_director_regional', 3);
+DEFINE('local_hoteles_city_dashboard_personal_elearning', 4);
+DEFINE('local_hoteles_city_dashboard_administrador', 5);
+
+// Directores regionales                           --pendiente--
+// Gerente de hoteles                              institution = "Gerentes Generales"
+// Gerente de Aprendizaje Organizacional           Rol "AO"
+// Coordinadores de Aprendizaje Organizacional     Rol "AO"
+// Personal de E-learning                          --?--
+// Otros que requieren acceso                      Proponer
+// Administrador del dashboard                     Administrador del sistema
+
+function local_hoteles_city_dashboard_save_custom_settings(array $params){
+    // _log($params);
+    try {
+        // $keys = array_keys($params);
+        $excluded = array('mform_isexpanded', 'sesskey', '_qf__');
+        foreach($params as $key => $param){
+            $to_exclude = false;
+            foreach ($excluded as $e_key) {
+                $search = strpos($key, $e_key);
+                if($search !== false){
+                    $to_exclude = true;                
+                }
+            }
+            if($to_exclude){
+                continue;
+            }
+            if(empty($param)){
+                continue;
+            }
+            if(is_array($param)){
+                $param = implode(',', $param);
+                set_config($key, $param, 'local_hoteles_city_dashboard');
+            }else{
+                set_config($key, $param, 'local_hoteles_city_dashboard');
+            }
+        }
+    } catch (\Exception $th) {
+        _log($th);
+        return "Error";
+    }
+}
+
 /**
  * @return array
  */
