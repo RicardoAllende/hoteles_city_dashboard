@@ -34,7 +34,8 @@ $PAGE->set_url($CFG->wwwroot . "/local/hoteles_city_dashboard/administrar_region
 $settingsurl = $CFG->wwwroot . '/admin/settings.php?section=local_hoteles_city_dashboard';
 $PAGE->set_context($context_system);
 $PAGE->set_pagelayout('admin');
-$PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
+$pluginname = "local_hoteles_city_dashboard";
+$PAGE->set_title(get_string('pluginname', $pluginname));
 echo $OUTPUT->header();
 // Institution -> hotel
 // Department -> puesto
@@ -55,9 +56,8 @@ $default_profile_fields = local_hoteles_city_dashboard_get_default_profile_field
 $all_default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields();
 $custom_fields = local_hoteles_city_dashboard_get_custom_profile_fields();
 echo local_hoteles_city_dashboard_print_theme_variables();
-$configs = get_config('local_hoteles_city_dashboard');
+$configs = get_config($pluginname);
 $configs = (array) $configs;
-$pluginname = "local_hoteles_city_dashboard";
 ?>
 <link rel="stylesheet" href="estilos_city.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
@@ -85,7 +85,7 @@ $pluginname = "local_hoteles_city_dashboard";
     <div class="tab-pane fade" id="regions-settings" role="tabpanel" aria-labelledby="regions-tab">
         <div class="row" style="padding-bottom: 2%; padding-top: 2%;">
             <div class="col-sm-6" style="text-align: left;">
-                <a class="btn Primary btn-lg" href="<?php echo $settingsurl; ?>">Configuraciones del plugin</a>
+                <!-- <a class="btn Primary btn-lg" href="<?php echo $settingsurl; ?>">Configuraciones del plugin</a> -->
             </div>
             <div class="col-sm-6" style="text-align: right;">
                 <button type="button" class="btn Primary btn-lg" data-toggle="modal" data-target="#addRegion">Agregar nueva región</button>
