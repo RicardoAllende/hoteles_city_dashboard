@@ -61,13 +61,9 @@ $configs = (array) $configs;
 $pluginname = "local_hoteles_city_dashboard";
 
 $filter_settings = new filter_settings(null, compact('configs'), 'post', '', ' name="filter_settings" id="filter_settings" ');
-if ($data = $filter_settings->get_data()) {
-    _print($data);
-}
 $permission_settings = new permission_settings(null, compact('configs'), 'post', '', ' name="permission_settings" id="permission_settings" ');
-if ($data = $permission_settings->get_data()) {
-    _print($data);
-}
+$gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales(true);
+
 ?>
 <link rel="stylesheet" href="estilos_city.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
@@ -110,10 +106,11 @@ if ($data = $permission_settings->get_data()) {
                             $status = (!$region->active) ? "(Deshabilitada)" : "";
                             $class = (!$region->active) ? " gray-row " : "";
                             echo "<th scope=\"col\" class=\"text-center {$class}\"><button class='btn Info'
-                        onclick='show_region({$region->id}, \"{$region->name}\", $region->active)'>
-                        {$region->name} {$status}&nbsp;<i class='fas fa-edit'></i></button>
-                    </th>";
+                            onclick='show_region({$region->id}, \"{$region->name}\", $region->active)'>
+                            {$region->name} {$status}&nbsp;<i class='fas fa-edit'></i></button>
+                            </th>";
                         }
+                        echo "<th>Gerente</th>";
                         echo '</tr>';
                     }
                     ?>
@@ -137,6 +134,14 @@ if ($data = $permission_settings->get_data()) {
                                 $class = (!$region->active) ? " gray-row " : "";
                                 echo "<td class='{$class}'><input type='radio' {$checked} onclick='relateRegionInstitution(\"{$region->id}\", \"{$institution}\")' name='{$ins}'></td>";
                             }
+                            // $select_inner = "";
+                            $default = !empty($configs[$name]) ? $configs[$name] : "";
+                            echo "<td><select class='form-control' id='manager_{$ins}' onchange=\"change_manager('manager_{$ins}')\">";
+                            foreach($gerentes_generales as $id => $gg){
+                                echo "<option value='{$id}'>{$gg}</option>";
+                            }
+                            echo "</select></td>";
+                            // echo "<td class='manager_fillable' id='manager_fillable'></td>";
                             echo '</tr>';
                         }
                     }

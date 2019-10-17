@@ -146,13 +146,27 @@ function local_hoteles_city_dashboard_get_marcas(){
 }
 
 function local_hoteles_city_dashboard_get_institutions_for_profile(){
-    // 
     global $USER;
     if($USER->department == 'Gerentes Generales'){
         $institution = $USER->institution;
     }
     $institution = 
     $query = "SELECT * FROM {dashboard_region_ins} WHERE regionid IN (SELECT distinct regionid FROM {dashboard_region_ins} WHERE institution = 'Hotel 2')";
+}
+
+function local_hoteles_city_dashboard_get_gerentes_generales(){
+    global $DB;
+    // if($returnAsKeyValue){
+    //     $query = "SELECT DISTINCT u.institution, u.institution as inst
+    //         FROM {user} AS u
+    //         WHERE u.department='Gerente General' AND u.deleted = '0'
+    //         ORDER BY u.institution";
+    // }
+    $query = "SELECT id, concat(firstname, ' ', lastname) as name
+    FROM {user} AS u
+    WHERE u.department='Gerente General' AND u.deleted = '0'";
+    return $DB->get_records_sql_menu($query);
+    // return $DB->get_fieldset_sql($query);
 }
 
 function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions, $user) {

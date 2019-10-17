@@ -52,3 +52,6 @@ $string['filtercustomfields'] = 'Campos personalizados usados como filtros';
 $string['filtercustomfields_desc'] = 'Seleccione los campos personalizados que servirán como filtros. Presione ctrl para seleccionar varios campos';
 $string['filterdefaultfields'] = 'Campos tabla usuarios como filtros';
 $string['filterdefaultfields_desc'] = 'Seleccione los campos de la tabla {user} de moodle para mostrar en el reporte. Presione ctrl para seleccionar varios campos';
+
+$string['marcafield'] = 'Campos de marca';
+$string['marcafield_desc'] = 'Seleccione el campo personalizado que tiene la marca';
