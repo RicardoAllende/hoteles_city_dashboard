@@ -30,11 +30,14 @@ $PAGE->set_title('Pruebas hoteles city');
 $PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/pruebas.php');
 
 echo $OUTPUT->header();
-global $DB;
+global $DB, $USER;
 
-_print(list($enrolledsql, $params) = get_enrolled_sql(
-    context_course::instance(8)));
-_print(get_config('local_hoteles_city_dashboard'));
+// _print(list($enrolledsql, $params) = get_enrolled_sql(
+//     context_course::instance(8)));
+// _print(get_config('local_hoteles_city_dashboard'));
+_print($USER->institution);
+// _log(local_hoteles_city_dashboard_get_course_information(9));
+// _log($USER);
 // $cadena = optional_param('string', 'Alguna cadena con espacios', PARAM_TEXT);
 // _print ($cadena);
 // _print (local_dominosdashboard_create_slug($cadena));

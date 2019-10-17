@@ -94,6 +94,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
             $regionid = isset($_POST['region']) ? $_POST['region'] : '';
             die(local_hoteles_city_dashboard_get_region_insitutions($regionid));
         break;
+        case 'test':
+            _log($_POST);
+            dd($_POST);
+        break;
+        case 'save_settings':
+            die(local_hoteles_city_dashboard_save_custom_settings($_POST));
+        break;
         default:
             die(local_hoteles_city_dashboard_error_response("request_type not allowed"));
             break;

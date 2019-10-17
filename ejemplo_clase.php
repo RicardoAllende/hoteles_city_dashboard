@@ -42,7 +42,7 @@
   <script src="js/demo/datatables-demo.js"></script>
 
   <script src="vendor/chart.js/Chart.min.js"></script>
-
+  
 </head>
 
 <body style="background-color: #ecedf1;">
@@ -52,7 +52,8 @@
     <!-- <div id="demo"></div>
     <div id="demo2"></div>
     <div class="col-sm-12"id="card"></div> -->
-    <div id="bloque_cards"></div>
+    <div id="contenedor"></div>
+    
 
   <script src="classes.js"></script>  
   

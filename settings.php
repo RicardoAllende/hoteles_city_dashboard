@@ -29,65 +29,68 @@ if ($hassiteconfig) {
     // TODO: Define the plugin settings page.
     // https://docs.moodle.org/dev/Admin_settings
 
-    require_once(__DIR__ . '/lib.php');
-    $lhcd_pluginname = 'local_hoteles_city_dashboard';
+    $ADMIN->add('modules', new admin_externalpage('local_hoteles_city_dashboard', get_string('pluginname', 'local_hoteles_city_dashboard'),
+     $CFG->wwwroot . '/local/hoteles_city_dashboard/administrar_regiones.php'));
 
-    $settings = new theme_boost_admin_settingspage_tabs($lhcd_pluginname, get_string('pluginname', $lhcd_pluginname));
-    $ADMIN->add('localplugins', $settings);
+    // require_once(__DIR__ . '/lib.php');
+    // $lhcd_pluginname = 'local_hoteles_city_dashboard';
 
-    $page = new admin_settingpage($lhcd_pluginname . 'tab_userform', get_string('tab_userform', $lhcd_pluginname)); // Inicia pestaña
+    // $settings = new theme_boost_admin_settingspage_tabs($lhcd_pluginname, get_string('pluginname', $lhcd_pluginname));
+    // $ADMIN->add('localplugins', $settings);
+
+    // $page = new admin_settingpage($lhcd_pluginname . 'tab_userform', get_string('tab_userform', $lhcd_pluginname)); // Inicia pestaña
     
-    $default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields(true);
-    $all_default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields();
-    $custom_fields = local_hoteles_city_dashboard_get_custom_profile_fields();
+    // $default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields(true);
+    // $all_default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields();
+    // $custom_fields = local_hoteles_city_dashboard_get_custom_profile_fields();
 
-    $default = array('email');
-    $name = $lhcd_pluginname . '/userformdefaultfields';
-    $title = get_string('userformdefaultfields', $lhcd_pluginname);
-    $description = get_string('userformdefaultfields' . '_desc', $lhcd_pluginname);
-    $setting = new admin_setting_configmultiselect($name, $title, $description, $default, $default_profile_fields);
-    $page->add($setting);
+    // $default = array('email');
+    // $name = $lhcd_pluginname . '/userformdefaultfields';
+    // $title = get_string('userformdefaultfields', $lhcd_pluginname);
+    // $description = get_string('userformdefaultfields' . '_desc', $lhcd_pluginname);
+    // $setting = new admin_setting_configmultiselect($name, $title, $description, $default, $default_profile_fields);
+    // $page->add($setting);
     
-    $name = $lhcd_pluginname . '/userformcustomfields';
-    $title = get_string('userformcustomfields', $lhcd_pluginname);
-    $description = get_string('userformcustomfields' . '_desc', $lhcd_pluginname);
-    $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $custom_fields);
-    $page->add($setting);
+    // $name = $lhcd_pluginname . '/userformcustomfields';
+    // $title = get_string('userformcustomfields', $lhcd_pluginname);
+    // $description = get_string('userformcustomfields' . '_desc', $lhcd_pluginname);
+    // $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $custom_fields);
+    // $page->add($setting);
     
-    $settings->add($page); // Se agrega pestaña a la administración del plugin
+    // $settings->add($page); // Se agrega pestaña a la administración del plugin
 
 
 
-    $page = new admin_settingpage($lhcd_pluginname . 'tab_profile', get_string('tab_profile', $lhcd_pluginname)); // Inicia pestaña
+    // $page = new admin_settingpage($lhcd_pluginname . 'tab_profile', get_string('tab_profile', $lhcd_pluginname)); // Inicia pestaña
 
-    $name = $lhcd_pluginname . '/reportdefaultfields';
-    $title = get_string('reportdefaultfields', $lhcd_pluginname);
-    $description = get_string('reportdefaultfields' . '_desc', $lhcd_pluginname);
-    $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $all_default_profile_fields);
-    $page->add($setting);
+    // $name = $lhcd_pluginname . '/reportdefaultfields';
+    // $title = get_string('reportdefaultfields', $lhcd_pluginname);
+    // $description = get_string('reportdefaultfields' . '_desc', $lhcd_pluginname);
+    // $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $all_default_profile_fields);
+    // $page->add($setting);
 
-    $name = $lhcd_pluginname . '/reportcustomfields';
-    $title = get_string('reportcustomfields', $lhcd_pluginname);
-    $description = get_string('reportcustomfields' . '_desc', $lhcd_pluginname);
-    $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $custom_fields);
-    $page->add($setting);
+    // $name = $lhcd_pluginname . '/reportcustomfields';
+    // $title = get_string('reportcustomfields', $lhcd_pluginname);
+    // $description = get_string('reportcustomfields' . '_desc', $lhcd_pluginname);
+    // $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $custom_fields);
+    // $page->add($setting);
     
-    $settings->add($page); // Se agrega pestaña a la administración del plugin
+    // $settings->add($page); // Se agrega pestaña a la administración del plugin
 
-    $page = new admin_settingpage($lhcd_pluginname . 'tab_filters', get_string('tab_filters', $lhcd_pluginname)); // Inicia pestaña
+    // $page = new admin_settingpage($lhcd_pluginname . 'tab_filters', get_string('tab_filters', $lhcd_pluginname)); // Inicia pestaña
 
-    $name = $lhcd_pluginname . '/filterdefaultfields';
-    $title = get_string('filterdefaultfields', $lhcd_pluginname);
-    $description = get_string('filterdefaultfields' . '_desc', $lhcd_pluginname);
-    $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $all_default_profile_fields);
-    $page->add($setting);
+    // $name = $lhcd_pluginname . '/filterdefaultfields';
+    // $title = get_string('filterdefaultfields', $lhcd_pluginname);
+    // $description = get_string('filterdefaultfields' . '_desc', $lhcd_pluginname);
+    // $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $all_default_profile_fields);
+    // $page->add($setting);
 
-    $name = $lhcd_pluginname . '/filtercustomfields';
-    $title = get_string('filtercustomfields', $lhcd_pluginname);
-    $description = get_string('filtercustomfields' . '_desc', $lhcd_pluginname);
-    $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $custom_fields);
-    $page->add($setting);
+    // $name = $lhcd_pluginname . '/filtercustomfields';
+    // $title = get_string('filtercustomfields', $lhcd_pluginname);
+    // $description = get_string('filtercustomfields' . '_desc', $lhcd_pluginname);
+    // $setting = new admin_setting_configmultiselect($name, $title, $description, array(), $custom_fields);
+    // $page->add($setting);
     
-    $settings->add($page); // Se agrega pestaña a la administración del plugin
+    // $settings->add($page); // Se agrega pestaña a la administración del plugin
 
 }

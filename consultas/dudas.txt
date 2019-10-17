@@ -1,14 +1,27 @@
 ¿Qué puesto tiene el gerente de hotel?
-Gerente de Ventas
-Gerente General
-Gerente Operativo
-GTE. UNICO HOT.
+   Gerente de Ventas
+-> Gerente General
+   Gerente Operativo
+   GTE. UNICO HOT.
 
 
 
 
 
 
-Región                  
-Unidad operativa        intitution      También llamada propiedad en calificaciones (hoteles)
-Puesto                  department      
+Región                  dashboard_region    (Tabla creada)
+Unidad operativa        intitution          También llamada propiedad en calificaciones (hoteles)
+Puesto                  department          
+
+Tipos de usuarios
+
+Directores regionales                           --pendiente--
+Gerente de hoteles                              institution = "Gerentes Generales"
+Gerente de Aprendizaje Organizacional           Rol "AO"
+Coordinadores de Aprendizaje Organizacional     Rol "AO"
+Personal de E-learning                          --?--
+Otros que requieren acceso                      Proponer
+Administrador del dashboard                     Administrador del sistema
+
+
+Permisos

@@ -74,7 +74,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
   <!-- Botón regresar a Dashboard -->
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
       <div class="input-group margen_filtro">
-      <a href="dashboard.php" class="btn btn-primary" role="button" aria-pressed="true">Volver a dashboard</a>      
+      <a href="dashboard.php" class="btn Primary" role="button" aria-pressed="true">Volver a dashboard</a>      
       </div>    
   </div>
 

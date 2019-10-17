@@ -46,11 +46,68 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
     }
 }
 
+function local_hoteles_city_dashboard_get_dashboard_roles(){
+    return array(
+        local_hoteles_city_dashboard_gerente_ao         => "Gerente Aprendizaje Organizacional",
+        local_hoteles_city_dashboard_coordinador_ao     => "Coordinador Aprendizaje Organizacional",
+        local_hoteles_city_dashboard_director_regional  => "Director regional",
+        local_hoteles_city_dashboard_personal_elearning => "Personal Elearning",
+        local_hoteles_city_dashboard_administrador      => "Administrador del dashboard",
+    );
+}
+
+DEFINE('local_hoteles_city_dashboard_gerente_ao', 1);
+DEFINE('local_hoteles_city_dashboard_coordinador_ao', 2);
+DEFINE('local_hoteles_city_dashboard_director_regional', 3);
+DEFINE('local_hoteles_city_dashboard_personal_elearning', 4);
+DEFINE('local_hoteles_city_dashboard_administrador', 5);
+
+// Directores regionales                           --pendiente--
+// Gerente de hoteles                              institution = "Gerentes Generales"
+// Gerente de Aprendizaje Organizacional           Rol "AO"
+// Coordinadores de Aprendizaje Organizacional     Rol "AO"
+// Personal de E-learning                          --?--
+// Otros que requieren acceso                      Proponer
+// Administrador del dashboard                     Administrador del sistema
+
+function local_hoteles_city_dashboard_save_custom_settings(array $params){
+    // _log($params);
+    try {
+        // $keys = array_keys($params);
+        $excluded = array('mform_isexpanded', 'sesskey', '_qf__');
+        foreach($params as $key => $param){
+            $to_exclude = false;
+            foreach ($excluded as $e_key) {
+                $search = strpos($key, $e_key);
+                if($search !== false){
+                    $to_exclude = true;                
+                }
+            }
+            if($to_exclude){
+                continue;
+            }
+            if(empty($param)){
+                continue;
+            }
+            if(is_array($param)){
+                $param = implode(',', $param);
+                set_config($key, $param, 'local_hoteles_city_dashboard');
+            }else{
+                set_config($key, $param, 'local_hoteles_city_dashboard');
+            }
+        }
+    } catch (\Exception $th) {
+        _log($th);
+        return "Error";
+    }
+}
+
 /**
  * @return array
  */
 function local_hoteles_city_dashboard_get_courses_overview(array $params = array()){
     $courses = local_hoteles_city_dashboard_get_courses();
+    $courses_in_order = array();
     foreach($courses as $course){
         $course_information = local_hoteles_city_dashboard_get_course_information($course->id, $params);        
         if(empty($course_information)){
@@ -64,6 +121,52 @@ function local_hoteles_city_dashboard_get_courses_overview(array $params = array
 
 function local_hoteles_city_dashboard_user_has_access(){
     return true;
+}
+
+function local_hoteles_city_dashboard_get_departments(){
+    $key = 'department';
+    $result = local_hoteles_city_dashboard_get_catalogues([$key]);
+    return $result[$key];
+}
+
+function local_hoteles_city_dashboard_get_institutions(){
+    $key = 'institution';
+    $result = local_hoteles_city_dashboard_get_catalogues([$key]);
+    return $result[$key];
+}
+
+function local_hoteles_city_dashboard_get_marcas(){
+    if($config = 'marcafield'){
+        $result = local_hoteles_city_dashboard_get_catalogues([$config]);
+        if(isset($result[$config])){
+            return $result[$config];
+        }
+    }
+    return array();
+}
+
+function local_hoteles_city_dashboard_get_institutions_for_profile(){
+    global $USER;
+    if($USER->department == 'Gerentes Generales'){
+        $institution = $USER->institution;
+    }
+    $institution = 
+    $query = "SELECT * FROM {dashboard_region_ins} WHERE regionid IN (SELECT distinct regionid FROM {dashboard_region_ins} WHERE institution = 'Hotel 2')";
+}
+
+function local_hoteles_city_dashboard_get_gerentes_generales(){
+    global $DB;
+    // if($returnAsKeyValue){
+    //     $query = "SELECT DISTINCT u.institution, u.institution as inst
+    //         FROM {user} AS u
+    //         WHERE u.department='Gerente General' AND u.deleted = '0'
+    //         ORDER BY u.institution";
+    // }
+    $query = "SELECT id, concat(firstname, ' ', lastname) as name
+    FROM {user} AS u
+    WHERE u.department='Gerente General' AND u.deleted = '0'";
+    return $DB->get_records_sql_menu($query);
+    // return $DB->get_fieldset_sql($query);
 }
 
 function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions, $user) {
@@ -286,9 +389,7 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     // }
 
     // if(in_array('department', $allowed_fields)){
-        $departments = local_hoteles_city_dashboard_get_catalogues(array('department'));
-        $departments = $departments['department'];
-        $mform->addElement('select', 'department', get_string('department'), $departments);
+        $mform->addElement('select', 'department', get_string('department'), local_hoteles_city_dashboard_get_departments());
         $mform->addRule('department', $strrequired, 'required');
         $mform->setType('department', core_user::get_property_type('department'));
     // }

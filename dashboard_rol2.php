@@ -67,7 +67,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
 
         <div class="col-sm-12" style="text-align: end;">    
             <div class="btn-group dropleft">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="button" class="btn Primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Generar Reporte
                 </button>
                 <div class="dropdown-menu">

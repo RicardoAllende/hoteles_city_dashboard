@@ -24,29 +24,111 @@
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class PintarCard{
-    constructor(card, titulo, tipo_grafica, data, col){
-        this.card = card, // Div padre
-        this.titulo = titulo, //Título de la gráfica        
-        this.div_graf = card + Date.now(); //Div donde se imprime la card con la gráfica
-        this.tipo_grafica = tipo_grafica, // Tipo de gráfica
-        this.data = data, //Datos de la gráfica
-        this.col = col //Tamaño de la col donde se imprime la card
+function regresaInfo(){
+    //showModal();
+    //informacion = $('#filter_form').serializeArray();
+    informacion = [];
+            informacion.push({name: 'request_type', value: 'course_list'});
+            //informacion.push({name: 'type', value: currentTab});
+            //dateBegining = Date.now();
+            // $('#local_dominosdashboard_content').html('Cargando la información');
+            $.ajax({
+                type: "POST",
+                url: "services.php",
+                data: informacion,
+                dataType: "json"
+            })
+            .done(function(data) {
+                console.log('Aqui entra done');
+                isCourseLoading = false;
+                //console.log('Data obtenida ' + data);
+                respuesta = JSON.parse(JSON.stringify(data));
+                respuesta = respuesta.data;
+                console.log('Imprimiendo la respuesta', respuesta);
+                
+                // var arr_data = Array();
+                // var labels_graph = Array();
+                // var info_graph = Array();                
+                for (var i = 0; i < respuesta.result.length; i++) {
+                    resp = respuesta.result[i];
+                    // info_graph.push(resp.approved_users);
+                    // info_graph.push(resp.not_approved_users);
+                    // labels_graph.push("Aprobados");
+                    // labels_graph.push("No aprobados");
+                    // arr_data.push(info_graph);
+                    // arr_data.push(labels_graph);
+                    var curso = new GraphicsDashboard('contenedor',resp.title, 'pie',resp,5);                    
+                    curso.printCard();
+                    curso.infoGraph();
+                }
+                
+                
+                // var hotel = new GraphicsDashboard('contenedor', resp.title,'bar', '', 5);
+                // hotel.printCard();
+                // hotel.infoGraph();
+                
+                // dateEnding = Date.now();
+                // // $('#local_dominosdashboard_content').html('<pre>' + JSON.stringify(data, undefined, 2) + '</pre>');
+                // console.log(`Tiempo de respuesta de API al obtener json para listado de cursos ${dateEnding - dateBegining} ms`);
+                // render_div = "#ldm_tab_" + currentTab;
+                // var cosa = generarGraficasTodosLosCursos(render_div, respuesta, tituloPestana);
+                // setTimeout(function(){
+                //     if(cosa == true){
+                //         showPage("ldm_tab_" + currentTab);
+                //     }
+                // },1000)
+                //var card= new PintarCard();
+                //showPage("graficas");             
+               
+                
+                
+            })
+            .fail(function(error, error2) {
+                isCourseLoading = false;
+                console.log('Entra a fail');
+                console.log(error);
+                console.log(error2);
+            });
+            // if(indicator !== undefined){
+            //     obtenerFiltros(indicator);
+            // }
+}
+
+// Modal
+
+
+// function showModal() {   
+//     $('#modal_loader').modal('show');
+// }
+
+// function showPage(id_div) {
+//   document.getElementById("modal").style.display = "none";
+//   //document.getElementById(id_div).style.display = "block";
+// }
+
+
+class GraphicsDashboard{
+    constructor(div_print_card, title, type_graph, data_graph, col_size_graph){
+        this.div_print_card = div_print_card, // Div padre
+        this.title = title, //Título de la gráfica        
+        this.div_graph = div_print_card + Date.now(); //Div donde se imprime la card con la gráfica
+        this.type_graph = type_graph, // Tipo de gráfica
+        this.data_graph = data_graph, //Datos de la gráfica
+        this.col_size_graph = col_size_graph //Tamaño de la col donde se imprime la card
     }    
     
-    imprimirDiv(){
-        document.write(`<div class="col-sm-12" id="${this.card}"></div>`);
-       
-    }
+    
 
-    imprimirCard(){        
+    printCard(){  
         
-        $(this.card).append(`
-                <div class="col-sm-${this.col}">
+        if(this.data_graph.enrolled_users >0){
+        
+        $("#"+this.div_print_card).append(`
+                <div class="col-sm-${this.col_size_graph}">
                 <div class="card shadow mb-4">
                     <!-- Card Header - Dropdown -->
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">${this.titulo}</a></h6>
+                        <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">${this.title}</a></h6>
                         <div class="dropdown no-arrow">
                             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -63,19 +145,52 @@ class PintarCard{
                     <!-- Card Body -->
                     <div class="card-body">
                         <div class="">                  
-                            <canvas id="${this.div_graf}"></canvas>                  
+                            <canvas id="${this.div_graph}"></canvas>                  
                         </div>
                     </div>    
                 </div>
         </div>        
-        `);        
+        `);
+        }
+        else{
+            $("#"+this.div_print_card).append(`
+            <div class="col-sm-${this.col_size_graph}">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">${this.title}</a></h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Dropdown Header:</div>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="">                  
+                        <h3 id="${this.div_graph}"></h3>                  
+                    </div>
+                </div>    
+            </div>
+    </div>        
+    `);  
+        }   
+        console.log('PRINT CARD');    
         
     }    
 
-    infoGrafica(){
-        switch (this.tipo_grafica) {
+    infoGraph(){
+        console.log('INFO GRAPH') 
+        switch (this.type_graph) {
             case 'bar-agrupadas':
-                    var ctx = document.getElementById(this.div_graf);
+                    var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                         // The type of chart we want to create
                         type: 'bar',
@@ -103,7 +218,7 @@ class PintarCard{
                 break;
                 
             case 'horizontalBar':
-                    var ctx = document.getElementById(this.div_graf);
+                    var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                     // The type of chart we want to create
                     type: 'horizontalBar',
@@ -126,26 +241,36 @@ class PintarCard{
                     
                 break;
 
-            case 'pie': 
-                    var ctx = document.getElementById(this.div_graf);
+            case 'pie':
+                    var d_graph = Array();
+                    d_graph.push(this.data_graph.approved_users);
+                    d_graph.push(this.data_graph.not_approved_users); 
+                    if(this.data_graph.enrolled_users >0){
+                    var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                     type: 'pie',
                     data: {
-                        labels: ["Variable 1", "Variable 2", "Variable 3"],
+                        labels: ["Aprobado", "No Aprobados"],
                         datasets: [{
                             label: "Population (millions)",
                             backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-                            data: [2478,5267,734]
+                            data: d_graph
                           }]
                         },
                         options: {      
                         }
-                        });                                      
+                        });
+                    }
+                    else{
+                        var ctx = document.getElementById(this.div_graph)
+                        ctx.innerHTML="No existen usuarios inscritos";
+                    } 
+                                                          
                     
                 break;
                 
             case 'line': //Tendencia
-                    var ctx = document.getElementById(this.div_graf);
+                    var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                     // The type of chart we want to create
                     type: 'line',
@@ -174,16 +299,19 @@ class PintarCard{
                         
                 break;
 
-            case 'bar': 
-                    var ctx = document.getElementById(this.div_graf);
+            case 'bar':
+                    var d_graph = Array();
+                    d_graph.push(this.data_graph.approved_users);
+                    d_graph.push(this.data_graph.not_approved_users);
+                    var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                     // The type of chart we want to create
                     type: 'bar',
                     data: {
-                    labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
+                    labels: ["Aprobados","No aprobados"],
                     datasets: [{
                         backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-                        data: [2478,5267,734,784,433]
+                        data: d_graph
                     }]
                     },
                     options: {
@@ -194,23 +322,25 @@ class PintarCard{
                 break;
                 
             case 'burbuja': 
-                    var ctx = document.getElementById(this.div_graf);
+            console.log('DIV GRAF');
+            console.log(this.div_graph);
+                    var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                         type: 'bubble',
                         data: {
                         labels: "Africa",
                         datasets: [
                             {
-                            label: ["China"],
+                            label: ["Hotel 1"],
                             backgroundColor: "rgba(255,221,50,0.2)",
                             borderColor: "rgba(255,221,50,1)",
                             data: [{
-                                x: 21269017,
-                                y: 5.245,
-                                r: 15
+                                x: 212,//inscritos
+                                y: 207,//aprobados
+                                r: 5//no aprobados
                             }]
                             }, {
-                            label: ["Denmark"],
+                            label: ["Hotel 2"],
                             backgroundColor: "rgba(60,186,159,0.2)",
                             borderColor: "rgba(60,186,159,1)",
                             data: [{
@@ -219,21 +349,12 @@ class PintarCard{
                                 r: 10
                             }]
                             }, {
-                            label: ["Germany"],
+                            label: ["Hotel 3"],
                             backgroundColor: "rgba(0,0,0,0.2)",
                             borderColor: "#000",
                             data: [{
                                 x: 3979083,
                                 y: 6.994,
-                                r: 15
-                            }]
-                            }, {
-                            label: ["Japan"],
-                            backgroundColor: "rgba(193,46,12,0.2)",
-                            borderColor: "rgba(193,46,12,1)",
-                            data: [{
-                                x: 4931877,
-                                y: 5.921,
                                 r: 15
                             }]
                             }
@@ -270,20 +391,17 @@ class PintarCard{
                 break;
         }
         
-    }
-    
+    }    
 }
 
-var hotel = new PintarCard('#bloque_cards','Avance global de capacitación','burbuja', '', 5);
-hotel.imprimirDiv();
-hotel.imprimirCard();
-hotel.infoGrafica();
+
+
 
  
 
 
-//document.getElementById("card").innerHTML = hotel.txtdiv();
-//document.getElementById("card").innerHTML = hotel.imprimirCard();
+
+//document.getElementById("card").innerHTML = hotel.printCard();
 
 
 
