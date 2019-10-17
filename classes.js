@@ -24,7 +24,7 @@
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function regresaInfo(){
+function regresaInfoByCurso(){
     //showModal();
     //informacion = $('#filter_form').serializeArray();
     informacion = [];
@@ -57,7 +57,7 @@ function regresaInfo(){
                     // labels_graph.push("No aprobados");
                     // arr_data.push(info_graph);
                     // arr_data.push(labels_graph);
-                    var curso = new GraphicsDashboard('contenedor',resp.title, 'pie',resp,5);                    
+                    var curso = new GraphicsDashboard('contenedor',resp.title, 'bar-agrupadas',resp,5);                    
                     curso.printCard();
                     curso.infoGraph();
                 }
@@ -174,8 +174,8 @@ class GraphicsDashboard{
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
-                    <div class="">                  
-                        <h3 id="${this.div_graph}"></h3>                  
+                    <div class="">                                         
+                        <h3 id="${this.div_graph}" class="txt_sin_usuarios"></h3>                  
                     </div>
                 </div>    
             </div>
@@ -190,6 +190,16 @@ class GraphicsDashboard{
         console.log('INFO GRAPH') 
         switch (this.type_graph) {
             case 'bar-agrupadas':
+                    var d_graph = Array();
+                    d_graph.push(this.data_graph.approved_users);
+                    console.log('Aprobados');
+                    console.log(this.data_graph.approved_users);
+                    d_graph.push(this.data_graph.not_approved_users);
+                    // console.log('INFO');                    
+                    // console.log(d_graph[1]); 
+                    console.log('No Aprobados');
+                    console.log(this.data_graph.not_approved_users);
+                    if(this.data_graph.enrolled_users >0){
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                         // The type of chart we want to create
@@ -201,11 +211,13 @@ class GraphicsDashboard{
                         datasets: [{
                             label: 'Aprobados',
                             backgroundColor: '#1cc88a',       
-                            data: [15, 40, 30, 26, 12, 34, 0],
+                            //data: d_graph[0],
+                            data:[1,2,3]
                         },{
                             label: 'No Aprobados',
                             backgroundColor: '#e74a3b',       
-                            data: [5, 45, 26, 31, 41, 10, 0],
+                            //data: d_graph[1],
+                            data:[5,4,3]
                         }]
                         },
                     
@@ -214,10 +226,20 @@ class GraphicsDashboard{
                         
                         }
                     });
-                
+                    }
+                    else{
+                        var ctx = document.getElementById(this.div_graph)
+                        ctx.innerHTML="No existen usuarios inscritos";
+                    }                
                 break;
                 
             case 'horizontalBar':
+                    var d_graph = Array();
+                    d_graph.push(this.data_graph.approved_users);
+                    //d_graph.push(this.data_graph.not_approved_users);
+                    console.log('HORIZONTAL');
+                    console.log(d_graph); 
+                    if(this.data_graph.enrolled_users >0){
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                     // The type of chart we want to create
@@ -225,11 +247,11 @@ class GraphicsDashboard{
                 
                     // The data for our dataset
                     data: {
-                        labels: ['EVD', 'JVD', 'GV', 'ALL', 'CA', 'JM', 'CO', 'CXC'],
+                        labels: ['EVD', 'JVD', 'GV'],
                         datasets: [{
                             label: 'A',            
                             //borderColor: 'rgb(255, 99, 132)',
-                            data: [15, 40, 12, 30, 26, 50, 1, 9, 0],
+                            data: d_graph,
                         }]
                     },
                 
@@ -237,7 +259,12 @@ class GraphicsDashboard{
                     options: {
                         legend: { display: false },
                     }
-                    });                  
+                    });
+                    }
+                    else{
+                        var ctx = document.getElementById(this.div_graph)
+                        ctx.innerHTML="No existen usuarios inscritos";
+                    }                  
                     
                 break;
 
@@ -270,6 +297,7 @@ class GraphicsDashboard{
                 break;
                 
             case 'line': //Tendencia
+                    if(this.data_graph.enrolled_users >0){
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                     // The type of chart we want to create
@@ -295,7 +323,12 @@ class GraphicsDashboard{
                     options: {
                     
                     }
-                    });                                     
+                    });  
+                    }
+                    else{
+                        var ctx = document.getElementById(this.div_graph)
+                        ctx.innerHTML="No existen usuarios inscritos";
+                    }                                    
                         
                 break;
 
@@ -303,6 +336,7 @@ class GraphicsDashboard{
                     var d_graph = Array();
                     d_graph.push(this.data_graph.approved_users);
                     d_graph.push(this.data_graph.not_approved_users);
+                    if(this.data_graph.enrolled_users >0){
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                     // The type of chart we want to create
@@ -317,7 +351,12 @@ class GraphicsDashboard{
                     options: {
                         legend: { display: false }                   
                     }
-                    });                                     
+                    }); 
+                    }
+                    else{
+                        var ctx = document.getElementById(this.div_graph)
+                        ctx.innerHTML="No existen usuarios inscritos";
+                    }                                    
                     
                 break;
                 

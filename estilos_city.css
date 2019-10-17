@@ -123,3 +123,10 @@
     color: white;
     font-size: 5rem;
 }
+
+/*Texto de card sin usuarios inscritos*/
+.txt_sin_usuarios{
+  text-align: center;
+  padding-top: 100px;
+  padding-bottom: 100px;
+}

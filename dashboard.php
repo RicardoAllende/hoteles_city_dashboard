@@ -204,7 +204,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     
     
     
-    <div id="contenedor" class="row"></div>
+    <div id="contenedor" class="row" style="padding: 15px 25px;"></div>
     
     
      
