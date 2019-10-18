@@ -57,7 +57,12 @@ class filter_settings extends moodleform {
         // $configs = (array) $configs;
         $pluginname = 'local_hoteles_city_dashboard';
         
-
+        $name = 'marcafield';
+        $title = get_string($name, $pluginname);
+        $description = get_string($name . '_desc', $pluginname);
+        $default = !empty($configs[$name]) ? $configs[$name] : "";
+        $select = $mform->addElement('select', $name, $title, $custom_fields);
+        $mform->setDefault($name, $default);
         
         $mform->addElement('header', 'reportfields', 'Campos de reportes');
         // $mform->setExpanded('reportfields', true);

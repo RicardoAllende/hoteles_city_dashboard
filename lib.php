@@ -123,6 +123,52 @@ function local_hoteles_city_dashboard_user_has_access(){
     return true;
 }
 
+function local_hoteles_city_dashboard_get_departments(){
+    $key = 'department';
+    $result = local_hoteles_city_dashboard_get_catalogues([$key]);
+    return $result[$key];
+}
+
+function local_hoteles_city_dashboard_get_institutions(){
+    $key = 'institution';
+    $result = local_hoteles_city_dashboard_get_catalogues([$key]);
+    return $result[$key];
+}
+
+function local_hoteles_city_dashboard_get_marcas(){
+    if($config = 'marcafield'){
+        $result = local_hoteles_city_dashboard_get_catalogues([$config]);
+        if(isset($result[$config])){
+            return $result[$config];
+        }
+    }
+    return array();
+}
+
+function local_hoteles_city_dashboard_get_institutions_for_profile(){
+    global $USER;
+    if($USER->department == 'Gerentes Generales'){
+        $institution = $USER->institution;
+    }
+    $institution = 
+    $query = "SELECT * FROM {dashboard_region_ins} WHERE regionid IN (SELECT distinct regionid FROM {dashboard_region_ins} WHERE institution = 'Hotel 2')";
+}
+
+function local_hoteles_city_dashboard_get_gerentes_generales(){
+    global $DB;
+    // if($returnAsKeyValue){
+    //     $query = "SELECT DISTINCT u.institution, u.institution as inst
+    //         FROM {user} AS u
+    //         WHERE u.department='Gerente General' AND u.deleted = '0'
+    //         ORDER BY u.institution";
+    // }
+    $query = "SELECT id, concat(firstname, ' ', lastname) as name
+    FROM {user} AS u
+    WHERE u.department='Gerente General' AND u.deleted = '0'";
+    return $DB->get_records_sql_menu($query);
+    // return $DB->get_fieldset_sql($query);
+}
+
 function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions, $user) {
     $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformdefaultfields');
     if(empty($allowed_fields)){
@@ -343,9 +389,7 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     // }
 
     // if(in_array('department', $allowed_fields)){
-        $departments = local_hoteles_city_dashboard_get_catalogues(array('department'));
-        $departments = $departments['department'];
-        $mform->addElement('select', 'department', get_string('department'), $departments);
+        $mform->addElement('select', 'department', get_string('department'), local_hoteles_city_dashboard_get_departments());
         $mform->addRule('department', $strrequired, 'required');
         $mform->setType('department', core_user::get_property_type('department'));
     // }
