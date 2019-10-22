@@ -1126,10 +1126,12 @@ if(!function_exists('_sql')){
      * Imprime los parámetros enviados con la función error_log()
      * @param mixed ...$parameters Recibe varios parámetros e imprime su valor en el archivo log, para pasarlos a cadena de texto se utiliza print_r($var, true)
      */
-    function _sql(string $title = 'Probando Consulta. Debugger por subitus', string $query, array $params = array()){
+    function _sql(string $query, array $params = array(), string $title = 'Probando Consulta. Debugger por subitus'){
+        global $CFG;
+        $prefix = $CFG->prefix;
         $title .= ' ';
         $original = $query;
-        $query = str_replace('{', 'mdl_', $query);
+        $query = str_replace('{', $prefix, $query);
         $query = str_replace('}', '', $query);
         // buscar
         $error = "";
@@ -1148,7 +1150,7 @@ if(!function_exists('_sql')){
         }
         if($replaceParams){
             for($i = 0; $i < $nested_params; $i++){
-                $query = local_hoteles_city_dashboard_str_replace_first('?', "'".$params[$i] . "'", $query);
+                $query = local_flexi_analytics_str_replace_first('?', "'".$params[$i] . "'", $query);
             }
         }
         if(!$showParams || empty($params)){ $params = ''; }
