@@ -1126,7 +1126,7 @@ if(!function_exists('_sql')){
      * Imprime los parámetros enviados con la función error_log()
      * @param mixed ...$parameters Recibe varios parámetros e imprime su valor en el archivo log, para pasarlos a cadena de texto se utiliza print_r($var, true)
      */
-    function _sql(string $query, array $params = array(), string $title = 'Probando Consulta. Debugger por subitus'){
+    function _sql(string $query, array $params = array(), string $title = ''){
         global $CFG;
         $prefix = $CFG->prefix;
         $title .= ' ';
