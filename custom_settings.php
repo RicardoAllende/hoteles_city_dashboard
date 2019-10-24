@@ -179,10 +179,11 @@ class permission_settings extends moodleform {
         foreach (local_hoteles_city_dashboard_get_dashboard_roles() as $key => $value) {
             $name = "role_{$key}";
             $default = !empty($configs[$name]) ? $configs[$name] : "";
-            $mform->addElement('text', $name, $value);
+            $mform->addElement('text', $name, $value, 'size = "80"');
             $mform->addRule($name, $strrequired, 'required');
             $mform->setDefault($name, $default);
             $mform->setType($name, PARAM_TEXT);
+            $mform->addElement('static', 'description', '', 'Escriba el correo de los usuarios que tendrán el perfil "' . strtolower($value) . '" separados por un espacio');
         }
         
     }

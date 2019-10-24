@@ -69,23 +69,17 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
                 die(local_hoteles_city_dashboard_error_response("courseid (int) not found"));
             }
             break;
-        case 'kpi_list':
-            die(local_hoteles_city_dashboard_format_response(local_hoteles_city_dashboard_get_kpi_list()));
-        break;
-        case 'delete_kpi':
-            die(local_hoteles_city_dashboard_delete_kpi($params = $_POST));
-        break;
-        case 'update_kpi':
-            die(local_hoteles_city_dashboard_update_kpi($params = $_POST));
-        break;
-        case 'create_kpi':
-            die(local_hoteles_city_dashboard_create_kpi($params = $_POST));
-        break;
         case 'create_region':
             die(local_hoteles_city_dashboard_create_region($params = $_POST));
         break;
         case 'relate_region_institution':
             die(local_hoteles_city_dashboard_relate_region_institution($params = $_POST));
+        break;
+        case 'establecer_gerente_hotel':
+            die(local_hoteles_city_dashboard_update_gerente_general($params = $_POST));
+        break;
+        case 'establecer_gerente_region':
+            die(local_hoteles_city_dashboard_update_gerente_regional($params = $_POST));
         break;
         case 'update_region':
             die(local_hoteles_city_dashboard_update_region($params = $_POST));

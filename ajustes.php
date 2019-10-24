@@ -63,7 +63,7 @@ $pluginname = "local_hoteles_city_dashboard";
 
 $filter_settings = new filter_settings(null, compact('configs'), 'post', '', ' name="filter_settings" id="filter_settings" ');
 $permission_settings = new permission_settings(null, compact('configs'), 'post', '', ' name="permission_settings" id="permission_settings" ');
-$gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales(true);
+$gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales();
 
 ?>
 <link rel="stylesheet" href="estilos_city.css">
@@ -111,7 +111,7 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales(true);
                             {$region->name} {$status}&nbsp;<i class='fas fa-edit'></i></button>
                             </th>";
                         }
-                        echo "<th>Gerente</th>";
+                        echo "<th>Gerente de hotel</th>";
                         echo '</tr>';
                     }
                     ?>
@@ -120,15 +120,21 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales(true);
                     <?php
                     if ($hasInstitutions) {
                         foreach ($institutions as $institution) {
+                            $relationship = false;
+                            foreach ($relationships as $rel) {
+                                if ($rel->institution == $institution) {
+                                    $relationship = $rel;
+                                }
+                            }
                             echo '<tr>';
                             echo "<td scope=\"col\" class=\"text-center\">{$institution}</td>";
                             $ins = local_hoteles_city_dashboard_slug($institution);
                             foreach ($regions as $region) {
                                 $checked = "";
-                                foreach ($relationships as $rel) {
-                                    if (empty($checked)) {
-                                        if ($rel->regionid == $region->id && $rel->institution == $institution) {
-                                            $checked = "checked";
+                                if (empty($checked)) {
+                                    if($relationship){
+                                        if($relationship->regionid == $region->id){
+                                            $checked = 'checked';
                                         }
                                     }
                                 }
@@ -136,10 +142,17 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales(true);
                                 echo "<td class='{$class}'><input type='radio' {$checked} onclick='relateRegionInstitution(\"{$region->id}\", \"{$institution}\")' name='{$ins}'></td>";
                             }
                             // $select_inner = "";
-                            $default = !empty($configs[$name]) ? $configs[$name] : "";
-                            echo "<td><select class='form-control' id='manager_{$ins}' onchange=\"change_manager('manager_{$ins}')\">";
+                            $default = "";
+                            $relationshipid = -1;
+                            if($relationship){
+                                $default = $relationship->userid;
+                                $relationshipid = $relationship->id ;
+                            }
+                            echo "<td><select class='form-control' id='manager_{$ins}' onchange=\"establecer_gerente_general('{$institution}', '#manager_{$ins}')\">";
+                            echo "<option>Seleccionar</option>";
                             foreach($gerentes_generales as $id => $gg){
-                                echo "<option value='{$id}'>{$gg}</option>";
+                                $selected = ($id == $default) ? 'selected' : '';
+                                echo "<option {$selected} value='{$id}'>{$gg}</option>";
                             }
                             echo "</select></td>";
                             // echo "<td class='manager_fillable' id='manager_fillable'></td>";
@@ -237,19 +250,84 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales(true);
             // });
             // $('.multiselect-setting').hide(); // Si no se oculta en bootstrap alpha 4
         });
+        
+        function establecer_gerente_general(institution, inputId){
+            informacion = Array();
+            userid = $(inputId).val();
+            informacion.push({ name: 'request_type', value: 'establecer_gerente_hotel' });
+            informacion.push({ name: 'institution', value: institution });
+            informacion.push({ name: 'userid', value: userid });
+            $.ajax({
+                    type: "POST",
+                    url: "services.php",
+                    data: informacion,
+                })
+                .done(function(data) {
+                    console.log('La información obtenida es: ', data);
+                    if (data == 'ok') {
+                        Toast.fire({
+                            type: 'success',
+                            title: 'Guardado correctamente'
+                        });
+                    } else { // Se trata de un error
+                        Toast.fire({
+                            type: 'warning',
+                            title: 'Ocurrió un error, inténtelo nuevamente'
+                        })
+                    }
+                })
+                .fail(function(error, error2) {
+                    Swal.fire({
+                        type: 'error', title: 'Oops...',
+                        text: 'Ocurrió un error al crear la región',
+                        footer: 'Por favor, inténtelo de nuevo'
+                    });
+                    console.log(error, error2);
+                });
+        }
+
+        function establecer_gerente_regional(regionId, inputId){
+            informacion = Array();
+            userid = $(inputId).val();
+            informacion.push({ name: 'request_type', value: 'establecer_gerente_hotel' });
+            informacion.push({ name: 'id', value: regionId });
+            informacion.push({ name: 'userid', value: userid });
+            $.ajax({
+                    type: "POST",
+                    url: "services.php",
+                    data: informacion,
+                })
+                .done(function(data) {
+                    console.log('La información obtenida es: ', data);
+                    if (data == 'ok') {
+                        Toast.fire({
+                            type: 'success',
+                            title: 'Guardado correctamente'
+                        });
+                    } else { // Se trata de un error
+                        Toast.fire({
+                            type: 'warning',
+                            title: 'Ocurrió un error, inténtelo nuevamente'
+                        })
+                    }
+                })
+                .fail(function(error, error2) {
+                    Swal.fire({
+                        type: 'error', title: 'Oops...',
+                        text: 'Ocurrió un error al crear la región',
+                        footer: 'Por favor, inténtelo de nuevo'
+                    });
+                    console.log(error, error2);
+                });
+        }
+
         // document.addEventListener("DOMContentLoaded", function() {
         //     require(['jquery'], function ($) {
         function createRegion() {
             informacion = Array();
             name = $('#region_name').val();
-            informacion.push({
-                name: 'request_type',
-                value: 'create_region'
-            });
-            informacion.push({
-                name: 'name',
-                value: name
-            });
+            informacion.push({ name: 'request_type', value: 'create_region' });
+            informacion.push({ name: 'name', value: name });
             $.ajax({
                     type: "POST",
                     url: "services.php",
@@ -290,14 +368,8 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales(true);
             $('#region_name_e').val(name);
 
             informacion = Array();
-            informacion.push({
-                name: 'request_type',
-                value: 'get_region_institutions'
-            });
-            informacion.push({
-                name: 'region',
-                value: regionid
-            });
+            informacion.push({ name: 'request_type', value: 'get_region_institutions' });
+            informacion.push({ name: 'region', value: regionid });
 
             $.ajax({
                     type: "POST",
@@ -321,24 +393,13 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales(true);
             name = $('#region_name_e').val();
             if (name == '') {
                 Swal.fire('Por favor ingrese un nombre');
+                return;
             }
             informacion = Array();
-            informacion.push({
-                name: 'request_type',
-                value: 'update_region'
-            });
-            informacion.push({
-                name: 'id',
-                value: regionid
-            });
-            informacion.push({
-                name: 'name',
-                value: name
-            });
-            informacion.push({
-                name: 'change_status',
-                value: 1
-            });
+            informacion.push({ name: 'request_type', value: 'update_region' });
+            informacion.push({ name: 'id', value: regionid });
+            informacion.push({ name: 'name', value: name });
+            informacion.push({ name: 'change_status', value: 1 });
 
             $.ajax({
                     type: "POST",
@@ -372,14 +433,8 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales(true);
             regionid = editing;
             informacion = Array();
             name = $('#region_name_e').val();
-            informacion.push({
-                name: 'request_type',
-                value: 'update_region'
-            });
-            informacion.push({
-                name: 'id',
-                value: regionid
-            });
+            informacion.push({ name: 'request_type', value: 'update_region' });
+            informacion.push({ name: 'id', value: regionid });
             informacion.push({
                 name: 'name',
                 value: name
@@ -482,14 +537,8 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales(true);
 
         function relateRegionInstitution(regionid, institution) {
             informacion = Array();
-            informacion.push({
-                name: 'request_type',
-                value: 'relate_region_institution'
-            });
-            informacion.push({
-                name: 'id',
-                value: regionid
-            });
+            informacion.push({ name: 'request_type', value: 'relate_region_institution' });
+            informacion.push({ name: 'id', value: regionid });
             informacion.push({
                 name: 'institution',
                 value: institution
@@ -504,22 +553,14 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales(true);
                     console.log('La información obtenida es: ', data);
                     // return;
                     if (data == 'ok') {
-                        // Swal.fire('Guardado');
                         Toast.fire({
                             type: 'success',
                             title: 'Guardado correctamente'
                         });
-                        // Swal.fire({
-                        //     position: 'bottom-end',
-                        //     type: 'success',
-                        //     title: 'Guardado correctamente',
-                        //     showConfirmButton: false,
-                        //     timer: 1000
-                        // });
                     } else { // Se trata de un error
                         Toast.fire({
                             type: 'warning',
-                            title: 'Signed in successfully'
+                            title: 'Ocurrió un error, inténtelo nuevamente'
                         })
                     }
                 })
@@ -531,9 +572,6 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales(true);
                         footer: 'Por favor, inténtelo de nuevo'
                     });
                     console.log(error, error2);
-                    // alert(data, 'error');
-                    // alert('Por favor, inténtelo de nuevo');
-                    // ocultarModal();
                 });
         }
 

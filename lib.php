@@ -40,7 +40,7 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
         $node->showinflatnavigation = true;
         $node = $nav->add (
             'Configuraciones ' . get_string('pluginname', 'local_hoteles_city_dashboard'),
-            new moodle_url( $CFG->wwwroot . '/admin/settings.php?section=local_hoteles_city_dashboard' )
+            new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/ajustes.php' )
         );
         $node->showinflatnavigation = true;
     }
@@ -56,11 +56,43 @@ function local_hoteles_city_dashboard_get_dashboard_roles(){
     );
 }
 
+function local_hoteles_city_dashboard_get_all_roles_with_users(){
+    $roles = local_hoteles_city_dashboard_get_dashboard_roles();
+    // $role_ids = array_keys($roles); // Todos los roles
+    $response = array();
+    foreach($roles as $key => $role){
+        $response[$role] = local_hoteles_city_dashboard_get_role_users($key);
+    }
+    return $response;
+}
+
+function local_hoteles_city_dashboard_get_role_users($id){
+    $roles = local_hoteles_city_dashboard_get_dashboard_roles();
+    $role_ids = array_keys($roles);
+    if(in_array($id, $role_ids)){
+        $config_name = 'role_' . $id;
+        $config = get_config('local_hoteles_city_dashboard', $config_name);
+        if(!empty($config)){
+            $config = explode(' ', $config);
+            if(!empty($config)){
+                global $DB;
+                list($insql, $inparams) =  $DB->get_in_or_equal($config);
+                $query = "SELECT id, concat(firstname, ' ', lastname) as name
+                FROM {user} AS u WHERE email {$insql}";
+                return $DB->get_records_sql_menu($query, $inparams);
+            }
+        }
+    }
+    return array();
+}
+
 DEFINE('local_hoteles_city_dashboard_gerente_ao', 1);
 DEFINE('local_hoteles_city_dashboard_coordinador_ao', 2);
 DEFINE('local_hoteles_city_dashboard_director_regional', 3);
 DEFINE('local_hoteles_city_dashboard_personal_elearning', 4);
 DEFINE('local_hoteles_city_dashboard_administrador', 5);
+
+DEFINE('local_hoteles_city_gerente_general', 'Gerente General');
 
 // Directores regionales                           --pendiente--
 // Gerente de hoteles                              institution = "Gerentes Generales"
@@ -156,17 +188,20 @@ function local_hoteles_city_dashboard_get_institutions_for_profile(){
 
 function local_hoteles_city_dashboard_get_gerentes_generales(){
     global $DB;
-    // if($returnAsKeyValue){
-    //     $query = "SELECT DISTINCT u.institution, u.institution as inst
-    //         FROM {user} AS u
-    //         WHERE u.department='Gerente General' AND u.deleted = '0'
-    //         ORDER BY u.institution";
-    // }
+    $gerente_general = local_hoteles_city_gerente_general;
     $query = "SELECT id, concat(firstname, ' ', lastname) as name
-    FROM {user} AS u
-    WHERE u.department='Gerente General' AND u.deleted = '0'";
-    return $DB->get_records_sql_menu($query);
-    // return $DB->get_fieldset_sql($query);
+    FROM {user} AS u WHERE u.deleted = '0'AND u.department = ?";
+    $query_params = array($gerente_general);
+    return $DB->get_records_sql_menu($query, $query_params);
+}
+
+function local_hoteles_city_dashboard_get_gerentes_regionales(){
+    global $DB;
+    $gerente_general = local_hoteles_city_gerente_general;
+    $query = "SELECT id, concat(firstname, ' ', lastname) as name
+    FROM {user} AS u WHERE u.deleted = '0'AND u.department = ?";
+    $query_params = array($gerente_general);
+    return $DB->get_records_sql_menu($query, $query_params);
 }
 
 function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions, $user) {
@@ -1398,6 +1433,68 @@ function local_hoteles_city_dashboard_create_region(array $params){
         return "ok";
     }catch(Exception $e){
         _log('Error al crear región', $e);
+        return 'Por favor, inténtelo de nuevo';
+    }
+}
+
+function local_hoteles_city_dashboard_update_gerente_regional(array $params){
+    try{
+        global $DB;
+        $id = local_hoteles_city_dashboard_get_value_from_params($params, 'id', false);
+        $userid = local_hoteles_city_dashboard_get_value_from_params($params, 'userid', false);
+        if(local_hoteles_city_dashboard_has_empty($id, $userid)){
+            _log('Faltan datos institution, userid', $params);
+            return 'Por favor recargue la página';
+        }
+        $record = $DB->get_record('dashboard_region', compact('id'));
+        if($record === false){ // Crear
+            return "No existe la región a actualizar ({$id})";
+            // $record = new stdClass();
+            // // $record->institution = $institution;
+            // $record->userid = $userid;
+            // // $record->active = 1;
+            // $insertion = $DB->insert_record('dashboard_region', $record);
+        }else{ // Actualizar
+            if($userid != $record->userid ){
+                $record->userid = $userid;
+                // $record->active = 1;
+                $update = $DB->update_record('dashboard_region', $record);
+            }
+        }
+        return "ok";
+    }catch(Exception $e){
+        _log('Error local_hoteles_city_dashboard_update_gerente_regional', $e);
+        return 'Por favor, inténtelo de nuevo';
+    }
+}
+
+
+function local_hoteles_city_dashboard_update_gerente_general(array $params){
+    try{
+        global $DB;
+        $institution = local_hoteles_city_dashboard_get_value_from_params($params, 'institution', false);
+        $userid = local_hoteles_city_dashboard_get_value_from_params($params, 'userid', false);
+        if(local_hoteles_city_dashboard_has_empty($institution, $userid)){
+            _log('Faltan datos institution, userid', $params);
+            return 'Por favor recargue la página';
+        }
+        $record = $DB->get_record('dashboard_region_ins', compact('institution'));
+        if($record === false){ // Crear
+            $record = new stdClass();
+            $record->institution = $institution;
+            $record->userid = $userid;
+            $record->active = 1;
+            $insertion = $DB->insert_record('dashboard_region_ins', $record);
+        }else{ // Actualizar
+            if($userid != $record->userid ){
+                $record->userid = $userid;
+                $record->active = 1;
+                $update = $DB->update_record('dashboard_region_ins', $record);
+            }
+        }
+        return "ok";
+    }catch(Exception $e){
+        _log('Error local_hoteles_city_dashboard_update_gerente_general', $e);
         return 'Por favor, inténtelo de nuevo';
     }
 }
