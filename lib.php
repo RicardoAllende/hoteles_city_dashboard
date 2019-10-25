@@ -161,7 +161,7 @@ function local_hoteles_city_dashboard_get_departments(){
     return $result[$key];
 }
 
-function local_hoteles_city_dashboard_get_institutions(){
+function local_hoteles_city_dashboard_get_all_institutions(){
     $key = 'institution';
     $result = local_hoteles_city_dashboard_get_catalogues([$key]);
     return $result[$key];
@@ -429,7 +429,8 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     }
 
     // if(in_array('institution', $allowed_fields)){
-        $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
+        $mform->addElement('select', 'institution', get_string('institution'), local_hoteles_city_dashboard_get_all_institutions() );
+        // $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
         $mform->addRule('institution', $strrequired, 'required');
         $mform->setType('institution', core_user::get_property_type('institution'));
     // }
@@ -1624,13 +1625,15 @@ function local_hoteles_city_dashboard_create_form_part($content, $title, $descri
  * @param int $regionid Id de la región que se desean ver las unidades operativas
  * @return string Unidades operativas correspondientes a la región
  */
-function local_hoteles_city_dashboard_get_region_insitutions($regionid){
+function local_hoteles_city_dashboard_get_region_insitutions($regionid, $returnAsString = false){
     $default = "Sin unidades operativas";
     if(empty($regionid)) return $default;
     global $DB;
     $regions = $DB->get_records_sql_menu('SELECT id, institution FROM {dashboard_region_ins} WHERE regionid = ?', array($regionid));
     if($regions){
-        $regions = implode(', ', $regions);
+        if($returnAsString){
+            $regions = implode(', ', $regions);            
+        }
         return $regions;
     }
     return $default;

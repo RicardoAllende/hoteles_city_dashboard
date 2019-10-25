@@ -80,7 +80,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
         break;
         case 'get_region_institutions':
             $regionid = isset($_POST['region']) ? $_POST['region'] : '';
-            die(local_hoteles_city_dashboard_get_region_insitutions($regionid));
+            die(local_hoteles_city_dashboard_get_region_insitutions($regionid, true));
         break;
         case 'test':
             _log($_POST);
