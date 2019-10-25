@@ -177,7 +177,7 @@ class permission_settings extends moodleform {
         $mform->setExpanded('permissions', true);
         
         foreach (local_hoteles_city_dashboard_get_dashboard_roles() as $key => $value) {
-            $name = "role_{$key}";
+            $name = $key;
             $default = !empty($configs[$name]) ? $configs[$name] : "";
             $mform->addElement('text', $name, $value, 'size = "80"');
             $mform->addRule($name, $strrequired, 'required');

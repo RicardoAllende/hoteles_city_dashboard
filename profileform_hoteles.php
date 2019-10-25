@@ -153,7 +153,7 @@ class profileform_hoteles extends moodleform {
         }
 
         $mform->addElement('text', 'newpassword', get_string('newpassword'), 'size="30"');
-        $mform->addRule('newpassword', $strrequired, 'required');
+        // $mform->addRule('newpassword', $strrequired, 'required');
         $mform->addHelpButton('newpassword', 'newpassword');
         $mform->setType('newpassword', PARAM_TEXT);// core_user::get_property_type('password'));
 
@@ -196,7 +196,7 @@ class profileform_hoteles extends moodleform {
         //     $mform->hardFreeze('preference_auth_forcepasswordchange');
         // }
 
-        // // Admin must choose some password and supply correct email.
+        // Admin must choose some password and supply correct email.
         // if (!empty($USER->newadminuser)) {
         //     $mform->addRule('newpassword', get_string('required'), 'required', null, 'client');
         //     if ($mform->elementExists('suspended')) {
@@ -217,12 +217,12 @@ class profileform_hoteles extends moodleform {
         //         $mform->removeElement('suspended');
         //     }
         // }
-        // if ($user and ($user->id == $USER->id or is_siteadmin($user))) {
-        //     // Prevent self and admin mess ups.
-        //     if ($mform->elementExists('suspended')) {
-        //         $mform->hardFreeze('suspended');
-        //     }
-        // }
+        if ($user and ($user->id == $USER->id or is_siteadmin($user))) {
+            // Prevent self and admin mess ups.
+            if ($mform->elementExists('suspended')) {
+                $mform->hardFreeze('suspended');
+            }
+        }
 
         // Print picture.
         // if (empty($USER->newadminuser)) {

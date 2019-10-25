@@ -52,7 +52,8 @@ function local_hoteles_city_dashboard_get_dashboard_roles(){
         local_hoteles_city_dashboard_coordinador_ao     => "Coordinador Aprendizaje Organizacional",
         local_hoteles_city_dashboard_director_regional  => "Director regional",
         local_hoteles_city_dashboard_personal_elearning => "Personal Elearning",
-        local_hoteles_city_dashboard_administrador      => "Administrador del dashboard",
+        // local_hoteles_city_dashboard_gerente_hotel => "Gerente de hotel", // Se obtiene según campo institution de usuario
+        // local_hoteles_city_dashboard_administrador      => "Administrador del dashboard", // Se pretende que sea el administrador del sitio
     );
 }
 
@@ -70,7 +71,7 @@ function local_hoteles_city_dashboard_get_role_users($id){
     $roles = local_hoteles_city_dashboard_get_dashboard_roles();
     $role_ids = array_keys($roles);
     if(in_array($id, $role_ids)){
-        $config_name = 'role_' . $id;
+        $config_name = $id;
         $config = get_config('local_hoteles_city_dashboard', $config_name);
         if(!empty($config)){
             $config = explode(' ', $config);
@@ -86,11 +87,12 @@ function local_hoteles_city_dashboard_get_role_users($id){
     return array();
 }
 
-DEFINE('local_hoteles_city_dashboard_gerente_ao', 1);
-DEFINE('local_hoteles_city_dashboard_coordinador_ao', 2);
-DEFINE('local_hoteles_city_dashboard_director_regional', 3);
-DEFINE('local_hoteles_city_dashboard_personal_elearning', 4);
-DEFINE('local_hoteles_city_dashboard_administrador', 5);
+DEFINE('local_hoteles_city_dashboard_gerente_ao', 'role_1');
+DEFINE('local_hoteles_city_dashboard_coordinador_ao', 'role_2');
+DEFINE('local_hoteles_city_dashboard_director_regional', 'role_3');
+DEFINE('local_hoteles_city_dashboard_personal_elearning', 'role_4');
+DEFINE('local_hoteles_city_dashboard_gerente_hotel', 'role_5');
+DEFINE('local_hoteles_city_dashboard_administrador', 'role_6');
 
 DEFINE('local_hoteles_city_gerente_general', 'Gerente General');
 
@@ -161,7 +163,7 @@ function local_hoteles_city_dashboard_get_departments(){
     return $result[$key];
 }
 
-function local_hoteles_city_dashboard_get_institutions(){
+function local_hoteles_city_dashboard_get_all_institutions(){
     $key = 'institution';
     $result = local_hoteles_city_dashboard_get_catalogues([$key]);
     return $result[$key];
@@ -429,7 +431,8 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     }
 
     // if(in_array('institution', $allowed_fields)){
-        $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
+        $mform->addElement('select', 'institution', get_string('institution'), local_hoteles_city_dashboard_get_all_institutions() );
+        // $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
         $mform->addRule('institution', $strrequired, 'required');
         $mform->setType('institution', core_user::get_property_type('institution'));
     // }
@@ -728,7 +731,7 @@ function local_hoteles_city_dashboard_print_theme_variables(){
     foreach (local_hoteles_city_dashboard_theme_colors as $name => $value) {
         if(!empty($config[$name])) $value = $config[$name];
         $script .= " {$name} = '{$value}'; ";
-        $stylesheet .= " .{$name} { background-color: {$value} !important; color: #ffffff } ";
+        $stylesheet .= " .{$name} { background-color: {$value} !important; color: #ffffff } .{$name}:hover { color: #ffffff !important; } ";
     }
     $script .= "</script>";
     $stylesheet .= "</style>";
@@ -737,7 +740,7 @@ function local_hoteles_city_dashboard_print_theme_variables(){
     // _log(compact('stylesheet', 'script'));
 }
 
-function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_information, $searched = '', $prefix = 'user.'){
+function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_information = '', $searched = '', $prefix = 'user.'){
     $select_sql = array("concat({$prefix}id, '||', {$prefix}firstname, ' ', {$prefix}lastname ) as name, institution, department");
     $ajax_names = array("name", 'institution', 'department');
     $visible_names = array('Nombre', 'Unidad operativa', 'Puesto');
@@ -769,7 +772,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
     switch ($type) {
         case local_hoteles_city_dashboard_course_users_pagination:
             global $DB;
-            $courseid = $custom_information;
+            $courseid = intval($custom_information);
             $name = $DB->get_field('course', 'fullname', array('id' => $courseid));
             if($name !== false){
                 $key_name = 'custom_completion';
@@ -847,7 +850,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
             array_push($visible_names, 'Editar usuario');
 
             $key_name = "link_suspend_user";
-            $field = "{$prefix}id concat({$prefix}id, '||', {$prefix}suspended, ' ', {$prefix}lastname )  as {$key_name}";
+            $field = "{$prefix}id, concat({$prefix}id, '||', {$prefix}suspended)  as {$key_name}";
             $field_slim = "'s' as {$key_name}";
             array_push($select_sql, $field);
             array_push($ajax_names, $key_name);
@@ -892,10 +895,13 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
             case 'link_suspend_user':
                 $ajax_code .= "{data: '{$an}', render: 
                 function ( data, type, row ) { 
-                    texto = (data == '0') ? 'Quitar suspensión' : 'Suspender';
-                    clase = (data == '0') ? 'btn Success' : 'btn Danger';
-                    if(data == '0'){}
-                    return '<a target=\"_blank\" class=\"btn btn-info\" href=\"administrar_usuarios.php?id=' + data + '\">Suspender usuario</a>'; }  }, ";
+                    parts = data.split('||');
+                    id = parts[0];
+                    suspended = parts[1];
+                    texto = (suspended == '0') ? 'Quitar suspensión' : 'Suspender';
+                    clase = (suspended == '0') ? 'btn Success' : 'btn Danger';
+                    return '<a target=\"_blank\" class=\"' + clase + '\" href=\"administrar_usuarios.php?id=' + id + '\">' + texto + '</a>'; }  
+                }, ";
             break;
             case 'link_edit_user':
                 $ajax_code .= "{data: '{$an}', render: 
@@ -1621,13 +1627,15 @@ function local_hoteles_city_dashboard_create_form_part($content, $title, $descri
  * @param int $regionid Id de la región que se desean ver las unidades operativas
  * @return string Unidades operativas correspondientes a la región
  */
-function local_hoteles_city_dashboard_get_region_insitutions($regionid){
+function local_hoteles_city_dashboard_get_region_insitutions($regionid, $returnAsString = false){
     $default = "Sin unidades operativas";
     if(empty($regionid)) return $default;
     global $DB;
     $regions = $DB->get_records_sql_menu('SELECT id, institution FROM {dashboard_region_ins} WHERE regionid = ?', array($regionid));
     if($regions){
-        $regions = implode(', ', $regions);
+        if($returnAsString){
+            $regions = implode(', ', $regions);            
+        }
         return $regions;
     }
     return $default;
@@ -1674,4 +1682,29 @@ function local_hoteles_city_dashboard_slug(string $text){
     }
 
     return $text;
+}
+
+function local_hoteles_city_dashboard_get_user_roles(){
+    global $USER;
+    $email = $USER->email;
+    $roles = array();
+    foreach (local_hoteles_city_dashboard_get_dashboard_roles() as $key => $value) {
+        $config_name = $key;
+        $config = get_config('local_hoteles_city_dashboard', $config_name);
+        if(!empty($config)){
+            $config = explode(' ', $config);
+            if(in_array($email, $config)){
+                $roles[$key] = $value;
+            }
+        }
+    }
+    if(local_hoteles_city_dashboard_is_gerente_general()){
+        $roles[local_hoteles_city_dashboard_gerente_hotel] = 'Gerente de hotel';
+    }
+    return $roles;
+}
+
+function local_hoteles_city_dashboard_is_gerente_general(){
+    global $USER;
+    return $USER->institution == local_hoteles_city_gerente_general;
 }

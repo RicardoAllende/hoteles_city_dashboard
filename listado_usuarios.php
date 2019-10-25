@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Listado de usuarios con paginación utilizando datatables y ajax
+ * Listado de usuarios inscritos seccionados a los que el usuario tenga acceso
  *
  * @package     local_hoteles_city_dashboard
  * @category    admin
@@ -27,36 +27,44 @@ require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title('Pruebas hoteles city');
-$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/ejemplo_ajax.php');
+$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/listado_usuarios.php');
 
 echo $OUTPUT->header();
+$report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_all_users_pagination);
+echo local_hoteles_city_dashboard_print_theme_variables();
 ?>
 
-<!-- Datatable CSS -->
-<link href='//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
-<table id='empTable' class='display dataTable'>    
+<table id='empTable' class='display dataTable table table-bordered'>    
     <thead>
         <tr>
-            <th>Email</th>
-            <th>Nombre</th>
-            <th>Id</th>
-            <th>Cont</th>
+            <?php echo $report_info->table_code; ?>
         </tr>
     </thead>
+    <tfoot>
+        <tr>
+            <?php echo $report_info->table_code; ?>
+        </tr>
+    </tfoot>
 </table>
 
+<!-- Datatable CSS -->
+<link href='datatables/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
+
+<!-- <link href='//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'> -->
+<link href="datatables/buttons.dataTables.min.css" rel="stylesheet">
+
 <!-- jQuery Library -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="vendor/jquery/jquery.min.js"></script>
 
 <!-- Datatable JS -->
-<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.6.0/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.6.0/js/buttons.flash.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.6.0/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.6.0/js/buttons.print.min.js"></script>
+<script src="datatables/jquery.dataTables.min.js"></script>
+<script src="datatables/dataTables.buttons.min.js"></script>
+<script src="datatables/buttons.flash.min.js"></script>
+<script src="datatables/jszip.min.js"></script>
+<script src="datatables/pdfmake.min.js"></script>
+<script src="datatables/vfs_fonts.js"></script>
+<script src="datatables/buttons.html5.min.js"></script>
+<script src="datatables/buttons.print.min.js"></script>
 
 <!-- Table -->
 <script>
@@ -66,23 +74,80 @@ echo $OUTPUT->header();
             'serverSide': true,
             'serverMethod': 'post',
             'ajax': {
-                'url':'ajax_file.php'
+                'url':'services.php',
+                data: {
+                    request_type: 'all_users_pagination',
+                }
             },
-            "pageLength": 25,
+            lengthMenu: [[10, 15, 20, 100, -1], [10, 15, 20, 100, "Todos los registros"]],
             'dom': 'Bfrtip',
-            'buttons': [
-                'copy', 'csv', 'excel', 'pdf', 'print'
+            "pageLength": 10,
+            buttons: [
+                {
+                    extend: 'excel',
+                    text: '<span class="fa fa-file-excel-o"></span> Exportar a excel',
+                    exportOptions: {
+                        modifier: {
+                            search: 'applied',
+                            order: 'applied'
+                        },
+                        columns: [<?php echo $report_info->ajax_printed_rows; ?>],
+                    },
+                },
+                {
+                    extend: 'excel',
+                    text: '<span class="fa fa-file-o"></span> Exportar a CSV',
+                    exportOptions: {
+                        modifier: {
+                            search: 'applied',
+                            order: 'applied'
+                        },
+                        columns: [<?php echo $report_info->ajax_printed_rows; ?>],
+                    },
+                },
+                'pageLength',
             ],
             'columns': [
-                { data: 'email' },
-                { data: 'name' },
-                { data: 'id' },
-                { data: 'reg' },
-                // { data: 'city' },
+                <?php echo $report_info->ajax_code; ?>
             ],
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
-            }
+            language: {
+                "url": "datatables/Spanish.json",
+
+                "emptyTable":     "No se encontró información",
+                // "infoFiltered":   "(filtered from _MAX_ total entries)",
+                "loadingRecords": "Cargando...",
+                "processing":     "Procesando...",
+                "search":         "Búsqueda:",
+                // "zeroRecords":    "No matching records found",
+                "paginate": {
+                    "first":      "Primera",
+                    "last":       "Última",
+                    "next":       "Siguiente",
+                    "previous":   "Anterior"
+                },
+                // "decimal":        "",
+                // "info":           "Showing _START_ to _END_ of _TOTAL_ entries",
+                // "infoEmpty":      "Showing 0 to 0 of 0 entries",
+                // "infoPostFix":    "",
+                // "thousands":      ",",
+                // "lengthMenu":     "Show _MENU_ entries",
+                // "aria": {
+                //     "sortAscending":  ": activate to sort column ascending",
+                //     "sortDescending": ": activate to sort column descending"
+                // }
+                buttons: {
+                    pageLength: {
+                        _: "Mostrando %d filas",
+                        '-1': "Mostrando todas las filas"
+                    }
+                }
+            },
+            "columnDefs": [
+                { "targets": [<?php echo $report_info->ajax_link_fields; ?>], "orderable": false }
+            ]
+            // language: {
+            // },
+            // buttons: [ { extend: 'excel', action: newExportAction } ],
         });
     });
 </script>

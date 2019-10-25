@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Página de pruebas
+ * Listado de usuarios inscritos en un curso
  *
  * @package     local_hoteles_city_dashboard
  * @category    admin
@@ -33,16 +33,10 @@ $PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/detalle_curso.php'
 
 
 echo $OUTPUT->header();
-// foreach (local_hoteles_city_dashboard_get_courses() as $key => $course) {
-//     _print($course->fullname, local_hoteles_city_dashboard_get_course_information($course->id));
-// }
 $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_course_users_pagination, $courseid);
 echo local_hoteles_city_dashboard_print_theme_variables();
 ?>
 
-<!-- Datatable CSS -->
-<link href='//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.0/css/buttons.dataTables.min.css">
 <table id='empTable' class='display dataTable table table-bordered'>    
     <thead>
         <tr>
@@ -56,18 +50,24 @@ echo local_hoteles_city_dashboard_print_theme_variables();
     </tfoot>
 </table>
 
+<!-- Datatable CSS -->
+<link href='datatables/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
+
+<!-- <link href='//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'> -->
+<link href="datatables/buttons.dataTables.min.css" rel="stylesheet">
+
 <!-- jQuery Library -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="vendor/jquery/jquery.min.js"></script>
 
 <!-- Datatable JS -->
-<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.6.0/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.6.0/js/buttons.flash.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.6.0/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.6.0/js/buttons.print.min.js"></script>
+<script src="datatables/jquery.dataTables.min.js"></script>
+<script src="datatables/dataTables.buttons.min.js"></script>
+<script src="datatables/buttons.flash.min.js"></script>
+<script src="datatables/jszip.min.js"></script>
+<script src="datatables/pdfmake.min.js"></script>
+<script src="datatables/vfs_fonts.js"></script>
+<script src="datatables/buttons.html5.min.js"></script>
+<script src="datatables/buttons.print.min.js"></script>
 
 <!-- Table -->
 <script>
@@ -115,7 +115,7 @@ echo local_hoteles_city_dashboard_print_theme_variables();
                 <?php echo $report_info->ajax_code; ?>
             ],
             language: {
-                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json",
+                "url": "datatables/Spanish.json",
 
                 "emptyTable":     "No se encontró información",
                 // "infoFiltered":   "(filtered from _MAX_ total entries)",
