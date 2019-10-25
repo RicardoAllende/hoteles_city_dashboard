@@ -52,7 +52,8 @@ function local_hoteles_city_dashboard_get_dashboard_roles(){
         local_hoteles_city_dashboard_coordinador_ao     => "Coordinador Aprendizaje Organizacional",
         local_hoteles_city_dashboard_director_regional  => "Director regional",
         local_hoteles_city_dashboard_personal_elearning => "Personal Elearning",
-        local_hoteles_city_dashboard_administrador      => "Administrador del dashboard",
+        // local_hoteles_city_dashboard_gerente_hotel => "Gerente de hotel", // Se obtiene según campo institution de usuario
+        // local_hoteles_city_dashboard_administrador      => "Administrador del dashboard", // Se pretende que sea el administrador del sitio
     );
 }
 
@@ -70,7 +71,7 @@ function local_hoteles_city_dashboard_get_role_users($id){
     $roles = local_hoteles_city_dashboard_get_dashboard_roles();
     $role_ids = array_keys($roles);
     if(in_array($id, $role_ids)){
-        $config_name = 'role_' . $id;
+        $config_name = $id;
         $config = get_config('local_hoteles_city_dashboard', $config_name);
         if(!empty($config)){
             $config = explode(' ', $config);
@@ -86,11 +87,12 @@ function local_hoteles_city_dashboard_get_role_users($id){
     return array();
 }
 
-DEFINE('local_hoteles_city_dashboard_gerente_ao', 1);
-DEFINE('local_hoteles_city_dashboard_coordinador_ao', 2);
-DEFINE('local_hoteles_city_dashboard_director_regional', 3);
-DEFINE('local_hoteles_city_dashboard_personal_elearning', 4);
-DEFINE('local_hoteles_city_dashboard_administrador', 5);
+DEFINE('local_hoteles_city_dashboard_gerente_ao', 'role_1');
+DEFINE('local_hoteles_city_dashboard_coordinador_ao', 'role_2');
+DEFINE('local_hoteles_city_dashboard_director_regional', 'role_3');
+DEFINE('local_hoteles_city_dashboard_personal_elearning', 'role_4');
+DEFINE('local_hoteles_city_dashboard_gerente_hotel', 'role_5');
+DEFINE('local_hoteles_city_dashboard_administrador', 'role_6');
 
 DEFINE('local_hoteles_city_gerente_general', 'Gerente General');
 
@@ -1680,4 +1682,29 @@ function local_hoteles_city_dashboard_slug(string $text){
     }
 
     return $text;
+}
+
+function local_hoteles_city_dashboard_get_user_roles(){
+    global $USER;
+    $email = $USER->email;
+    $roles = array();
+    foreach (local_hoteles_city_dashboard_get_dashboard_roles() as $key => $value) {
+        $config_name = $key;
+        $config = get_config('local_hoteles_city_dashboard', $config_name);
+        if(!empty($config)){
+            $config = explode(' ', $config);
+            if(in_array($email, $config)){
+                $roles[$key] = $value;
+            }
+        }
+    }
+    if(local_hoteles_city_dashboard_is_gerente_general()){
+        $roles[local_hoteles_city_dashboard_gerente_hotel] = 'Gerente de hotel';
+    }
+    return $roles;
+}
+
+function local_hoteles_city_dashboard_is_gerente_general(){
+    global $USER;
+    return $USER->institution == local_hoteles_city_gerente_general;
 }
