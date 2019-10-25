@@ -47,6 +47,7 @@ $institutions = $catalogues['institution'];
 $hasInstitutions = count($institutions) > 0;
 // $regions = $catalogues['departments'];
 $regions = local_hoteles_city_dashboard_get_regions();
+// _log('Regiones en ajustes.php ', $regions);
 $relationships = local_hoteles_city_dashboard_get_region_institution_relationships();
 if (is_array($regions)) {
     $hasRegions = count($regions) > 0;
@@ -64,6 +65,7 @@ $pluginname = "local_hoteles_city_dashboard";
 $filter_settings = new filter_settings(null, compact('configs'), 'post', '', ' name="filter_settings" id="filter_settings" ');
 $permission_settings = new permission_settings(null, compact('configs'), 'post', '', ' name="permission_settings" id="permission_settings" ');
 $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales();
+$directores_regionales = local_hoteles_city_dashboard_get_directores_regionales();
 
 ?>
 <link rel="stylesheet" href="estilos_city.css">
@@ -107,7 +109,7 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales();
                             $status = (!$region->active) ? "(Deshabilitada)" : "";
                             $class = (!$region->active) ? " gray-row " : "";
                             echo "<th scope=\"col\" class=\"text-center {$class}\"><button class='btn Info'
-                            onclick='show_region({$region->id}, \"{$region->name}\", $region->active)'>
+                            onclick='show_region({$region->id}, \"{$region->name}\", $region->active, \"{$region->userid}\")'>
                             {$region->name} {$status}&nbsp;<i class='fas fa-edit'></i></button>
                             </th>";
                         }
@@ -192,6 +194,18 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales();
                         <label for="region_name" class="col-form-label">Nombre de la región:</label>
                         <input type="text" class="form-control" id="region_name" name="region_name">
                     </div>
+                    <div class="form-group">
+                        <label for="create_regional_manager" class="col-form-label">Director regional:</label>
+                        <?php 
+                            echo "<td><select class='form-control' id='create_regional_manager'>";
+                            echo "<option value=''>Seleccionar</option>";
+                            foreach($directores_regionales as $id => $gr){
+                                echo "<option value='{$id}'>{$gr}</option>";
+                            }
+                            echo "</select></td>";
+                        ?>
+                        <br>
+                    </div>
                     <!-- </form> -->
                 </div>
                 <div class="modal-footer">
@@ -215,6 +229,20 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales();
                         <input type="text" class="form-control" id="region_name_e" name="region_name_e">
                         <br>
                         <p id="region-description"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_regional_manager" class="col-form-label">Director regional:</label>
+                        <?php 
+                            echo "<td><select class='form-control' id='edit_regional_manager'>";
+                            // echo "<td><select class='form-control' id='edit_regional_manager' onchange=\"establecer_gerente_general('{$institution}', '#manager_{$ins}')\">";
+                            echo "<option value=''>Seleccionar</option>";
+                            foreach($directores_regionales as $id => $gr){
+                                // $selected = ($id == $default) ? 'selected' : '';
+                                echo "<option value='{$id}'>{$gr}</option>";
+                            }
+                            echo "</select></td>";
+                        ?>
+                        <br>
                     </div>
                     <!-- </form> -->
                 </div>
@@ -286,48 +314,16 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales();
                 });
         }
 
-        function establecer_gerente_regional(regionId, inputId){
-            informacion = Array();
-            userid = $(inputId).val();
-            informacion.push({ name: 'request_type', value: 'establecer_gerente_hotel' });
-            informacion.push({ name: 'id', value: regionId });
-            informacion.push({ name: 'userid', value: userid });
-            $.ajax({
-                    type: "POST",
-                    url: "services.php",
-                    data: informacion,
-                })
-                .done(function(data) {
-                    console.log('La información obtenida es: ', data);
-                    if (data == 'ok') {
-                        Toast.fire({
-                            type: 'success',
-                            title: 'Guardado correctamente'
-                        });
-                    } else { // Se trata de un error
-                        Toast.fire({
-                            type: 'warning',
-                            title: 'Ocurrió un error, inténtelo nuevamente'
-                        })
-                    }
-                })
-                .fail(function(error, error2) {
-                    Swal.fire({
-                        type: 'error', title: 'Oops...',
-                        text: 'Ocurrió un error al crear la región',
-                        footer: 'Por favor, inténtelo de nuevo'
-                    });
-                    console.log(error, error2);
-                });
-        }
-
         // document.addEventListener("DOMContentLoaded", function() {
         //     require(['jquery'], function ($) {
         function createRegion() {
             informacion = Array();
             name = $('#region_name').val();
+            userid = $('#create_regional_manager').val();
             informacion.push({ name: 'request_type', value: 'create_region' });
             informacion.push({ name: 'name', value: name });
+            informacion.push({ name: 'userid', value: userid });
+            console.log(informacion);
             $.ajax({
                     type: "POST",
                     url: "services.php",
@@ -356,7 +352,7 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales();
                 });
         }
 
-        function show_region(id, name, enabled) {
+        function show_region(id, name, enabled, userid) {
             editing = id;
             regionid = id;
             $('#showRegionLabel').html(name);
@@ -370,6 +366,8 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales();
             informacion = Array();
             informacion.push({ name: 'request_type', value: 'get_region_institutions' });
             informacion.push({ name: 'region', value: regionid });
+            // informacion.push({ name: 'userid', value: userid });
+            $('#edit_regional_manager').val(userid);
 
             $.ajax({
                     type: "POST",
@@ -377,11 +375,11 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales();
                     data: informacion,
                 })
                 .done(function(data) {
-                    console.log('show_region La información obtenida es: ', data);
+                    // console.log('show_region La información obtenida es: ', data);
                     $('#region-description').html('Hoteles disponibles: ' + data);
                 })
                 .fail(function(error, error2) {
-                    $('#region-description').html('Hoteles disponibles: ');
+                    $('#region-description').html('Error al cargar hoteles disponibles, intente de nuevo');
                     console.log('show_region Errores', error, error2);
                 });
 
@@ -433,13 +431,12 @@ $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales();
             regionid = editing;
             informacion = Array();
             name = $('#region_name_e').val();
+            userid = $('#edit_regional_manager').val();
             informacion.push({ name: 'request_type', value: 'update_region' });
             informacion.push({ name: 'id', value: regionid });
-            informacion.push({
-                name: 'name',
-                value: name
-            });
-
+            informacion.push({ name: 'name', value: name });
+            informacion.push({ name: 'userid', value: userid });
+            console.log(informacion);
             $.ajax({
                     type: "POST",
                     url: "services.php",
