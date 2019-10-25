@@ -737,7 +737,7 @@ function local_hoteles_city_dashboard_print_theme_variables(){
     // _log(compact('stylesheet', 'script'));
 }
 
-function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_information, $searched = '', $prefix = 'user.'){
+function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_information = '', $searched = '', $prefix = 'user.'){
     $select_sql = array("concat({$prefix}id, '||', {$prefix}firstname, ' ', {$prefix}lastname ) as name, institution, department");
     $ajax_names = array("name", 'institution', 'department');
     $visible_names = array('Nombre', 'Unidad operativa', 'Puesto');
@@ -769,7 +769,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
     switch ($type) {
         case local_hoteles_city_dashboard_course_users_pagination:
             global $DB;
-            $courseid = $custom_information;
+            $courseid = parseint($custom_information);
             $name = $DB->get_field('course', 'fullname', array('id' => $courseid));
             if($name !== false){
                 $key_name = 'custom_completion';
