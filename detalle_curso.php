@@ -36,7 +36,8 @@ echo $OUTPUT->header();
 // foreach (local_hoteles_city_dashboard_get_courses() as $key => $course) {
 //     _print($course->fullname, local_hoteles_city_dashboard_get_course_information($course->id));
 // }
-$report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_pagination_course, $courseid);
+$report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_course_users_pagination, $courseid);
+echo local_hoteles_city_dashboard_print_theme_variables();
 ?>
 
 <!-- Datatable CSS -->
@@ -76,9 +77,9 @@ $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_cit
             'serverSide': true,
             'serverMethod': 'post',
             'ajax': {
-                'url':'ajax_file.php',
+                'url':'services.php',
                 data: {
-                    type: 'course',
+                    request_type: 'course_users_pagination',
                     courseid: <?php echo $courseid; ?>,
                 }
             },

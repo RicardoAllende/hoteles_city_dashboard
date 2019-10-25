@@ -22,13 +22,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 *dashboard.php*
-- El div para las 4 cards informativas tiene un id="cards informativas", la información de cada card es la siguiente:
-    + No. de hoteles: id="card_numero_hoteles"
-    + Cantidad de usuarios: id="card_cantidad_usarios"
-    + Aprobados: id="card_aprobados"
-    + No aprobados: id="card_no_aprobados"
+- El div (col-sm-12) para las 4 cards informativas tiene un id="cards informativas", la información de cada card es la siguiente: 
+    + No. de hoteles: id="card_numero_hoteles" (col-sm-3)
+    + Cantidad de usuarios: id="card_cantidad_usarios" (col-sm-3)
+    + Aprobados: id="card_aprobados" (col-sm-3)
+    + No aprobados: id="card_no_aprobados" (col-sm-3)
 
-- El div para que se pinten las cards con gráfica tiene un id="contenedor_graficas".
+- El div para que se pinten las cards con gráfica tiene un id="contenedor_graficas" (col-sm-12).
 
 *Otra información*
 

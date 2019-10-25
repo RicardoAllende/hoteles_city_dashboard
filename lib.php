@@ -642,7 +642,20 @@ function local_hoteles_city_dashboard_get_course_information(int $courseid, arra
     $response = new stdClass();
     $response->key = 'course' . $courseid;
     $response->id = $courseid;
-    // $response->chart = local_hoteles_city_dashboard_get_course_chart($courseid);
+    $response->groups = [
+        [
+            'chart' => 'barras_agrupadas',
+            'name'  => 'Grupo 1'
+        ],
+        [
+            'chart' => 'line',
+            'name'  => 'Segundo grupo'
+        ]
+    ];
+    $response->chart = 'bar';// local_hoteles_city_dashboard_get_course_chart($courseid);
+    $response->comparative = [
+        // ...
+    ];
     $response->title = $course->fullname;
     $response->status = 'ok';
     $fecha_inicial = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_inicial');
@@ -690,7 +703,11 @@ function local_hoteles_city_dashboard_get_tracked_activities(int $courseid){
     return local_hoteles_city_dashboard_get_activities($courseid, 'AND cm.completion > 0');
 }
 
-DEFINE('local_hoteles_city_dashboard_pagination_course', 1);
+DEFINE('local_hoteles_city_dashboard_course_users_pagination', 1);
+DEFINE('local_hoteles_city_dashboard_all_users_pagination', 2);
+DEFINE('local_hoteles_city_dashboard_suspended_users_pagination', 3);
+DEFINE('local_hoteles_city_dashboard_actived_users_pagination', 4);
+DEFINE('local_hoteles_city_dashboard_deleted_users_pagination', 5);
 DEFINE('local_hoteles_city_dashboard_theme_colors', [
     'Primary' => "#4e73df",
     'Success' => "#1cc88a",
@@ -720,8 +737,7 @@ function local_hoteles_city_dashboard_print_theme_variables(){
     // _log(compact('stylesheet', 'script'));
 }
 
-DEFINE('local_hoteles_city_dashboard_pagination_admin', 2);
-function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_information, $searched = '', $prefix = 'user.'){
+function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_information, $searched = '', $prefix = 'user.'){
     $select_sql = array("concat({$prefix}id, '||', {$prefix}firstname, ' ', {$prefix}lastname ) as name, institution, department");
     $ajax_names = array("name", 'institution', 'department');
     $visible_names = array('Nombre', 'Unidad operativa', 'Puesto');
@@ -751,14 +767,14 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
         $underscores .= "_";
     }
     switch ($type) {
-        case local_hoteles_city_dashboard_pagination_course:
+        case local_hoteles_city_dashboard_course_users_pagination:
             global $DB;
             $courseid = $custom_information;
-            $name = $DB->get_field('course', 'fullname', array('id' => $custom_information));
+            $name = $DB->get_field('course', 'fullname', array('id' => $courseid));
             if($name !== false){
                 $key_name = 'custom_completion';
                 $field = "IF( EXISTS( SELECT id FROM {course_completions} AS cc WHERE user.id = cc.userid 
-                AND cc.course = {$custom_information} AND cc.timecompleted IS NOT NULL), 'Completado', 'No completado') as {$key_name}";
+                AND cc.course = {$courseid} AND cc.timecompleted IS NOT NULL), 'Completado', 'No completado') as {$key_name}";
                 array_push($select_sql, $field);
                 array_push($ajax_names, $key_name);
                 if($key_name == $searched){
@@ -767,8 +783,8 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
                 array_push($visible_names, $name);
 
                 $key_name = 'custom_completion_date';
-                $field = "COALESCE( EXISTS( SELECT DATE(FROM_UNIXTIME(cc.timecompleted)) FROM {course_completions} AS cc WHERE user.id = cc.userid 
-                AND cc.course = {$custom_information} AND cc.timecompleted IS NOT NULL), '-') as {$key_name}";
+                $field = "COALESCE( ( SELECT DATE(FROM_UNIXTIME(cc.timecompleted)) FROM {course_completions} AS cc WHERE user.id = cc.userid 
+                AND cc.course = {$courseid} AND cc.timecompleted IS NOT NULL), '-') as {$key_name}";
                 array_push($select_sql, $field);
                 array_push($ajax_names, $key_name);
                 if($key_name == $searched){
@@ -776,7 +792,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
                 }
                 array_push($visible_names, 'Fecha de completado');
 
-                $grade_item = local_hoteles_city_dashboard_get_course_grade_item_id($custom_information);
+                $grade_item = local_hoteles_city_dashboard_get_course_grade_item_id($courseid);
 
                 if($grade_item !== false){
                     $key_name = "custom_grade";
@@ -804,44 +820,25 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
                     // grade/report/grader/index.php?id=6 // Agregar libro de calificaciones // https://durango.aprendiendo.org.mx/grade/report/user/index.php?userid=8&id=6
                     
                 }else{
-                    _log('No existe item_grade para el curso: ', $custom_information);
+                    _log('No existe item_grade para el curso: ', $courseid);
                 }
+
+                $key_name = "link_libro_calificaciones";
+                $field = "{$prefix}id as {$key_name}";
+                // $field_slim = "'suspend' as {$key_name}";
+                array_push($select_sql, $field);
+                array_push($ajax_names, $key_name);
+                // if($key_name == $searched){
+                //     array_push($slim_query, $field_slim);
+                // }
+                array_push($visible_names, 'Libro de calificaciones');
             }
-            $key_name = 'link_edit_user';
-            $field = "{$prefix}id as {$key_name}";
-            $field_slim = "'edit' as {$key_name}";
-            array_push($select_sql, $field);
-            array_push($ajax_names, $key_name);
-            // if($key_name == $searched){
-            //     array_push($slim_query, $field_slim);
-            // }
-            array_push($visible_names, 'Editar usuario');
-
-            $key_name = "link_suspend_user";
-            $field = "{$prefix}id as {$key_name}";
-            $field_slim = "'suspend' as {$key_name}";
-            array_push($select_sql, $field);
-            array_push($ajax_names, $key_name);
-            // if($key_name == $searched){
-            //     array_push($slim_query, $field_slim);
-            // }
-            array_push($visible_names, 'Suspender usuario');
-
-            $key_name = "link_libro_calificaciones";
-            $field = "{$prefix}id as {$key_name}";
-            // $field_slim = "'suspend' as {$key_name}";
-            array_push($select_sql, $field);
-            array_push($ajax_names, $key_name);
-            // if($key_name == $searched){
-            //     array_push($slim_query, $field_slim);
-            // }
-            array_push($visible_names, 'Libro de calificaciones');
 
             break;    
-        case local_hoteles_city_dashboard_pagination_admin:
+        case local_hoteles_city_dashboard_all_users_pagination:
             $key_name = 'link_edit_user';
             $field = "{$prefix}id as {$key_name}";
-            $field_slim = "'edit' as {$key_name}";
+            $field_slim = "'e' as {$key_name}";
             array_push($select_sql, $field);
             array_push($ajax_names, $key_name);
             // if($key_name == $searched){
@@ -850,8 +847,8 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
             array_push($visible_names, 'Editar usuario');
 
             $key_name = "link_suspend_user";
-            $field = "{$prefix}id as {$key_name}";
-            $field_slim = "'suspend' as {$key_name}";
+            $field = "{$prefix}id concat({$prefix}id, '||', {$prefix}suspended, ' ', {$prefix}lastname )  as {$key_name}";
+            $field_slim = "'s' as {$key_name}";
             array_push($select_sql, $field);
             array_push($ajax_names, $key_name);
             // if($key_name == $searched){
@@ -860,8 +857,23 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
             array_push($visible_names, 'Suspender usuario');
 
             break;
-        
-        default:
+        case local_hoteles_city_dashboard_suspended_users_pagination:
+            // $key_name = "link_suspend_user";
+            // $field = "{$prefix}id as {$key_name}";
+            // $field_slim = "'s' as {$key_name}";
+            // array_push($select_sql, $field);
+            // array_push($ajax_names, $key_name);
+            // array_push($visible_names, 'Activar usuario');
+        break;
+
+        case local_hoteles_city_dashboard_actived_users_pagination:
+
+        break;
+
+        case local_hoteles_city_dashboard_deleted_users_pagination:
+
+        break;
+            default:
             # code...
             break;
     }
@@ -879,7 +891,11 @@ function local_hoteles_city_dashboard_get_report_columns(int $type = 0, $custom_
         switch($an){
             case 'link_suspend_user':
                 $ajax_code .= "{data: '{$an}', render: 
-                function ( data, type, row ) { return '<a target=\"_blank\" class=\"btn btn-info\" href=\"administrar_usuarios.php?id=' + data + '\">Suspender usuario</a>'; }  }, ";
+                function ( data, type, row ) { 
+                    texto = (data == '0') ? 'Quitar suspensión' : 'Suspender';
+                    clase = (data == '0') ? 'btn Success' : 'btn Danger';
+                    if(data == '0'){}
+                    return '<a target=\"_blank\" class=\"btn btn-info\" href=\"administrar_usuarios.php?id=' + data + '\">Suspender usuario</a>'; }  }, ";
             break;
             case 'link_edit_user':
                 $ajax_code .= "{data: '{$an}', render: 
@@ -1072,11 +1088,35 @@ function local_hoteles_city_dashboard_get_custom_profile_fields(string $ids = ''
 /**
  * Regresa información para la paginación de usuarios compatible con datatables
  */
-function local_hoteles_city_dashboard_get_paginated_users(array $params){
+function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     $courseid = local_hoteles_city_dashboard_get_value_from_params($params, 'courseid');
     $courseid = intval($courseid);
     // _log($params);
-    $enrol_sql_query = " user.id IN " . local_hoteles_city_dashboard_get_enrolled_users_ids($courseid, $desde = '', $hasta = '');
+    switch($type){
+        case local_hoteles_city_dashboard_course_users_pagination:
+            $enrol_sql_query = " user.id IN " . local_hoteles_city_dashboard_get_enrolled_users_ids($courseid, $desde = '', $hasta = '');
+        break;
+
+        case local_hoteles_city_dashboard_all_users_pagination:
+            $enrol_sql_query = " user.id > 1 ";
+        break;
+
+        case local_hoteles_city_dashboard_suspended_users_pagination:
+            $enrol_sql_query = ' user.id > 1 ';
+        break;
+
+        case local_hoteles_city_dashboard_actived_users_pagination:
+            $enrol_sql_query = ' user.id > 1 ';
+        break;
+
+        case local_hoteles_city_dashboard_deleted_users_pagination:
+            $enrol_sql_query = ' user.id > 1 ';
+        break;
+
+        default:
+            $enrol_sql_query = ' user.id > 1 ';
+        break;
+    }
     if(empty($params)){
         return array();
     }
@@ -1098,7 +1138,7 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params){
     $queryParams = array();
     
     
-    $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_pagination_course, $courseid, $searched);
+    $report_info = local_hoteles_city_dashboard_get_report_columns($type, $courseid, $searched);
 
     /* Versión con consulta de solamente nombre y email */
     // if($searchValue != ''){
@@ -1109,7 +1149,6 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params){
     // }
 
     ## Fetch records
-    // $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_pagination_course, $courseid, $searched);
     $select_sql = $report_info->select_sql;
     $select_slim = $report_info->slim_query;
     $limit = " LIMIT {$row}, {$rowperpage}";
