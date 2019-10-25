@@ -30,7 +30,7 @@ $PAGE->set_title('Pruebas hoteles city');
 $PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/listado_usuarios.php');
 
 echo $OUTPUT->header();
-$report_info = local_hoteles_city_dashboard_get_report_columns(all_users_pagination);
+$report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_all_users_pagination);
 echo local_hoteles_city_dashboard_print_theme_variables();
 ?>
 

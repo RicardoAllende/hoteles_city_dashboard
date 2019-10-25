@@ -728,7 +728,7 @@ function local_hoteles_city_dashboard_print_theme_variables(){
     foreach (local_hoteles_city_dashboard_theme_colors as $name => $value) {
         if(!empty($config[$name])) $value = $config[$name];
         $script .= " {$name} = '{$value}'; ";
-        $stylesheet .= " .{$name} { background-color: {$value} !important; color: #ffffff } ";
+        $stylesheet .= " .{$name} { background-color: {$value} !important; color: #ffffff } .{$name}:hover { color: #ffffff !important; } ";
     }
     $script .= "</script>";
     $stylesheet .= "</style>";
@@ -769,7 +769,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
     switch ($type) {
         case local_hoteles_city_dashboard_course_users_pagination:
             global $DB;
-            $courseid = parseint($custom_information);
+            $courseid = intval($custom_information);
             $name = $DB->get_field('course', 'fullname', array('id' => $courseid));
             if($name !== false){
                 $key_name = 'custom_completion';
@@ -847,7 +847,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
             array_push($visible_names, 'Editar usuario');
 
             $key_name = "link_suspend_user";
-            $field = "{$prefix}id concat({$prefix}id, '||', {$prefix}suspended, ' ', {$prefix}lastname )  as {$key_name}";
+            $field = "{$prefix}id, concat({$prefix}id, '||', {$prefix}suspended)  as {$key_name}";
             $field_slim = "'s' as {$key_name}";
             array_push($select_sql, $field);
             array_push($ajax_names, $key_name);
@@ -892,10 +892,13 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
             case 'link_suspend_user':
                 $ajax_code .= "{data: '{$an}', render: 
                 function ( data, type, row ) { 
-                    texto = (data == '0') ? 'Quitar suspensión' : 'Suspender';
-                    clase = (data == '0') ? 'btn Success' : 'btn Danger';
-                    if(data == '0'){}
-                    return '<a target=\"_blank\" class=\"btn btn-info\" href=\"administrar_usuarios.php?id=' + data + '\">Suspender usuario</a>'; }  }, ";
+                    parts = data.split('||');
+                    id = parts[0];
+                    suspended = parts[1];
+                    texto = (suspended == '0') ? 'Quitar suspensión' : 'Suspender';
+                    clase = (suspended == '0') ? 'btn Success' : 'btn Danger';
+                    return '<a target=\"_blank\" class=\"' + clase + '\" href=\"administrar_usuarios.php?id=' + id + '\">' + texto + '</a>'; }  
+                }, ";
             break;
             case 'link_edit_user':
                 $ajax_code .= "{data: '{$an}', render: 
