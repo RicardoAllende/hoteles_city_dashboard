@@ -30,21 +30,23 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 - El div para que se pinten las cards con gráfica tiene un id="contenedor_graficas" (col-sm-12).
 
+*reporte_tabla*
+- El div (col-sm-12) para que imprima la gráfica tiene un id="graph_data_table".
+
+- El div (col-sm-12) para imprimir la tabla tiene un id id="table_informacion".
+
 *Otra información*
+- Clasificación de gráficas:
+    - Comparativa: bar-agrupadas, line, burbuja
+    - Individual: pie, bar
 
-Clasificación de gráficas:
-- Comparativa: bar-agrupadas, line, burbuja
-- Individual: pie, bar
-
-
-
-Tipo de gráfica (clave chart):
- - bar-agrupadas
- - horizontalBar
- - pie
- - line
- - bar
- - burbuja
+- Tipo de gráfica (clave chart):
+    - bar-agrupadas
+    - horizontalBar
+    - pie
+    - line
+    - bar
+    - burbuja
 
 
 

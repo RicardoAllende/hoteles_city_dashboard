@@ -57,13 +57,12 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
   <!-- Custom fonts for this template -->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
   <!-- Custom styles for this template -->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
-
   <!-- Custom styles for this page -->
   <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
   <?php echo local_hoteles_city_dashboard_print_theme_variables(); ?>
+
 </head>
 
 <body style="background-color: #ecedf1;">
@@ -79,7 +78,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
       </div>    
   </div>
 
-  <div class="row" style="justify-content: center;">
+  <div class="row" style="justify-content: center;" id="graph_data_table">
       <!-- Gráfica 1 -->
       <div class="col-sm-4">
               <div class="card shadow mb-4">
@@ -110,7 +109,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
   </div>
 
   <!-- Inicia data-table -->
-  <div class="row" style="justify-content: center;">
+  <div class="row" style="justify-content: center;" id="table_informacion">
     <div class="col-sm-10">      
             
             <!-- DataTales Example -->
@@ -663,22 +662,32 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
   
 
 
-  <script>
-      var ctx = document.getElementById('myAreaChart1');
-      var chart = new Chart(ctx, {
-          type: 'pie',
-      data: {
-        labels: ["Variable 1", "Variable 2", "Variable 3"],
+    <script>
+        var ctx = document.getElementById('myAreaChart1');
+        var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'bar',
+
+        // The data for our dataset
+        data: {
+        labels: ['Variable 1', 'Variable 2', 'Variable 3', 'Variable 4', 'Variable 5', 'Variable 6'],
         datasets: [{
-          label: "Population (millions)",
-          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-          data: [2478,5267,734]
+            label: 'A',
+            backgroundColor: '#1cc88a',       
+            data: [15, 40, 30, 26, 12, 34, 0],
+        },{
+            label: 'B',
+            backgroundColor: '#e74a3b',       
+            data: [5, 45, 26, 31, 41, 10, 0],
         }]
-      },
-      options: {      
-      }
-      });
-  </script>
+        },
+
+        // Configuration options go here
+        options: {
+        
+        }
+        });
+    </script> 
   
   <script>
         var muestraComparativas = false;
