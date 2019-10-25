@@ -120,7 +120,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     </div>  
 
     <!-- Inicia row para cards informativas -->
-    <div class="row">
+    <div class="row" id="cards informativas">
 
         <!-- Card Número de hoteles-->
         <div class="col-sm-3 mb-4">
@@ -129,7 +129,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                 <div class="txt_primary text-uppercase mb-1">Número de hoteles</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">40,000</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_numero_hoteles">40,000</div>
                 </div>
                 <div class="col-auto">
                 <i class="fas fa-building fa-2x text-gray-300"></i>
@@ -146,7 +146,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                 <div class="txt_warning text-uppercase mb-1">Cantidad de usuarios</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">15,000</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_cantidad_usarios">15,000</div>
                 </div>
                 <div class="col-auto">
                 <i class="fas fa-user-friends fa-2x text-gray-300"></i>
@@ -165,7 +165,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
                 <div class="txt_success text-uppercase mb-1">Aprobados</div>
                 <div class="row no-gutters align-items-center">
                     <div class="col-auto">
-                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">90%</div>
+                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800" id="card_aprobados">90%</div>
                     </div>
                     <div class="col">
                     <div class="progress progress-sm mr-2">
@@ -189,7 +189,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                 <div class="txt_danger text-uppercase mb-1">No aprobados</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_no_aprobados">18</div>
                 </div>
                 <div class="col-auto">
                 <i class="fas fa-user-times fa-2x text-gray-300"></i>
@@ -203,8 +203,8 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     
     
     
-    
-    <div id="contenedor" class="row" style="padding: 15px 25px;"></div>
+    <!-- Div para pintar las graficas en dashboard -->
+    <div id="contenedor_graficas" class="row" style="padding: 15px 25px;"></div>
     
     
      
@@ -221,143 +221,6 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     <!-- <script src="js/jquery.loadingModal.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
-    <!-- Gráfica comparativa -->
-    <!-- <script>
-    var ctx = document.getElementById('chart_comparativa_regionales');
-    var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'line',
-
-    // The data for our dataset
-    data: {
-        labels: ['Hotel1', 'Hotel2', 'Hotel3', 'Hotel4', 'Hotel5'],
-        datasets: [{
-            label: 'A',           
-            backgroundColor: 'transparent',
-            borderColor: 'rgb(255, 99, 132)',
-            data: [90, 80, 90, 92, 95],
-        },{
-            label: 'B',           
-            backgroundColor: 'transparent',
-            borderColor: 'rgb(255, 99, 132)',
-            data: [50, 10, 20, 10, 10],
-        }]
-    },
-
-    // Configuration options go here
-    options: {
-        
-    }
-    });
-    </script> -->
-
-    <!-- Gráfica 1 -->
-    <!-- <script>
-    var ctx = document.getElementById('myAreaChart1');
-    var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'bar',
-
-    // The data for our dataset
-    data: {
-    labels: ['Centro', 'Suites', 'Plus', 'Express', 'Junior', 'OC'],
-    datasets: [{
-        label: 'Aprobados',
-        backgroundColor: '#1cc88a',       
-        data: [15, 40, 30, 26, 12, 34, 0],
-    },{
-        label: 'No Aprobados',
-        backgroundColor: '#e74a3b',       
-        data: [5, 45, 26, 31, 41, 10, 0],
-    }]
-    },
-
-    // Configuration options go here
-    options: {
-    
-    }
-    });
-    </script> -->
-
-    <!-- Gráfica 2 -->
-    <!-- <script>
-    var ctx = document.getElementById('myAreaChart2');
-    var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'bar',
-
-    // The data for our dataset
-    data: {
-    labels: ['NO', 'NE', 'CO', 'Metro', 'Sur', 'SE', 'LA'],
-    datasets: [{
-        label: 'Aprobados',            
-        //borderColor: '#1cc88a',
-        data: [15, 40, 26, 31, 41, 10, 19, 0],
-    },{
-        label: 'No Aprobados',            
-        //borderColor: '#e74a3b',
-        data: [5, 45, 30, 26, 12, 34, 5, 0],
-    }]
-},
-
-// Configuration options go here
-options: {
-    
-}
-});
-    </script> -->
-
-    <!-- Gráfica 3 -->
-    <!-- <script>
-    var ctx = document.getElementById('myAreaChart3');
-    var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'bar',
-
-    // The data for our dataset
-    data: {
-    labels: ['OP', 'CH', 'BR', 'TI', 'FI', 'LE', 'AD', 'FR', 'DE'],
-    datasets: [{
-        label: 'Aprobados',            
-        //borderColor: 'yellow',
-        data: [15, 40, 26, 31, 41, 10, 19, 0],
-    },{
-        label: 'No Aprobados',            
-        //borderColor: '#e74a3b',
-        data: [5, 45, 30, 26, 12, 34, 5, 0],
-    }]
-    },
-
-// Configuration options go here
-    options: {
-        
-    }
-    });
-    </script> -->
-
-    <!-- Gráfica 4 -->
-    <!-- <script>
-    var ctx = document.getElementById('myAreaChart4');
-    var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'horizontalBar',
-
-    // The data for our dataset
-    data: {
-        labels: ['EVD', 'JVD', 'GV', 'ALL', 'CA', 'JM', 'CO', 'CXC'],
-        datasets: [{
-            label: 'A',            
-            //borderColor: 'rgb(255, 99, 132)',
-            data: [15, 40, 12, 30, 26, 50, 1, 9, 0],
-        }]
-    },
-
-    // Configuration options go here
-    options: {
-        legend: { display: false },
-    }
-    });
-    </script> -->
     
     
     <script>
@@ -403,68 +266,14 @@ options: {
             });
             //obtenerInformacion();
         }
-        // function rehacerPeticion(){
-        //     trabajoPendiente = true;
-        //     setTimeout(function() {                
-        //     }, 2000);
-        // }
-        // function reObtenerInformacion(){
-
-        // }
-        // function obtenerInformacion(indicator){
-        //     // if(isCourseLoading){
-        //     //     console.log('Cargando contenido de cursos, no debe procesar más peticiones por el momento');
-        //     //     return;
-        //     // }
-        //     // isCourseLoading = !isCourseLoading;
-        //     // console.log("Obteniendo gráficas");
-        //     informacion = $('#filter_form').serializeArray();
-        //     informacion.push({name: 'request_type', value: 'course_list'});
-        //     informacion.push({name: 'type', value: currentTab});
-        //     dateBegining = Date.now();
-        //     // $('#local_dominosdashboard_content').html('Cargando la información');
-        //     $.ajax({
-        //         type: "POST",
-        //         url: "services.php",
-        //         data: informacion,
-        //         dataType: "json"
-        //     })
-        //     .done(function(data) {
-        //         isCourseLoading = false;
-        //         console.log('Data obtenida', data);
-        //         respuesta = JSON.parse(JSON.stringify(data));
-        //         respuesta = respuesta.data;
-        //         console.log('Imprimiendo la respuesta', respuesta);
-        //         dateEnding = Date.now();
-        //         // $('#local_dominosdashboard_content').html('<pre>' + JSON.stringify(data, undefined, 2) + '</pre>');
-        //         console.log(`Tiempo de respuesta de API al obtener json para listado de cursos ${dateEnding - dateBegining} ms`);
-        //         render_div = "#ldm_tab_" + currentTab;
-        //         var cosa = generarGraficasTodosLosCursos(render_div, respuesta, tituloPestana);
-        //         setTimeout(function(){
-        //             if(cosa == true){
-        //                 showPage("ldm_tab_" + currentTab);
-        //             }
-        //         },1000)
-                
-                
-        //     })
-        //     .fail(function(error, error2) {
-        //         isCourseLoading = false;
-        //         console.log(error);
-        //         console.log(error2);
-        //     });
-        //     if(indicator !== undefined){
-        //         obtenerFiltros(indicator);
-        //     }
-        // }
-
+        
         
         
     </script>   
 
     <script src="classes.js"></script>
     <script>
-        regresaInfo(); 
+        regresaInfoByCurso(); 
     </script>
     
     

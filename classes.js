@@ -57,30 +57,10 @@ function regresaInfoByCurso(){
                     // labels_graph.push("No aprobados");
                     // arr_data.push(info_graph);
                     // arr_data.push(labels_graph);
-                    var curso = new GraphicsDashboard('contenedor',resp.title, 'bar-agrupadas',resp,5);                    
+                    var curso = new GraphicsDashboard('contenedor_graficas',resp.title, 'burbuja',resp,5);                    
                     curso.printCard();
                     curso.infoGraph();
-                }
-                
-                
-                // var hotel = new GraphicsDashboard('contenedor', resp.title,'bar', '', 5);
-                // hotel.printCard();
-                // hotel.infoGraph();
-                
-                // dateEnding = Date.now();
-                // // $('#local_dominosdashboard_content').html('<pre>' + JSON.stringify(data, undefined, 2) + '</pre>');
-                // console.log(`Tiempo de respuesta de API al obtener json para listado de cursos ${dateEnding - dateBegining} ms`);
-                // render_div = "#ldm_tab_" + currentTab;
-                // var cosa = generarGraficasTodosLosCursos(render_div, respuesta, tituloPestana);
-                // setTimeout(function(){
-                //     if(cosa == true){
-                //         showPage("ldm_tab_" + currentTab);
-                //     }
-                // },1000)
-                //var card= new PintarCard();
-                //showPage("graficas");             
-               
-                
+                }       
                 
             })
             .fail(function(error, error2) {
@@ -89,9 +69,7 @@ function regresaInfoByCurso(){
                 console.log(error);
                 console.log(error2);
             });
-            // if(indicator !== undefined){
-            //     obtenerFiltros(indicator);
-            // }
+            
 }
 
 // Modal
@@ -191,14 +169,10 @@ class GraphicsDashboard{
         switch (this.type_graph) {
             case 'bar-agrupadas':
                     var d_graph = Array();
-                    d_graph.push(this.data_graph.approved_users);
-                    console.log('Aprobados');
-                    console.log(this.data_graph.approved_users);
+                    d_graph.push(this.data_graph.approved_users);                    
                     d_graph.push(this.data_graph.not_approved_users);
                     // console.log('INFO');                    
-                    // console.log(d_graph[1]); 
-                    console.log('No Aprobados');
-                    console.log(this.data_graph.not_approved_users);
+                    // console.log(d_graph[1]);                     
                     if(this.data_graph.enrolled_users >0){
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
@@ -363,6 +337,7 @@ class GraphicsDashboard{
             case 'burbuja': 
             console.log('DIV GRAF');
             console.log(this.div_graph);
+                    if(this.data_graph.enrolled_users >0){
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                         type: 'bubble',
@@ -376,15 +351,15 @@ class GraphicsDashboard{
                             data: [{
                                 x: 212,//inscritos
                                 y: 207,//aprobados
-                                r: 5//no aprobados
+                                r: 5 //no aprobados
                             }]
                             }, {
                             label: ["Hotel 2"],
                             backgroundColor: "rgba(60,186,159,0.2)",
                             borderColor: "rgba(60,186,159,1)",
                             data: [{
-                                x: 258702,
-                                y: 7.526,
+                                x: 258,
+                                y: 726,
                                 r: 10
                             }]
                             }, {
@@ -392,8 +367,8 @@ class GraphicsDashboard{
                             backgroundColor: "rgba(0,0,0,0.2)",
                             borderColor: "#000",
                             data: [{
-                                x: 3979083,
-                                y: 6.994,
+                                x: 397,
+                                y: 994,
                                 r: 15
                             }]
                             }
@@ -418,7 +393,12 @@ class GraphicsDashboard{
                             }]
                         }
                         }
-                        });                                                  
+                        });
+                        }
+                        else{
+                            var ctx = document.getElementById(this.div_graph)
+                            ctx.innerHTML="No existen usuarios inscritos";
+                        }                                                  
                 
                 break;
                 
@@ -440,7 +420,7 @@ class GraphicsDashboard{
 
 
 
-//document.getElementById("card").innerHTML = hotel.printCard();
+
 
 
 
