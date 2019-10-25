@@ -75,12 +75,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
         case 'relate_region_institution':
             die(local_hoteles_city_dashboard_relate_region_institution($params = $_POST));
         break;
-        case 'establecer_gerente_hotel':
-            die(local_hoteles_city_dashboard_update_gerente_general($params = $_POST));
-        break;
-        case 'establecer_gerente_region':
-            die(local_hoteles_city_dashboard_update_gerente_regional($params = $_POST));
-        break;
         case 'update_region':
             die(local_hoteles_city_dashboard_update_region($params = $_POST));
         break;
