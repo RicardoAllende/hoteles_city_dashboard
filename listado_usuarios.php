@@ -26,7 +26,7 @@
 require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 $PAGE->set_context(context_system::instance());
-$PAGE->set_title('Pruebas hoteles city');
+$PAGE->set_title('Listado de usuarios');
 $PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/listado_usuarios.php');
 
 echo $OUTPUT->header();

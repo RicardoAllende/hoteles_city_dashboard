@@ -34,16 +34,17 @@ require_once($CFG->dirroot.'/user/lib.php');
 // require_once($CFG->dirroot.'/lib/formslib.php');
 
 $id     = optional_param('id', -1, PARAM_INT);    // User id; -1 if creating new user.
-$profileform_hoteles = optional_param('suspenduser', -1, PARAM_INT);
+$page_params = "id=" . $id;
+$suspenduser = optional_param('suspenduser', -1, PARAM_INT);
 $creating_user = false;
 if($id == -1){
     $creating_user = true;
 }
-$page_params = array('id' => $id);
-if($suspenduser == -1){
-    $page_params['suspenduser'] = $suspenduser;
+// $page_params = array('id' => $id);
+if($suspenduser != -1){
+    $page_params .= '&suspenduser=1';
 }
-$current_url = new moodle_url($url = $CFG->wwwroot . '/local/hoteles_city_dashboard/administrar_usuarios.php', $page_params);
+$current_url = $url = $CFG->wwwroot . '/local/hoteles_city_dashboard/administrar_usuarios.php?'. $page_params;
 $PAGE->set_url($current_url);
 
 global $DB;
@@ -53,7 +54,6 @@ $systemcontext = context_system::instance();
 $course = optional_param('course', SITEID, PARAM_INT);   // Course id (defaults to Site).
 $returnto = optional_param('returnto', null, PARAM_ALPHA);  // Code determining where to return to after save.
 
-$PAGE->set_url('/user/editadvanced.php', array('course' => $course, 'id' => $id));
 
 $course = $DB->get_record('course', array('id' => $course), '*', MUST_EXIST);
 
