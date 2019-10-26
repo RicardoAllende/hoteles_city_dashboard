@@ -836,12 +836,8 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
 
                 $key_name = "link_libro_calificaciones";
                 $field = "{$prefix}id as {$key_name}";
-                // $field_slim = "'suspend' as {$key_name}";
                 array_push($select_sql, $field);
                 array_push($ajax_names, $key_name);
-                // if($key_name == $searched){
-                //     array_push($slim_query, $field_slim);
-                // }
                 array_push($visible_names, 'Libro de calificaciones');
             }
 
@@ -852,9 +848,6 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
             $field_slim = "'e' as {$key_name}";
             array_push($select_sql, $field);
             array_push($ajax_names, $key_name);
-            // if($key_name == $searched){
-            //     array_push($slim_query, $field_slim);
-            // }
             array_push($visible_names, 'Editar usuario');
 
             $key_name = "link_suspend_user";
@@ -862,19 +855,16 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
             $field_slim = "'s' as {$key_name}";
             array_push($select_sql, $field);
             array_push($ajax_names, $key_name);
-            // if($key_name == $searched){
-            //     array_push($slim_query, $field_slim);
-            // }
             array_push($visible_names, 'Suspender usuario');
 
             break;
         case local_hoteles_city_dashboard_suspended_users_pagination:
-            // $key_name = "link_suspend_user";
-            // $field = "{$prefix}id as {$key_name}";
-            // $field_slim = "'s' as {$key_name}";
-            // array_push($select_sql, $field);
-            // array_push($ajax_names, $key_name);
-            // array_push($visible_names, 'Activar usuario');
+            $key_name = "link_suspend_user";
+            $field = "{$prefix}id, concat({$prefix}id, '||', {$prefix}suspended)  as {$key_name}";
+            $field_slim = "'s' as {$key_name}";
+            array_push($select_sql, $field);
+            array_push($ajax_names, $key_name);
+            array_push($visible_names, 'Suspender usuario');
         break;
 
         case local_hoteles_city_dashboard_actived_users_pagination:
@@ -1112,19 +1102,19 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
         break;
 
         case local_hoteles_city_dashboard_all_users_pagination:
-            $enrol_sql_query = " user.id > 1 ";
+            $enrol_sql_query = " user.id > 1 AND user.deleted = 0";
         break;
 
         case local_hoteles_city_dashboard_suspended_users_pagination:
-            $enrol_sql_query = ' user.id > 1 ';
+            $enrol_sql_query = ' user.id > 1 AND user.suspended = 1 AND user.deleted = 0';
         break;
 
         case local_hoteles_city_dashboard_actived_users_pagination:
-            $enrol_sql_query = ' user.id > 1 ';
+            $enrol_sql_query = ' user.id > 1 AND user.suspended = 0 AND user.deleted = 0';
         break;
 
         case local_hoteles_city_dashboard_deleted_users_pagination:
-            $enrol_sql_query = ' user.id > 1 ';
+            $enrol_sql_query = ' user.id > 1 AND user.deleted = 1';
         break;
 
         default:
