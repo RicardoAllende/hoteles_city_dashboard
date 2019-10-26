@@ -152,10 +152,13 @@ class profileform_hoteles extends moodleform {
             $mform->addHelpButton('suspended', 'suspended', 'auth');
         }
 
-        $mform->addElement('text', 'newpassword', get_string('newpassword'), 'size="30"');
-        // $mform->addRule('newpassword', $strrequired, 'required');
-        $mform->addHelpButton('newpassword', 'newpassword');
-        $mform->setType('newpassword', PARAM_TEXT);// core_user::get_property_type('password'));
+        if(!isset($_GET['suspenduser'])){
+            $mform->addElement('text', 'newpassword', get_string('newpassword'), 'size="30"');
+            $mform->addHelpButton('newpassword', 'newpassword');
+            $mform->setType('newpassword', PARAM_TEXT);// core_user::get_property_type('password'));
+        }else{
+            $mform->addElement('date_selector', 'suspend_date', 'Fecha de ejecución de la baja');
+        }
 
         // Next the customisable profile fields.
         custom_profile_definition($mform, $userid);

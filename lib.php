@@ -219,7 +219,7 @@ function local_hoteles_city_dashboard_get_administradores(){
 
 function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions, $user) {
     if(isset($_GET['suspenduser'])){
-        $allowed_fields = "";
+        $allowed_fields = "_";
     }else{
         $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformdefaultfields');
     }
@@ -494,7 +494,11 @@ function custom_profile_definition($mform, $userid = 0) {
     $categories = profile_get_user_fields_with_data_by_category($userid);
     $count = 0;
     // $first = true;
-    $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformcustomfields');
+    if(isset($_GET['suspenduser'])){
+        $allowed_fields = "";
+    }else{
+        $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformcustomfields');
+    }
     if(empty($allowed_fields)){
         return;
     }
@@ -529,7 +533,7 @@ function custom_profile_definition($mform, $userid = 0) {
                 }
                 if(!$any){
                     // _log($formfield);
-                    $mform->addElement('header', 'custom_fields', 'Campos de perfil del usuario');
+                    $mform->addElement('header', 'custom_fields', 'Campos de perfil personalizados');
                     $mform->setExpanded('custom_fields', true);
                     $any = true;
                 }
