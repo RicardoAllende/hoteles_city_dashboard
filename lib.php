@@ -28,6 +28,16 @@ defined('MOODLE_INTERNAL') || die();
 // Agrega enlace al Dashboard en el menú lateral de Moodle
 function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) {
     global $CFG; 
+    /*
+    Administración de usuarios (alta y baja)
+    Cambio de usuarios
+    Dashboard
+    */
+    $roles = local_hoteles_city_dashboard_get_user_roles();
+    $nested = array();
+    if(in_array(local_hoteles_city_dashboard_gerente_hotel, $roles)){
+
+    }
     if(has_capability('local/hoteles_city_dashboard:view', context_system::instance())){
         $node = $nav->add (
             get_string('pluginname', 'local_hoteles_city_dashboard'),
@@ -44,6 +54,40 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
         );
         $node->showinflatnavigation = true;
     }
+}
+
+DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios', 'Administración de usuarios de hoteles');
+DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central', 'Administración de usuarios de Oficina Central');
+DEFINE('local_hoteles_city_dashboard_cambio_usuarios', 'Cambio de usuarios');
+DEFINE('local_hoteles_city_dashboard_reportes', 'Dashboard');
+
+
+DEFINE('local_hoteles_city_dashboard_gerente_ao', 'role_1');
+DEFINE('local_hoteles_city_dashboard_coordinador_ao', 'role_2');
+DEFINE('local_hoteles_city_dashboard_director_regional', 'role_3');
+DEFINE('local_hoteles_city_dashboard_personal_elearning', 'role_4');
+DEFINE('local_hoteles_city_dashboard_gerente_hotel', 'role_5');
+DEFINE('local_hoteles_city_dashboard_administrador', 'role_6');
+
+DEFINE('local_hoteles_city_gerente_general_value', 'Gerente General');
+
+
+function local_hoteles_city_dashboard_get_section_permission(){
+    return array(
+        local_hoteles_city_dashboard_alta_baja_usuarios => array(
+            local_hoteles_city_dashboard_administrador, local_hoteles_city_dashboard_gerente_hotel, 
+        ),
+        local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central => array(
+            local_hoteles_city_dashboard_administrador, 
+            local_hoteles_city_dashboard_gerente_ao, 
+            local_hoteles_city_dashboard_coordinador_ao, 
+            local_hoteles_city_dashboard_personal_elearning)
+        ,
+        local_hoteles_city_dashboard_cambio_usuarios => array(
+            local_hoteles_city_dashboard_administrador, 
+        ),
+        local_hoteles_city_dashboard_reportes => array(local_hoteles_city_dashboard_administrador, ),
+    );
 }
 
 function local_hoteles_city_dashboard_get_dashboard_roles(){
@@ -86,15 +130,6 @@ function local_hoteles_city_dashboard_get_role_users($id){
     }
     return array();
 }
-
-DEFINE('local_hoteles_city_dashboard_gerente_ao', 'role_1');
-DEFINE('local_hoteles_city_dashboard_coordinador_ao', 'role_2');
-DEFINE('local_hoteles_city_dashboard_director_regional', 'role_3');
-DEFINE('local_hoteles_city_dashboard_personal_elearning', 'role_4');
-DEFINE('local_hoteles_city_dashboard_gerente_hotel', 'role_5');
-DEFINE('local_hoteles_city_dashboard_administrador', 'role_6');
-
-DEFINE('local_hoteles_city_gerente_general', 'Gerente General');
 
 // Directores regionales                           --pendiente--
 // Gerente de hoteles                              institution = "Gerentes Generales"
@@ -190,7 +225,7 @@ function local_hoteles_city_dashboard_get_institutions_for_profile(){
 
 function local_hoteles_city_dashboard_get_gerentes_generales(){
     global $DB;
-    $gerente_general = local_hoteles_city_gerente_general;
+    $gerente_general = local_hoteles_city_gerente_general_value;
     $query = "SELECT id, concat(firstname, ' ', lastname) as name
     FROM {user} AS u WHERE u.deleted = '0'AND u.department = ?";
     $query_params = array($gerente_general);
@@ -435,9 +470,15 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     }
 
     // if(in_array('institution', $allowed_fields)){
-        $mform->addElement('select', 'institution', get_string('institution'), local_hoteles_city_dashboard_get_all_institutions() );
+        $institutions = local_hoteles_city_dashboard_get_institutions_for_dashboard_user();
+        $institutions = array();
+        $required = $strrequired;
+        if(empty($institutions)){
+            $required = "Contacte al administrador para que le asigne unidades operativas";
+        }
+        $mform->addElement('select', 'institution', get_string('institution'), $institutions);
         // $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
-        $mform->addRule('institution', $strrequired, 'required');
+        $mform->addRule('institution', $required, 'required');
         $mform->setType('institution', core_user::get_property_type('institution'));
     // }
 
@@ -1702,7 +1743,62 @@ function local_hoteles_city_dashboard_get_user_roles(){
     return $roles;
 }
 
+function local_hoteles_city_dashboard_user_has_role($key){
+    global $USER;
+    $email = $USER->email;
+    $config_name = $key;
+    $config = get_config('local_hoteles_city_dashboard', $config_name);
+    if(!empty($config)){
+        $config = explode(' ', $config);
+        return in_array($email, $config);
+    }
+    return false;
+}
+
+/**
+ * Devuelve un listado de hoteles (institutions) del gerente general de la región
+ * @return array Listado de instituciones
+ */
+function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
+    global $DB, $USER;
+    $userid = $USER->id;
+    $email = $USER->email;
+    $queryAllInstitutions = "SELECT DISTINCT institution FROM {user} WHERE deleted = 0 AND id > 1 AND institution != ''";
+    if(local_hoteles_city_dashboard_is_gerente_ao()){
+        return $DB->get_fieldset_sql($queryAllInstitutions);
+    }
+    if(local_hoteles_city_dashboard_is_coordinador_ao()){
+        return $DB->get_fieldset_sql($queryAllInstitutions);
+    }
+    if(local_hoteles_city_dashboard_is_personal_elearning()){
+        return $DB->get_fieldset_sql($queryAllInstitutions);
+    }
+    if(local_hoteles_city_dashboard_is_gerente_general()){
+        return $DB->get_fieldset_sql("SELECT institution FROM {dashboard_region_ins} WHERE userid = {$userid}");
+    }
+    if(is_siteadmin()){
+        return $DB->get_fieldset_sql($queryAllInstitutions);
+    }
+    return array();
+}
+
+function local_hoteles_city_dashboard_is_gerente_ao(){
+    return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_gerente_ao);
+}
+
+function local_hoteles_city_dashboard_is_coordinador_ao(){
+    return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_coordinador_ao);
+}
+
+function local_hoteles_city_dashboard_is_director_regional(){
+    return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_director_regional);
+}
+
+function local_hoteles_city_dashboard_is_personal_elearning(){
+    return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_personal_elearning);
+}
+
 function local_hoteles_city_dashboard_is_gerente_general(){
     global $USER;
-    return $USER->institution == local_hoteles_city_gerente_general;
+    return $USER->institution == local_hoteles_city_gerente_general_value;
 }
