@@ -218,7 +218,11 @@ function local_hoteles_city_dashboard_get_administradores(){
 }
 
 function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions, $user) {
-    $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformdefaultfields');
+    if(isset($_GET['suspenduser'])){
+        $allowed_fields = "";
+    }else{
+        $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformdefaultfields');
+    }
     if(empty($allowed_fields)){
         return;
     }
@@ -898,9 +902,9 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
                     parts = data.split('||');
                     id = parts[0];
                     suspended = parts[1];
-                    texto = (suspended == '0') ? 'Quitar suspensión' : 'Suspender';
-                    clase = (suspended == '0') ? 'btn Success' : 'btn Danger';
-                    return '<a target=\"_blank\" class=\"' + clase + '\" href=\"administrar_usuarios.php?id=' + id + '\">' + texto + '</a>'; }  
+                    texto = (suspended == '1') ? 'Quitar suspensión' : 'Suspender';
+                    clase = (suspended == '1') ? 'btn Success' : 'btn Danger';
+                    return '<a target=\"_blank\" class=\"' + clase + '\" href=\"administrar_usuarios.php?suspenduser=1&id=' + id + '\">' + texto + '</a>'; }  
                 }, ";
             break;
             case 'link_edit_user':
