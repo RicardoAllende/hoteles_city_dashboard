@@ -25,36 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// Agrega enlace al Dashboard en el menú lateral de Moodle
-function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) {
-    global $CFG; 
-    /*
-    Administración de usuarios (alta y baja)
-    Cambio de usuarios
-    Dashboard
-    */
-    $roles = local_hoteles_city_dashboard_get_user_roles();
-    $nested = array();
-    if(in_array(local_hoteles_city_dashboard_gerente_hotel, $roles)){
+$roles = null;
+$permissions = null;
 
-    }
-    if(has_capability('local/hoteles_city_dashboard:view', context_system::instance())){
-        $node = $nav->add (
-            get_string('pluginname', 'local_hoteles_city_dashboard'),
-            new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/dashboard.php' ),
-            navigation_node::TYPE_CUSTOM,
-            'Dashboard',
-            'local_hoteles_city_dashboard',
-            new pix_icon("b/report", 'moodle')
-        );
-        $node->showinflatnavigation = true;
-        $node = $nav->add (
-            'Configuraciones ' . get_string('pluginname', 'local_hoteles_city_dashboard'),
-            new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/ajustes.php' )
-        );
-        $node->showinflatnavigation = true;
-    }
-}
 
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios', 'Administración de usuarios de hoteles');
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central', 'Administración de usuarios de Oficina Central');
@@ -72,7 +45,69 @@ DEFINE('local_hoteles_city_dashboard_administrador', 'role_6');
 DEFINE('local_hoteles_city_gerente_general_value', 'Gerente General');
 
 
-function local_hoteles_city_dashboard_get_section_permission(){
+DEFINE('local_hoteles_city_dashboard_course_users_pagination', 1);
+DEFINE('local_hoteles_city_dashboard_all_users_pagination', 2);
+DEFINE('local_hoteles_city_dashboard_suspended_users_pagination', 3);
+DEFINE('local_hoteles_city_dashboard_actived_users_pagination', 4);
+DEFINE('local_hoteles_city_dashboard_oficina_central_pagination', 5);
+
+
+DEFINE('local_hoteles_city_dashboard_theme_colors', [
+    'Primary' => "#4e73df",
+    'Success' => "#1cc88a",
+    'Info' => "#36b9cc",
+    'Warning' => "#f6c23e",
+    'Danger' => "#e74a3b",
+    'Secondary' => "#858796",
+    'color_aprobados' => "#1cc88a",
+    'color_no_aprobado' => "#e74a3b",
+    'color_variable_extra' => "#36b9cc",
+]);
+
+// Agrega enlace al Dashboard en el menú lateral de Moodle
+function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) {
+    global $CFG; 
+    $permissions = local_hoteles_city_dashboard_get_user_permissions();
+    foreach ($permissions as $key) {
+        switch ($key) {
+            case local_hoteles_city_dashboard_alta_baja_usuarios:
+                $node = $nav->add (
+                    $key,
+                    new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php?type=' 
+                    . local_hoteles_city_dashboard_actived_users_pagination )
+                );
+                $node->showinflatnavigation = true;
+                break;
+            
+            case local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central:
+                $node = $nav->add (
+                    $key,
+                    new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php?type=' 
+                    . local_hoteles_city_dashboard_oficina_central_pagination )
+                );
+                $node->showinflatnavigation = true;
+                break;
+            case local_hoteles_city_dashboard_cambio_usuarios:
+                $node = $nav->add (
+                    local_hoteles_city_dashboard_cambio_usuarios,
+                    new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php?type='
+                    . local_hoteles_city_dashboard_suspended_users_pagination )
+                );
+                $node->showinflatnavigation = true;
+                break;
+            
+            case local_hoteles_city_dashboard_reportes:
+                $node = $nav->add (
+                    local_hoteles_city_dashboard_reportes,
+                    new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/dashboard.php' )
+                );
+                $node->showinflatnavigation = true;
+                break;
+        }
+    }
+}
+
+function local_hoteles_city_dashboard_get_role_permissions(){
     return array(
         local_hoteles_city_dashboard_director_regional => [
             local_hoteles_city_dashboard_reportes,
@@ -145,6 +180,10 @@ function local_hoteles_city_dashboard_get_dashboard_roles(){
     );
 }
 
+/**
+ * Devuelve un listado de los roles disponibles junto con sus usuarios que tienen los diferentes roles
+ * @return array 
+ */
 function local_hoteles_city_dashboard_get_all_roles_with_users(){
     $roles = local_hoteles_city_dashboard_get_dashboard_roles();
     // $role_ids = array_keys($roles); // Todos los roles
@@ -799,22 +838,33 @@ function local_hoteles_city_dashboard_get_tracked_activities(int $courseid){
     return local_hoteles_city_dashboard_get_activities($courseid, 'AND cm.completion > 0');
 }
 
-DEFINE('local_hoteles_city_dashboard_course_users_pagination', 1);
-DEFINE('local_hoteles_city_dashboard_all_users_pagination', 2);
-DEFINE('local_hoteles_city_dashboard_suspended_users_pagination', 3);
-DEFINE('local_hoteles_city_dashboard_actived_users_pagination', 4);
-DEFINE('local_hoteles_city_dashboard_deleted_users_pagination', 5);
-DEFINE('local_hoteles_city_dashboard_theme_colors', [
-    'Primary' => "#4e73df",
-    'Success' => "#1cc88a",
-    'Info' => "#36b9cc",
-    'Warning' => "#f6c23e",
-    'Danger' => "#e74a3b",
-    'Secondary' => "#858796",
-    'color_aprobados' => "#1cc88a",
-    'color_no_aprobado' => "#e74a3b",
-    'color_variable_extra' => "#36b9cc",
-]);
+function local_hoteles_city_dashboard_get_pagination_name(int $type, string $additional = ''){
+    switch ($type) {
+        case local_hoteles_city_dashboard_course_users_pagination:
+            return "Usuarios del curso " . $additional;
+            break;
+        
+        case local_hoteles_city_dashboard_all_users_pagination:
+            return "Usuarios" . $additional;
+            break;
+        
+        case local_hoteles_city_dashboard_suspended_users_pagination:
+            return "Usuarios suspendidos " . $additional;
+            break;
+        
+        case local_hoteles_city_dashboard_actived_users_pagination:
+            return "Usuarios activos " . $additional;
+            break;
+        
+        case local_hoteles_city_dashboard_oficina_central_pagination:
+            return "Usuarios eliminados " . $additional;
+            break;
+        
+        default:
+            return false;
+            break;
+    }
+}
 
 function local_hoteles_city_dashboard_print_theme_variables(){
     $config = get_config('local_hoteles_city_dashboard');
@@ -956,7 +1006,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
 
         break;
 
-        case local_hoteles_city_dashboard_deleted_users_pagination:
+        case local_hoteles_city_dashboard_oficina_central_pagination:
 
         break;
             default:
@@ -1198,7 +1248,7 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
             $enrol_sql_query = ' user.id > 1 AND user.suspended = 0 AND user.deleted = 0';
         break;
 
-        case local_hoteles_city_dashboard_deleted_users_pagination:
+        case local_hoteles_city_dashboard_oficina_central_pagination:
             $enrol_sql_query = ' user.id > 1 AND user.deleted = 1';
         break;
 
@@ -1767,22 +1817,70 @@ function local_hoteles_city_dashboard_slug(string $text){
     return $text;
 }
 
-function local_hoteles_city_dashboard_get_user_roles(){
+/**
+ * Devuelve arreglo de permisos [permiso1, permiso2] a las que el usuario tiene acceso
+ * @return array [permiso1, permiso2]
+ */
+function local_hoteles_city_dashboard_get_user_permissions(){
+    // $roles = local_hoteles_city_dashboard_get_user_roles();
     global $USER;
+    if(empty($USER->email)){
+        return array();
+    }
     $email = $USER->email;
     $roles = array();
-    foreach (local_hoteles_city_dashboard_get_dashboard_roles() as $key => $value) {
+    $all_permissions = local_hoteles_city_dashboard_get_role_permissions();
+    $count_all_permissions = count($all_permissions);
+    $user_permissions = array();
+    if(is_siteadmin()){
+        // $roles[local_hoteles_city_dashboard_administrador] = $permissions[local_hoteles_city_dashboard_administrador];
+        $user_permissions = array_merge($user_permissions, $all_permissions[local_hoteles_city_dashboard_administrador]);
+        $user_permissions = array_unique($user_permissions);
+        if(count($user_permissions) == $count_all_permissions) return $user_permissions;
+    }
+    foreach (local_hoteles_city_dashboard_get_dashboard_roles() as $key => $name) {
         $config_name = $key;
         $config = get_config('local_hoteles_city_dashboard', $config_name);
         if(!empty($config)){
             $config = explode(' ', $config);
             if(in_array($email, $config)){
-                $roles[$key] = $value;
+                $user_permissions = array_merge($user_permissions, $all_permissions[local_hoteles_city_dashboard_administrador]);
+                $user_permissions = array_unique($user_permissions);
+                if(count($user_permissions) == $count_all_permissions) return $user_permissions;
+                // $roles[$key] = $all_permissions[$key];
             }
         }
     }
     if(local_hoteles_city_dashboard_is_gerente_general()){
-        $roles[local_hoteles_city_dashboard_gerente_hotel] = 'Gerente de hotel';
+        $user_permissions = array_merge($user_permissions, $all_permissions[local_hoteles_city_dashboard_gerente_hotel]);
+        $user_permissions = array_unique($user_permissions);
+        if(count($user_permissions) == $count_all_permissions) return $user_permissions;
+        // $roles[local_hoteles_city_dashboard_gerente_hotel] = $all_permissions[local_hoteles_city_dashboard_gerente_hotel];
+    }
+    return $user_permissions;
+}
+
+function local_hoteles_city_dashboard_get_user_roles(){
+    global $USER;
+    $email = $USER->email;
+    $roles = array();
+    $permissions = local_hoteles_city_dashboard_get_role_permissions();
+    if(is_siteadmin()){
+        $roles[local_hoteles_city_dashboard_administrador] = $permissions[local_hoteles_city_dashboard_administrador];
+    }
+    foreach (local_hoteles_city_dashboard_get_dashboard_roles() as $key => $name) {
+        $config_name = $key;
+        $config = get_config('local_hoteles_city_dashboard', $config_name);
+        if(!empty($config)){
+            $config = explode(' ', $config);
+            if(in_array($email, $config)){
+                $roles[$key] = $permissions[$key];
+            }
+        }
+    }
+    $roles = local_hoteles_city_dashboard_get_role_permissions();
+    if(local_hoteles_city_dashboard_is_gerente_general()){
+        $roles[local_hoteles_city_dashboard_gerente_hotel] = $permissions[local_hoteles_city_dashboard_gerente_hotel];
     }
     return $roles;
 }
@@ -1803,11 +1901,14 @@ function local_hoteles_city_dashboard_user_has_role($key){
  * Devuelve un listado de hoteles (institutions) del gerente general de la región
  * @return array Listado de instituciones
  */
-function local_hoteles_city_dashboard_get_institutions_for_dashboard_user($grants = null){
+function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
     global $DB, $USER;
     $userid = $USER->id;
     $email = $USER->email;
     $queryAllInstitutions = "SELECT DISTINCT institution FROM {user} WHERE deleted = 0 AND id > 1 AND institution != ''";
+    if(is_siteadmin()){        
+        return $DB->get_fieldset_sql($queryAllInstitutions);
+    }
     if(local_hoteles_city_dashboard_is_gerente_ao()){
         return $DB->get_fieldset_sql($queryAllInstitutions);
     }

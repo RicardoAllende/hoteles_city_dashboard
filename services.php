@@ -101,8 +101,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
         case 'actived_users_pagination':
             die(local_hoteles_city_dashboard_get_paginated_users($_POST, local_hoteles_city_dashboard_actived_users_pagination));
         break;
-        case 'deleted_users_pagination':
-            die(local_hoteles_city_dashboard_get_paginated_users($_POST, local_hoteles_city_dashboard_deleted_users_pagination));
+        case 'oficina_central_pagination':
+            die(local_hoteles_city_dashboard_get_paginated_users($_POST, local_hoteles_city_dashboard_oficina_central_pagination));
         break;
         default:
             die(local_hoteles_city_dashboard_error_response("request_type not allowed"));

@@ -27,7 +27,7 @@ require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title('Listado de usuarios');
-$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/listado_usuarios.php');
+$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php');
 
 echo $OUTPUT->header();
 $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_all_users_pagination);
