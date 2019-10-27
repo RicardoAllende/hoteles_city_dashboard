@@ -31,8 +31,9 @@ $permissions = null;
 
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios', 'Administración de usuarios de hoteles');
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central', 'Administración de usuarios de Oficina Central');
+DEFINE('local_hoteles_city_dashboard_listado_todos_los_usuarios', 'Administración de todos los usuarios');
 DEFINE('local_hoteles_city_dashboard_cambio_usuarios', 'Cambio de usuarios');
-DEFINE('local_hoteles_city_dashboard_reportes', 'Dashboard');
+DEFINE('local_hoteles_city_dashboard_reportes', 'Reporte de cursos');
 
 
 DEFINE('local_hoteles_city_dashboard_gerente_ao', 'role_1');
@@ -96,6 +97,15 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
                 $node->showinflatnavigation = true;
                 break;
             
+            case local_hoteles_city_dashboard_listado_todos_los_usuarios:
+                $node = $nav->add (
+                    local_hoteles_city_dashboard_listado_todos_los_usuarios,
+                    new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php?type='
+                    . local_hoteles_city_dashboard_all_users_pagination )
+                );
+                $node->showinflatnavigation = true;
+                break;
+
             case local_hoteles_city_dashboard_reportes:
                 $node = $nav->add (
                     local_hoteles_city_dashboard_reportes,
@@ -121,24 +131,28 @@ function local_hoteles_city_dashboard_get_role_permissions(){
             local_hoteles_city_dashboard_alta_baja_usuarios,
             local_hoteles_city_dashboard_cambio_usuarios,
             local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
+            local_hoteles_city_dashboard_listado_todos_los_usuarios,
         ],
         local_hoteles_city_dashboard_coordinador_ao => [
             local_hoteles_city_dashboard_reportes,
             local_hoteles_city_dashboard_alta_baja_usuarios,
             local_hoteles_city_dashboard_cambio_usuarios,
             local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
+            local_hoteles_city_dashboard_listado_todos_los_usuarios,
         ],
         local_hoteles_city_dashboard_personal_elearning => [
             local_hoteles_city_dashboard_reportes,
             local_hoteles_city_dashboard_alta_baja_usuarios,
             local_hoteles_city_dashboard_cambio_usuarios,
             local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
+            local_hoteles_city_dashboard_listado_todos_los_usuarios,
         ],
         local_hoteles_city_dashboard_administrador => [
             local_hoteles_city_dashboard_reportes,
             local_hoteles_city_dashboard_alta_baja_usuarios,
             local_hoteles_city_dashboard_cambio_usuarios,
             local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
+            local_hoteles_city_dashboard_listado_todos_los_usuarios,
         ], 
     );
     // return array(
