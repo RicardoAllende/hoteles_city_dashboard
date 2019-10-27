@@ -32,7 +32,7 @@ $type = optional_param('type', local_hoteles_city_dashboard_all_users_pagination
 $title = local_hoteles_city_dashboard_get_pagination_name($type);
 
 $PAGE->set_title($title);
-
+$PAGE->set_pagelayout('admin');
 echo $OUTPUT->header();
 $report_info = local_hoteles_city_dashboard_get_report_columns($type);
 echo local_hoteles_city_dashboard_print_theme_variables();
