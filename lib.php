@@ -255,8 +255,8 @@ function local_hoteles_city_dashboard_get_courses_overview(array $params = array
         }
         array_push($courses_in_order, $course_information);
     }
-    usort($courses_in_order, function ($a, $b) {return $a->percentage < $b->percentage;});
-    return ['type' => 'course_list', 'result' => $courses_in_order];
+    usort($courses_in_order, function ($a, $b) {return $a->title > $b->title;});
+    return $courses_in_order;
 }
 
 function local_hoteles_city_dashboard_user_has_access(){
