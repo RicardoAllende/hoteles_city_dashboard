@@ -44,7 +44,7 @@ DEFINE('local_hoteles_city_dashboard_gerente_hotel', 'role_5');
 DEFINE('local_hoteles_city_dashboard_administrador', 'role_6');
 
 DEFINE('local_hoteles_city_gerente_general_value', 'Gerente General');
-
+DEFINE('local_hoteles_city_dashboard_oficina_central_value', 'Oficina Central');
 
 DEFINE('local_hoteles_city_dashboard_course_users_pagination', 1);
 DEFINE('local_hoteles_city_dashboard_all_users_pagination', 2);
@@ -155,32 +155,6 @@ function local_hoteles_city_dashboard_get_role_permissions(){
             local_hoteles_city_dashboard_listado_todos_los_usuarios,
         ], 
     );
-    // return array(
-    //     local_hoteles_city_dashboard_alta_baja_usuarios => array(
-    //         local_hoteles_city_dashboard_administrador, 
-    //         local_hoteles_city_dashboard_gerente_hotel, 
-    //     ),
-    //     local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central => array(
-    //         local_hoteles_city_dashboard_administrador, 
-    //         local_hoteles_city_dashboard_gerente_ao, 
-    //         local_hoteles_city_dashboard_coordinador_ao, 
-    //         local_hoteles_city_dashboard_personal_elearning,
-    //     ),
-    //     local_hoteles_city_dashboard_cambio_usuarios => array(
-    //         local_hoteles_city_dashboard_administrador, 
-    //         local_hoteles_city_dashboard_gerente_ao, 
-    //         local_hoteles_city_dashboard_coordinador_ao, 
-    //         local_hoteles_city_dashboard_personal_elearning,
-    //     ),
-    //     local_hoteles_city_dashboard_reportes => array(
-    //         local_hoteles_city_dashboard_gerente_ao,
-    //         local_hoteles_city_dashboard_coordinador_ao,
-    //         local_hoteles_city_dashboard_director_regional,
-    //         local_hoteles_city_dashboard_personal_elearning,
-    //         local_hoteles_city_dashboard_gerente_hotel,
-    //         local_hoteles_city_dashboard_administrador, 
-    //     ),
-    // );
 }
 
 function local_hoteles_city_dashboard_get_dashboard_roles(){
@@ -1259,11 +1233,22 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
         break;
 
         case local_hoteles_city_dashboard_actived_users_pagination:
-            $enrol_sql_query = ' user.id > 1 AND user.suspended = 0 AND user.deleted = 0';
+            $marcafield = get_config('local_hoteles_city_dashboard', 'marcafield');
+            $marcaValue = local_hoteles_city_dashboard_oficina_central_value;
+            if(empty($marcafield)){
+                $marcafield = -1;
+            }
+            $enrol_sql_query = " user.id > 1 AND user.suspended = 0 AND user.deleted = 0
+            userid.id NOT IN (SELECT distinct userid FROM {user_info_data} WHERE fieldid = {$marcafield} AND data = '{$marcaValue}')";
         break;
 
         case local_hoteles_city_dashboard_oficina_central_pagination:
-            $enrol_sql_query = ' user.id > 1 AND user.deleted = 1';
+            $marcafield = get_config('local_hoteles_city_dashboard', 'marcafield');
+            $marcaValue = local_hoteles_city_dashboard_oficina_central_value;
+            if(empty($marcafield)){
+                $marcafield = -1;
+            }
+            $enrol_sql_query = " user.id > 1 AND user.deleted = 1 IN (SELECT distinct userid FROM {user_info_data} WHERE fieldid = {$marcafield} AND data = '{$marcaValue}')";
         break;
 
         default:
