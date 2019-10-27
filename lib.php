@@ -74,20 +74,64 @@ DEFINE('local_hoteles_city_gerente_general_value', 'Gerente General');
 
 function local_hoteles_city_dashboard_get_section_permission(){
     return array(
-        local_hoteles_city_dashboard_alta_baja_usuarios => array(
-            local_hoteles_city_dashboard_administrador, local_hoteles_city_dashboard_gerente_hotel, 
-        ),
-        local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central => array(
-            local_hoteles_city_dashboard_administrador, 
-            local_hoteles_city_dashboard_gerente_ao, 
-            local_hoteles_city_dashboard_coordinador_ao, 
-            local_hoteles_city_dashboard_personal_elearning)
-        ,
-        local_hoteles_city_dashboard_cambio_usuarios => array(
-            local_hoteles_city_dashboard_administrador, 
-        ),
-        local_hoteles_city_dashboard_reportes => array(local_hoteles_city_dashboard_administrador, ),
+        local_hoteles_city_dashboard_director_regional => [
+            local_hoteles_city_dashboard_reportes,
+        ],
+        local_hoteles_city_dashboard_gerente_hotel => [
+            local_hoteles_city_dashboard_reportes,
+            local_hoteles_city_dashboard_alta_baja_usuarios,
+        ],
+        local_hoteles_city_dashboard_gerente_ao => [
+            local_hoteles_city_dashboard_reportes,
+            local_hoteles_city_dashboard_alta_baja_usuarios,
+            local_hoteles_city_dashboard_cambio_usuarios,
+            local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
+        ],
+        local_hoteles_city_dashboard_coordinador_ao => [
+            local_hoteles_city_dashboard_reportes,
+            local_hoteles_city_dashboard_alta_baja_usuarios,
+            local_hoteles_city_dashboard_cambio_usuarios,
+            local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
+        ],
+        local_hoteles_city_dashboard_personal_elearning => [
+            local_hoteles_city_dashboard_reportes,
+            local_hoteles_city_dashboard_alta_baja_usuarios,
+            local_hoteles_city_dashboard_cambio_usuarios,
+            local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
+        ],
+        local_hoteles_city_dashboard_administrador => [
+            local_hoteles_city_dashboard_reportes,
+            local_hoteles_city_dashboard_alta_baja_usuarios,
+            local_hoteles_city_dashboard_cambio_usuarios,
+            local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
+        ], 
     );
+    // return array(
+    //     local_hoteles_city_dashboard_alta_baja_usuarios => array(
+    //         local_hoteles_city_dashboard_administrador, 
+    //         local_hoteles_city_dashboard_gerente_hotel, 
+    //     ),
+    //     local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central => array(
+    //         local_hoteles_city_dashboard_administrador, 
+    //         local_hoteles_city_dashboard_gerente_ao, 
+    //         local_hoteles_city_dashboard_coordinador_ao, 
+    //         local_hoteles_city_dashboard_personal_elearning,
+    //     ),
+    //     local_hoteles_city_dashboard_cambio_usuarios => array(
+    //         local_hoteles_city_dashboard_administrador, 
+    //         local_hoteles_city_dashboard_gerente_ao, 
+    //         local_hoteles_city_dashboard_coordinador_ao, 
+    //         local_hoteles_city_dashboard_personal_elearning,
+    //     ),
+    //     local_hoteles_city_dashboard_reportes => array(
+    //         local_hoteles_city_dashboard_gerente_ao,
+    //         local_hoteles_city_dashboard_coordinador_ao,
+    //         local_hoteles_city_dashboard_director_regional,
+    //         local_hoteles_city_dashboard_personal_elearning,
+    //         local_hoteles_city_dashboard_gerente_hotel,
+    //         local_hoteles_city_dashboard_administrador, 
+    //     ),
+    // );
 }
 
 function local_hoteles_city_dashboard_get_dashboard_roles(){
@@ -1759,7 +1803,7 @@ function local_hoteles_city_dashboard_user_has_role($key){
  * Devuelve un listado de hoteles (institutions) del gerente general de la región
  * @return array Listado de instituciones
  */
-function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
+function local_hoteles_city_dashboard_get_institutions_for_dashboard_user($grants = null){
     global $DB, $USER;
     $userid = $USER->id;
     $email = $USER->email;
