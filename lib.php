@@ -373,6 +373,25 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
         $mform->setType($addname, PARAM_NOTAGS);
     }
 
+    // if(in_array('institution', $allowed_fields)){
+        $institutions = local_hoteles_city_dashboard_get_institutions_for_dashboard_user();
+        _log($institutions);
+        $required = $strrequired;
+        if(empty($institutions)){
+            $required = "Contacte al administrador para que le asigne unidades operativas";
+        }
+        $mform->addElement('select', 'institution', 'Unidad operativa', $institutions);
+        // $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
+        $mform->addRule('institution', $required, 'required');
+        $mform->setType('institution', core_user::get_property_type('institution'));
+    // }
+
+    // if(in_array('department', $allowed_fields)){
+        $mform->addElement('select', 'department', 'Puesto', local_hoteles_city_dashboard_get_departments());
+        $mform->addRule('department', $strrequired, 'required');
+        $mform->setType('department', core_user::get_property_type('department'));
+    // }
+
     // Do not show email field if change confirmation is pending.
     // if ($user->id > 0 and !empty($CFG->emailchangeconfirmation) and !empty($user->preference_newemail)) {
     //     $notice = get_string('emailchangepending', 'auth', $user);
@@ -402,7 +421,7 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
 
     if(in_array('city', $allowed_fields)){
         $mform->addElement('text', 'city', get_string('city'), 'maxlength="120" size="21"');
-        $mform->addRule('', $strrequired, 'required');
+        $mform->addRule('city', $strrequired, 'required');
         $mform->setType('city', PARAM_TEXT);
         if (!empty($CFG->defaultcity)) {
             $mform->setDefault('city', $CFG->defaultcity);
@@ -528,7 +547,7 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     if(in_array('yahoo', $allowed_fields)){
         $mform->addElement('text', 'yahoo', get_string('yahooid'), 'maxlength="50" size="25"');
         $mform->setType('yahoo', core_user::get_property_type('yahoo'));
-        $mform->addRule('text', $strrequired, 'required');
+        $mform->addRule('yahoo', $strrequired, 'required');
         $mform->setForceLtr('yahoo');
     }
 
@@ -544,25 +563,6 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
         $mform->addRule('idnumber', $strrequired, 'required');
         $mform->setType('idnumber', core_user::get_property_type('idnumber'));
     }
-
-    // if(in_array('institution', $allowed_fields)){
-        $institutions = local_hoteles_city_dashboard_get_institutions_for_dashboard_user();
-        $institutions = array();
-        $required = $strrequired;
-        if(empty($institutions)){
-            $required = "Contacte al administrador para que le asigne unidades operativas";
-        }
-        $mform->addElement('select', 'institution', get_string('institution'), $institutions);
-        // $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
-        $mform->addRule('institution', $required, 'required');
-        $mform->setType('institution', core_user::get_property_type('institution'));
-    // }
-
-    // if(in_array('department', $allowed_fields)){
-        $mform->addElement('select', 'department', get_string('department'), local_hoteles_city_dashboard_get_departments());
-        $mform->addRule('department', $strrequired, 'required');
-        $mform->setType('department', core_user::get_property_type('department'));
-    // }
 
     // if(in_array('country', $allowed_fields)){
     //     $choices = get_string_manager()->get_list_of_countries();
@@ -1638,9 +1638,9 @@ function local_hoteles_city_dashboard_create_region(array $params){
 function local_hoteles_city_dashboard_relate_region_institution(array $params){
     try{
         global $DB;
-        $regionid = local_hoteles_city_dashboard_get_value_from_params($params, 'id', false);
-        $institution = local_hoteles_city_dashboard_get_value_from_params($params, 'institution', false);
-        if(local_hoteles_city_dashboard_has_empty($regionid, $institution)){
+        $regionid = local_hoteles_city_dashboard_get_value_from_params($params, 'id', '');
+        $institution = local_hoteles_city_dashboard_get_value_from_params($params, 'institution', '');
+        if(local_hoteles_city_dashboard_has_empty($regionid)){
             _log('Datos vacíos en creación de kpi', $params);
             return 'Por favor llene todos los campos';
         }
@@ -1908,9 +1908,20 @@ function local_hoteles_city_dashboard_user_has_role($key){
  * @return array Listado de instituciones
  */
 function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
+    $default = array();
+    if(!isloggedin()){
+        return $default;
+    }
     global $DB, $USER;
     $userid = $USER->id;
     $email = $USER->email;
+    // $institution = $USER->institution;
+    // if(empty($institution)){
+    //     return array();
+    // }
+    // $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE dri.regionid = (SELECT regionid 
+    // FROM {dashboard_region_ins} WHERE institution = '{$institution}' LIMIT 1)";
+    // return $DB->get_fieldset_sql($query);
     $queryAllInstitutions = "SELECT DISTINCT institution FROM {user} WHERE deleted = 0 AND id > 1 AND institution != ''";
     if(is_siteadmin()){        
         return $DB->get_fieldset_sql($queryAllInstitutions);
@@ -1922,12 +1933,23 @@ function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
         return $DB->get_fieldset_sql($queryAllInstitutions);
     }
     if(local_hoteles_city_dashboard_is_gerente_general()){
-        return $DB->get_fieldset_sql("SELECT institution FROM {dashboard_region_ins} WHERE userid = {$userid}");
+        $institution = $USER->institution;
+        if(empty($institution)){
+            return array();
+        }
+        $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE dri.regionid = (SELECT regionid 
+        FROM {dashboard_region_ins} WHERE institution = '{$institution}' LIMIT 1)";
+        return $DB->get_fieldset_sql($query);
+    }
+    if(local_hoteles_city_dashboard_is_director_regional()){
+        $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE 
+        regionid IN (SELECT id FROM {dashboard_region} WHERE userid = {$userid})";
+        return $DB->get_fieldset_sql($query);
     }
     if(is_siteadmin()){
         return $DB->get_fieldset_sql($queryAllInstitutions);
     }
-    return array();
+    return $default;
 }
 
 function local_hoteles_city_dashboard_is_gerente_ao(){
