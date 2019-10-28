@@ -46,7 +46,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Dashboard</title>
 
-    <!-- <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css"> -->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">    
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <!-- Custom styles for this page -->
@@ -132,9 +132,8 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
                 <div class="txt_primary text-uppercase mb-1">Número de hoteles</div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_numero_hoteles">40,000</div>
                 </div>
-                <div class="col-auto">
-                <i class="fab fa-algolia"></i>
-                <!-- <i class="fas fa-building fa-2x text-gray-300"></i> -->
+                <div class="col-auto">                
+                <i class="fas fa-building fa-2x text-gray-300"></i>
                 </div>
             </div>
             </div>
