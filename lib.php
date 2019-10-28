@@ -1798,7 +1798,8 @@ function local_hoteles_city_dashboard_has_empty(... $params){
 
 function local_hoteles_city_dashboard_get_custom_catalogue(int $fieldid){
     global $DB;
-    $query = "SELECT DISTINCT data FROM {user_info_data} where fieldid = {$fieldid} order by data ASC";
+    $query = "SELECT DISTINCT data FROM {user_info_data} where fieldid = {$fieldid} 
+    AND userid NOT IN (SELECT id FROM {user} WHERE deleted = 0) order by data ASC";
     return $DB->get_fieldset_sql($query);
 }
 
@@ -2115,7 +2116,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         array_push($response[1], $element);
     }
     $response[2] = array();
-    for ($i=0; $i < 9; $i++) { 
+    for ($i=0; $i < 9; $i++) { // Direcciones
         $element = new stdClass();
         $element->name = "Dirección " . $i;
         $element->enrolled_users = random_int(10, 10000);
