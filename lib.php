@@ -281,20 +281,20 @@ function local_hoteles_city_dashboard_user_has_access(){
 }
 
 function local_hoteles_city_dashboard_get_departments(){
-    $key = local_hoteles_city_dashboard_filter_prefix_default_field . 'department';
+    $key = 'department';
     $result = local_hoteles_city_dashboard_get_catalogues([$key]);
     return $result[$key];
 }
 
 function local_hoteles_city_dashboard_get_all_institutions(){
-    $key = local_hoteles_city_dashboard_filter_prefix_default_field . 'institution';
+    $key = 'institution';
     $result = local_hoteles_city_dashboard_get_catalogues([$key]);
     return $result[$key];
 }
 
 function local_hoteles_city_dashboard_get_marcas(){
     if($config = get_config('local_hoteles_city_dashboard', 'marcafield')){
-        local_hoteles_city_dashboard_filter_prefix_default_field . $config;
+        local_hoteles_city_dashboard_filter_prefix_custom_field . $config;
         $result = local_hoteles_city_dashboard_get_catalogues([$config]);
         if(isset($result[$config])){
             return $result[$config];
@@ -711,7 +711,7 @@ function local_hoteles_city_dashboard_get_default_profile_fields(bool $profileFo
         'msn' => 'ID MSN', 
         // 'department' => 'Puesto',
         // 'institution' => 'Unidad operativa', 
-        'interests' => 'Intereses', 
+        // 'interests' => 'Intereses', 
         'idnumber' => 'Número de ID', 
         // 'lang', 
         // 'timezone', 
@@ -2087,6 +2087,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->name = "Marca " . $i;
         $element->enrolled_users = random_int(10, 10000);
         $element->approved_users = random_int(5, $element->enrolled_users);
+        $element->chart = 'bar-agrupadas';
         $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
@@ -2098,6 +2099,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->name = "Región " . $i;
         $element->enrolled_users = random_int(10, 10000);
         $element->approved_users = random_int(5, $element->enrolled_users);
+        $element->chart = 'bar-agrupadas';
         $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
@@ -2109,6 +2111,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->name = "Dirección " . $i;
         $element->enrolled_users = random_int(10, 10000);
         $element->approved_users = random_int(5, $element->enrolled_users);
+        $element->chart = 'bar-agrupadas';
         $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
@@ -2118,6 +2121,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
     for ($i=0; $i < 12; $i++) { 
         $element = new stdClass();
         $element->name = "Puesto " . $i;
+        $element->chart = 'horizontalBar';
         $element->enrolled_users = random_int(10, 10000);
         $element->approved_users = random_int(5, $element->enrolled_users);
         $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
