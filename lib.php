@@ -33,7 +33,7 @@ DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios', 'Administración de us
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central', 'Administración de usuarios de Oficina Central');
 DEFINE('local_hoteles_city_dashboard_listado_todos_los_usuarios', 'Administración de todos los usuarios');
 DEFINE('local_hoteles_city_dashboard_cambio_usuarios', 'Cambio de usuarios');
-DEFINE('local_hoteles_city_dashboard_reportes', 'Reporte de cursos');
+DEFINE('local_hoteles_city_dashboard_reportes', 'Dashboard reporte de cursos');
 DEFINE('local_hoteles_city_dashboard_ajustes', 'Ajustes dashboard administrativo Hoteles City');
 
 
@@ -72,6 +72,9 @@ DEFINE('local_hoteles_city_dashboard_theme_colors', [
 function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) {
     global $CFG; 
     $permissions = local_hoteles_city_dashboard_get_user_permissions();
+    // $parent = $nav->add (
+    //     get_string('pluginname', 'local_hoteles_city_dashboard') 
+    // );
     foreach ($permissions as $key) {
         switch ($key) {
             case local_hoteles_city_dashboard_alta_baja_usuarios:
@@ -93,7 +96,7 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
                 break;
             case local_hoteles_city_dashboard_cambio_usuarios:
                 $node = $nav->add (
-                    local_hoteles_city_dashboard_cambio_usuarios,
+                    $key,
                     new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php?type='
                     . local_hoteles_city_dashboard_suspended_users_pagination )
                 );
@@ -102,7 +105,7 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
             
             case local_hoteles_city_dashboard_listado_todos_los_usuarios:
                 $node = $nav->add (
-                    local_hoteles_city_dashboard_listado_todos_los_usuarios,
+                    $key,
                     new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php?type='
                     . local_hoteles_city_dashboard_all_users_pagination )
                 );
@@ -111,8 +114,15 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
 
             case local_hoteles_city_dashboard_reportes:
                 $node = $nav->add (
-                    local_hoteles_city_dashboard_reportes,
+                    $key,
                     new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/dashboard.php' )
+                );
+                $node->showinflatnavigation = true;
+                break;
+            case local_hoteles_city_dashboard_ajustes:
+                $node = $nav->add (
+                    $key,
+                    new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/ajustes.php' )
                 );
                 $node->showinflatnavigation = true;
                 break;
@@ -135,6 +145,7 @@ function local_hoteles_city_dashboard_get_role_permissions(){
             local_hoteles_city_dashboard_cambio_usuarios,
             local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
             local_hoteles_city_dashboard_listado_todos_los_usuarios,
+            local_hoteles_city_dashboard_ajustes,
         ],
         local_hoteles_city_dashboard_coordinador_ao => [
             local_hoteles_city_dashboard_reportes,
@@ -142,6 +153,7 @@ function local_hoteles_city_dashboard_get_role_permissions(){
             local_hoteles_city_dashboard_cambio_usuarios,
             local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
             local_hoteles_city_dashboard_listado_todos_los_usuarios,
+            local_hoteles_city_dashboard_ajustes,
         ],
         local_hoteles_city_dashboard_personal_elearning => [
             local_hoteles_city_dashboard_reportes,
@@ -149,6 +161,7 @@ function local_hoteles_city_dashboard_get_role_permissions(){
             local_hoteles_city_dashboard_cambio_usuarios,
             local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
             local_hoteles_city_dashboard_listado_todos_los_usuarios,
+            local_hoteles_city_dashboard_ajustes,
         ],
         local_hoteles_city_dashboard_administrador => [
             local_hoteles_city_dashboard_reportes,
@@ -156,6 +169,7 @@ function local_hoteles_city_dashboard_get_role_permissions(){
             local_hoteles_city_dashboard_cambio_usuarios,
             local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
             local_hoteles_city_dashboard_listado_todos_los_usuarios,
+            local_hoteles_city_dashboard_ajustes,
         ], 
     );
 }
@@ -1147,18 +1161,17 @@ function local_hoteles_city_dashboard_percentage_of(int $number, int $total, int
 }
 
 function local_hoteles_city_dashboard_get_user_ids_with_params(int $courseid, array $params = array(), string $fieldname = ''){
+    $whereClauses = array(); // Aplicables sobre campos de la tabla user
+    $whereinClauses = array(); // Aplicables sobre campos de usuario personalizados
+    $whereParams = array();
+
     $fecha_inicial = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_inicial');
     $fecha_final = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_final');
     // Se omite $fecha_inicial debido a que si se incluye los usuarios inscritos anteriormente serían omitidos, activar si se pide explícitamente ese funcionamiento
     // $ids = local_hoteles_city_dashboard_get_enrolled_users_ids($courseid, $fecha_inicial, $fecha_final);
     $ids = local_hoteles_city_dashboard_get_enrolled_users_ids($courseid, '', $fecha_final);
-    $filters_sql = array();
-    array_push($filters_sql, $ids);
-    $query_parameters = array();
+    array_push($whereinClauses, $ids);
     global $DB;
-    $whereClauses = array();
-    $whereinClauses = array();
-    $whereParams = array();
     if(!empty($params)){
         $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
         foreach ($params as $key => $value) {
