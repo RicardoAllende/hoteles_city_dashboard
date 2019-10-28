@@ -2025,7 +2025,7 @@ function local_hoteles_city_dashboard_update_gerente_regional(array $params){
         $id = local_hoteles_city_dashboard_get_value_from_params($params, 'id', false);	
         $userid = local_hoteles_city_dashboard_get_value_from_params($params, 'userid', false);	
         if(local_hoteles_city_dashboard_has_empty($id, $userid)){	
-            _log('Faltan datos institution, userid', $params);	
+            _log('local_hoteles_city_dashboard_update_gerente_regional Faltan datos institution, userid', $params);	
             return 'Por favor recargue la página';	
         }	
         $record = $DB->get_record('dashboard_region', compact('id'));	
@@ -2054,8 +2054,8 @@ function local_hoteles_city_dashboard_update_gerente_general(array $params){
         global $DB;	
         $institution = local_hoteles_city_dashboard_get_value_from_params($params, 'institution', false);	
         $userid = local_hoteles_city_dashboard_get_value_from_params($params, 'userid', false);	
-        if(local_hoteles_city_dashboard_has_empty($institution, $userid)){	
-            _log('Faltan datos institution, userid', $params);	
+        if(local_hoteles_city_dashboard_has_empty($userid)){	
+            _log('local_hoteles_city_dashboard_update_gerente_general Faltan datos institution, userid', $params);
             return 'Por favor recargue la página';	
         }	
         $record = $DB->get_record('dashboard_region_ins', compact('institution'));	
@@ -2080,8 +2080,7 @@ function local_hoteles_city_dashboard_update_gerente_general(array $params){
 }
 
 function local_hoteles_city_dashboard_get_dashboard_windows(array $params = array()){
-    $response = new stdClass();
-    $response->section_1 = array();
+    $response = array();
     for ($i=0; $i < 6; $i++) { 
         $element = new stdClass();
         $element->name = "Marca " . $i;
@@ -2091,9 +2090,9 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
-        array_push($response->section_1, $element);
+        $element->type = 'section_1';
+        array_push($response, $element);
     }
-    $response->section_2 = array();
     for ($i=0; $i < 6; $i++) { 
         $element = new stdClass();
         $element->name = "Región " . $i;
@@ -2103,9 +2102,9 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
-        array_push($response->section_2, $element);
+        $element->type = 'section_2';
+        array_push($response, $element);
     }
-    $response->section_3 = array();
     for ($i=0; $i < 9; $i++) { 
         $element = new stdClass();
         $element->name = "Dirección " . $i;
@@ -2115,9 +2114,9 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
-        array_push($response->section_3, $element);
+        $element->type = 'section_3';
+        array_push($response, $element);
     }
-    $response->section_4 = array();
     for ($i=0; $i < 12; $i++) { 
         $element = new stdClass();
         $element->name = "Puesto " . $i;
@@ -2127,7 +2126,8 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
-        array_push($response->section_4, $element);
+        $element->type = 'section_4';
+        array_push($response, $element);
     }
     return $response;
 }
