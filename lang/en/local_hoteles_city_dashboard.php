@@ -65,3 +65,6 @@ $string['permissions_header'] = 'Permisos';
  
 $string['direcciones'] = 'Direcciónes';
 $string['direcciones_desc'] = 'Seleccione las direcciones en oficina central';
+
+$string['dashboard_courses'] = 'Cursos';
+$string['dashboard_courses_desc'] = 'Seleccione los cursos que se incluirán en los reportes';

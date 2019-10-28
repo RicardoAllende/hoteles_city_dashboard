@@ -256,8 +256,8 @@ function local_hoteles_city_dashboard_save_custom_settings(array $params){
 function local_hoteles_city_dashboard_get_courses_overview(array $params = array()){
     $courses = local_hoteles_city_dashboard_get_courses();
     $courses_in_order = array();
-    foreach($courses as $course){
-        $course_information = local_hoteles_city_dashboard_get_course_information($course->id, $params);        
+    foreach($courses as $courseid => $course){
+        $course_information = local_hoteles_city_dashboard_get_course_information($courseid, $params);        
         if(empty($course_information)){
             continue;
         }
@@ -1532,8 +1532,8 @@ function local_hoteles_city_dashboard_error_response($message = 'error'){
 
 function local_hoteles_city_dashboard_get_courses(string $andWhereClause = "", array $andWhereClauseParams = array() ){
     global $DB;
-    $query = "SELECT id, fullname, shortname FROM {course} where category != 0 {$andWhereClause} order by sortorder";
-    return $DB->get_records_sql($query, $andWhereClauseParams);
+    $query = "SELECT id, fullname FROM {course} where category != 0 {$andWhereClause} order by sortorder";
+    return $DB->get_records_sql_menu($query, $andWhereClauseParams);
 }
 
 /**

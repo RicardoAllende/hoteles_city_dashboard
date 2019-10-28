@@ -66,8 +66,17 @@ class filter_settings extends moodleform {
         $select = $mform->addElement('select', $name, $title, $custom_fields);
         $mform->setDefault($name, $default);
         $mform->addElement('static', 'description', '', $description);
+
+        $courses = local_hoteles_city_dashboard_get_courses();
+        $name = 'dashboard_courses';
+        $title = get_string('dashboard_courses', $pluginname);
+        $description = get_string('dashboard_courses' . '_desc', $pluginname);
+        $default = !empty($configs[$name]) ? $configs[$name] : '';
+        $select = $mform->addElement('select', $name, $title, $courses, 'class = " multiselect-setting "');
+        $select->setMultiple(true);
+        $mform->getElement($name)->setSelected(explode(',', $default));
         $mform->addElement('static', 'description', '', $description);
-        $mform->addElement('static', 'description', '', $description);
+        
 
         $institutions = local_hoteles_city_dashboard_get_institutions();
         $name = 'direcciones';
@@ -77,6 +86,7 @@ class filter_settings extends moodleform {
         $select = $mform->addElement('select', $name, $title, $institutions, 'class = " multiselect-setting "');
         $select->setMultiple(true);
         $mform->getElement($name)->setSelected(explode(',', $default));
+        $mform->addElement('static', 'description', '', $description);
 
         $mform->addElement('header', 'reportfields_header', get_string('reportfields_header', $pluginname));
         $mform->setExpanded('reportfields_header', true);
@@ -88,6 +98,7 @@ class filter_settings extends moodleform {
         $select = $mform->addElement('select', $name, $title, $all_default_profile_fields, 'class = " multiselect-setting "');
         $select->setMultiple(true);
         $mform->getElement($name)->setSelected(explode(',', $default));
+        $mform->addElement('static', 'description', '', $description);
 
         $name = 'reportcustomfields';
         $title = get_string('reportcustomfields', $pluginname);
@@ -96,6 +107,7 @@ class filter_settings extends moodleform {
         $select = $mform->addElement('select', $name, $title, $custom_fields, 'class = " multiselect-setting "');
         $select->setMultiple(true);
         $mform->getElement($name)->setSelected(explode(',', $default));
+        $mform->addElement('static', 'description', '', $description);
 
 
 
@@ -109,6 +121,7 @@ class filter_settings extends moodleform {
         $select = $mform->addElement('select', $name, $title, $default_profile_fields, 'class = " multiselect-setting "');
         $select->setMultiple(true);
         $mform->getElement($name)->setSelected(explode(',', $default));
+        $mform->addElement('static', 'description', '', $description);
 
         $name = 'userformcustomfields';
         $title = get_string('userformcustomfields', $pluginname);
@@ -117,6 +130,7 @@ class filter_settings extends moodleform {
         $select = $mform->addElement('select', $name, $title, $custom_fields, 'class = " multiselect-setting "');
         $select->setMultiple(true);
         $mform->getElement($name)->setSelected(explode(',', $default));
+        $mform->addElement('static', 'description', '', $description);
 
 
 
@@ -130,6 +144,7 @@ class filter_settings extends moodleform {
         $select = $mform->addElement('select', $name, $title, $all_default_profile_fields, 'class = " multiselect-setting "');
         $select->setMultiple(true);
         $mform->getElement($name)->setSelected(explode(',', $default));
+        $mform->addElement('static', 'description', '', $description);
 
         $name = 'filtercustomfields';
         $title = get_string('filtercustomfields', $pluginname);
@@ -138,6 +153,7 @@ class filter_settings extends moodleform {
         $select = $mform->addElement('select', $name, $title, $custom_fields, 'class = " multiselect-setting "');
         $select->setMultiple(true);
         $mform->getElement($name)->setSelected(explode(',', $default));
+        $mform->addElement('static', 'description', '', $description);
 
     }
 
