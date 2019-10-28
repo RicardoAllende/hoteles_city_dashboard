@@ -35,7 +35,7 @@ global $DB, $USER;
 // _print(list($enrolledsql, $params) = get_enrolled_sql(
 //     context_course::instance(8)));
 // _print(get_config('local_hoteles_city_dashboard'));
-_print(local_hoteles_city_dashboard_get_catalogues());
+_print(local_hoteles_city_dashboard_format_response(local_hoteles_city_dashboard_get_dashboard_windows()));
 // _print($USER->institution);
 // _log(local_hoteles_city_dashboard_get_course_information(9));
 // _log($USER);

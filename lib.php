@@ -720,7 +720,9 @@ function local_hoteles_city_dashboard_get_count_users($userids){ // Editado
     global $DB;
     // $whereids = implode(' AND _us_.id IN ', $userids->filters);
     $whereids = local_hoteles_city_dashboard_get_whereids_clauses($userids, '_us_.id');
-    return $DB->count_records_sql("SELECT count(*) FROM {user} as _us_ WHERE 1 = 1 {$whereids}", $userids->params);
+    $query = "SELECT count(*) FROM {user} as _us_ WHERE 1 = 1 {$whereids}";
+    _sql($query, $userids->params, 'Inscritos');
+    return $DB->count_records_sql($query, $userids->params);
 }
 
 function local_hoteles_city_dashboard_get_whereids_clauses($userids, $fieldname){
@@ -1122,12 +1124,13 @@ function local_hoteles_city_dashboard_create_sql_dates($campo_fecha, $fecha_inic
 function local_hoteles_city_dashboard_get_approved_users(int $courseid, stdClass $userids, string $fecha_inicial, string $fecha_final){ //
     $response = 0;
 
-    $whereids = local_hoteles_city_dashboard_get_whereids_clauses($userids, 'p.userid');
-    $campo_fecha = "p.timecompleted";
+    $whereids = local_hoteles_city_dashboard_get_whereids_clauses($userids, 'cc.userid');
+    $campo_fecha = "cc.timecompleted";
     $filtro_fecha = local_hoteles_city_dashboard_create_sql_dates($campo_fecha, $fecha_inicial, $fecha_final);    
-    $query = "SELECT count(*) AS completions FROM {course_completions} AS p
-    WHERE p.course = {$courseid} AND p.timecompleted IS NOT NULL {$filtro_fecha} {$whereids} ";
+    $query = "SELECT count(*) AS completions FROM {course_completions} AS cc JOIN {user} AS u ON cc.userid = u.id
+    WHERE cc.course = {$courseid} AND cc.timecompleted IS NOT NULL {$filtro_fecha} {$whereids} ";
 
+    _sql($query, $userids->params, 'Aprobados');
     global $DB;
     if($result = $DB->get_record_sql($query, $userids->params)){
         $response = $result->completions;
@@ -1159,16 +1162,19 @@ function local_hoteles_city_dashboard_get_user_ids_with_params(int $courseid, ar
     if(!empty($params)){
         $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
         foreach ($params as $key => $value) {
+            // if(in_array($ke))
             if(empty($value) && $value != ''){
                 if($value != ''){ // '' Podría ser un valor esperado, no así un arreglo vacío
                     continue;
                 }
             }
-            
+            if(!in_array($key, $allowed_filters->filters)){
+                continue;
+            }
             list($insql, $inparams) = $DB->get_in_or_equal($value);
-            array_merge($whereParams, $inparams);
+            $whereParams = array_merge($whereParams, $inparams);
             if(in_array($key, $allowed_filters->filterdefaultfields )){
-                $where = " {$key} = {$insql} ";
+                $where = " {$key} {$insql} ";
                 array_push($whereClauses, $where);
             }
             if(in_array($key, $allowed_filters->filtercustomfields)){
@@ -1178,54 +1184,11 @@ function local_hoteles_city_dashboard_get_user_ids_with_params(int $courseid, ar
             }
         }
     }
-    // Falta adaptar la lógica de las consultas
-    // if(!empty($params)){
-    //     $indicators = local_hoteles_city_dashboard_get_indicators();
-    //     $prefix = "___";
-    //     $tableName = 'user_info_data';
-    //     foreach($params as $key => $param){
-    //         if(array_search($key, $indicators) !== false){
-    //             $fieldid = get_config('local_hoteles_city_dashboard', "filtro_" . $key);
-    //             if($fieldid !== false){
-    //                 $prefix .= '_';
-    //                 $alias = $prefix . $tableName;
-    //                 $data = $params[$key];
-    //                 if(is_string($data) || is_numeric($data)){
-    //                     array_push($filters_sql, " (SELECT DISTINCT {$alias}.userid FROM {user_info_data} AS {$alias} WHERE {$alias}.fieldid = ? AND {$alias}.data = ?) ");
-    //                     array_push($query_parameters, $fieldid);
-    //                     array_push($query_parameters, $data);
-    //                 }elseif(is_array($data)){
-    //                     $wheres = array();
-    //                     $query_params = array();
-    //                     $options = array();
-    //                     foreach ($data as $d) {
-    //                             array_push($wheres, " data = ? ");
-    //                             array_push($query_params, $d);
-    //                             array_push($options, $d);
-    //                             array_push($query_parameters, $d);
-    //                     }
-    //                     if(!empty($options)){
-    //                         $bindParams = array();
-    //                         for($i = 0; $i < count($options); $i++){
-    //                             array_push($bindParams, '?');
-    //                         }
-    //                         $bindParams = implode(',', $bindParams);
-    //                         array_push($filters_sql, " (SELECT DISTINCT {$alias}.userid FROM {user_info_data} AS {$alias} WHERE {$alias}.data IN ({$bindParams}) AND {$alias}.fieldid = ? ) ");
-    //                         array_push($query_parameters, $fieldid);                            
-    //                     }
-    //                     if(!empty($wheres)){
-    //                         $wheres = " AND ( " . implode(" || ", $wheres) . " ) ";
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
     $response = new stdClass();
     $response->default_filters = $whereClauses;
     $response->custom_filters = $whereinClauses;
     // $response->filters = $filters_sql;
-    $response->params = $query_parameters;
+    $response->params = $whereParams;
     return $response;
 }
 
@@ -1403,7 +1366,7 @@ if(!function_exists('_sql')){
         }
         if($replaceParams){
             for($i = 0; $i < $nested_params; $i++){
-                $query = local_flexi_analytics_str_replace_first('?', "'".$params[$i] . "'", $query);
+                $query = local_hoteles_city_dashboard_str_replace_first('?', "'".$params[$i] . "'", $query);
             }
         }
         if(!$showParams || empty($params)){ $params = ''; }
@@ -2101,4 +2064,53 @@ function local_hoteles_city_dashboard_update_gerente_general(array $params){
         _log('Error local_hoteles_city_dashboard_update_gerente_general', $e);	
         return 'Por favor, inténtelo de nuevo';	
     }	
+}
+
+function local_hoteles_city_dashboard_get_dashboard_windows(array $params = array()){
+    $response = new stdClass();
+    $response->section_1 = array();
+    for ($i=0; $i < 6; $i++) { 
+        $element = new stdClass();
+        $element->name = "Marca " . $i;
+        $element->enrolled_users = random_int(10, 10000);
+        $element->approved_users = random_int(5, $element->enrolled_users);
+        $element->percentage = local_dominosdashboard_percentage_of($element->approved_users, $element->enrolled_users);
+        $element->not_approved_users = $element->enrolled_users - $element->approved_users;
+        $element->value = $element->percentage;
+        array_push($response->section_1, $element);
+    }
+    $response->section_2 = array();
+    for ($i=0; $i < 6; $i++) { 
+        $element = new stdClass();
+        $element->name = "Región " . $i;
+        $element->enrolled_users = random_int(10, 10000);
+        $element->approved_users = random_int(5, $element->enrolled_users);
+        $element->percentage = local_dominosdashboard_percentage_of($element->approved_users, $element->enrolled_users);
+        $element->not_approved_users = $element->enrolled_users - $element->approved_users;
+        $element->value = $element->percentage;
+        array_push($response->section_2, $element);
+    }
+    $response->section_3 = array();
+    for ($i=0; $i < 9; $i++) { 
+        $element = new stdClass();
+        $element->name = "Dirección " . $i;
+        $element->enrolled_users = random_int(10, 10000);
+        $element->approved_users = random_int(5, $element->enrolled_users);
+        $element->percentage = local_dominosdashboard_percentage_of($element->approved_users, $element->enrolled_users);
+        $element->not_approved_users = $element->enrolled_users - $element->approved_users;
+        $element->value = $element->percentage;
+        array_push($response->section_3, $element);
+    }
+    $response->section_4 = array();
+    for ($i=0; $i < 12; $i++) { 
+        $element = new stdClass();
+        $element->name = "Puesto " . $i;
+        $element->enrolled_users = random_int(10, 10000);
+        $element->approved_users = random_int(5, $element->enrolled_users);
+        $element->percentage = local_dominosdashboard_percentage_of($element->approved_users, $element->enrolled_users);
+        $element->not_approved_users = $element->enrolled_users - $element->approved_users;
+        $element->value = $element->percentage;
+        array_push($response->section_4, $element);
+    }
+    return $response;
 }
