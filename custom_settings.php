@@ -57,15 +57,29 @@ class filter_settings extends moodleform {
         // $configs = (array) $configs;
         $pluginname = 'local_hoteles_city_dashboard';
         
+        $mform->addElement('header', 'special_custom_fields', get_string('special_custom_fields_header', $pluginname));
+
         $name = 'marcafield';
         $title = get_string($name, $pluginname);
         $description = get_string($name . '_desc', $pluginname);
         $default = !empty($configs[$name]) ? $configs[$name] : "";
         $select = $mform->addElement('select', $name, $title, $custom_fields);
         $mform->setDefault($name, $default);
-        
-        $mform->addElement('header', 'reportfields', 'Campos de reportes');
-        // $mform->setExpanded('reportfields', true);
+        $mform->addElement('static', 'description', '', $description);
+        $mform->addElement('static', 'description', '', $description);
+        $mform->addElement('static', 'description', '', $description);
+
+        $institutions = local_hoteles_city_dashboard_get_institutions();
+        $name = 'direcciones';
+        $title = get_string('direcciones', $pluginname);
+        $description = get_string('direcciones' . '_desc', $pluginname);
+        $default = !empty($configs[$name]) ? $configs[$name] : '';
+        $select = $mform->addElement('select', $name, $title, $institutions, 'class = " multiselect-setting "');
+        $select->setMultiple(true);
+        $mform->getElement($name)->setSelected(explode(',', $default));
+
+        $mform->addElement('header', 'reportfields_header', get_string('reportfields_header', $pluginname));
+        $mform->setExpanded('reportfields_header', true);
 
         $name = 'reportdefaultfields';
         $title = get_string('reportdefaultfields', $pluginname);
@@ -85,8 +99,8 @@ class filter_settings extends moodleform {
 
 
 
-        $mform->addElement('header', 'signinfields', 'Alta de usuarios');
-        // $mform->setExpanded('signinfields', true);
+        $mform->addElement('header', 'signinfields', get_string('signinfields', $pluginname));
+        $mform->setExpanded('signinfields', true);
 
         $name = 'userformdefaultfields';    
         $title = get_string('userformdefaultfields', 'local_hoteles_city_dashboard');
@@ -106,8 +120,8 @@ class filter_settings extends moodleform {
 
 
 
-        $mform->addElement('header', 'filterfields', 'Campos que sirven como filtros');
-        // $mform->setExpanded('filterfields', true);
+        $mform->addElement('header', 'filterfields', get_string('filterfields', $pluginname));
+        $mform->setExpanded('filterfields', true);
 
         $name = 'filterdefaultfields';
         $title = get_string('filterdefaultfields', $pluginname);
@@ -170,10 +184,10 @@ class permission_settings extends moodleform {
         }
         $configs = $this->_customdata['configs'];
 
-        $strgeneral  = get_string('general');
+        // $strgeneral  = get_string('general');
         $strrequired = get_string('required');
 
-        $mform->addElement('header', 'permissions', 'Permisos');
+        $mform->addElement('header', 'permissions', get_string('filterfields', $pluginname));
         $mform->setExpanded('permissions', true);
         
         foreach (local_hoteles_city_dashboard_get_dashboard_roles() as $key => $value) {

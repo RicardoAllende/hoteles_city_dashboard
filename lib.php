@@ -277,10 +277,15 @@ function local_hoteles_city_dashboard_get_departments(){
     return $result[$key];
 }
 
-function local_hoteles_city_dashboard_get_all_institutions(){
+function local_hoteles_city_dashboard_get_institutions(){
     $key = 'institution';
     $result = local_hoteles_city_dashboard_get_catalogues([$key]);
-    return $result[$key];
+    $result = $result[$key];
+    $response = array();
+    foreach($result as $result){
+        $response[$result] = $result;
+    }
+    return $response;
 }
 
 function local_hoteles_city_dashboard_get_marcas(){
@@ -294,14 +299,14 @@ function local_hoteles_city_dashboard_get_marcas(){
     return array();
 }
 
-function local_hoteles_city_dashboard_get_institutions_for_profile(){
-    global $USER;
-    if($USER->department == 'Gerentes Generales'){
-        $institution = $USER->institution;
-    }
-    $institution = 
-    $query = "SELECT * FROM {dashboard_region_ins} WHERE regionid IN (SELECT distinct regionid FROM {dashboard_region_ins} WHERE institution = 'Hotel 2')";
-}
+// function local_hoteles_city_dashboard_get_institutions_for_profile(){
+//     global $USER;
+//     if($USER->department == 'Gerentes Generales'){
+//         $institution = $USER->institution;
+//     }
+//     $institution = 
+//     $query = "SELECT * FROM {dashboard_region_ins} WHERE regionid IN (SELECT distinct regionid FROM {dashboard_region_ins} WHERE institution = 'Hotel 2')";
+// }
 
 function local_hoteles_city_dashboard_get_gerentes_generales(){
     global $DB;
@@ -1561,7 +1566,7 @@ function local_hoteles_city_dashboard_get_catalogues($only = array()){
     foreach ($filterdefaultfields as $key) {
         if($returnAll || in_array($key, $only)){ // de la tabla usuarios
             $result  = $DB->get_fieldset_sql("SELECT distinct {$key} FROM {user}
-            WHERE suspended = 0 AND deleted = 0 "); // AND {$key} != ''"); // Puestos
+            WHERE suspended = 0 AND deleted = 0 AND {$key} != ''"); // Puestos
             if(!$returnAll && isset($required_keys[$key])) unset($required_keys[$key]);
             if($result){
                 $response[$key] = $result;
@@ -1938,11 +1943,11 @@ function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
             return array();
         }
         $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE dri.regionid = (SELECT regionid 
-        FROM {dashboard_region_ins} WHERE institution = '{$institution}' LIMIT 1)";
+        FROM {dashboard_region_ins} WHERE institution = '{$institution}' LIMIT 1) AND institution != ''";
         return $DB->get_fieldset_sql($query);
     }
     if(local_hoteles_city_dashboard_is_director_regional()){
-        $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE 
+        $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE institution != '' AND 
         regionid IN (SELECT id FROM {dashboard_region} WHERE userid = {$userid})";
         return $DB->get_fieldset_sql($query);
     }

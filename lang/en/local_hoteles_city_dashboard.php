@@ -55,3 +55,13 @@ $string['filterdefaultfields_desc'] = 'Seleccione los campos de la tabla {user} 
 
 $string['marcafield'] = 'Campo de marca';
 $string['marcafield_desc'] = 'Seleccione el campo personalizado que tiene la marca';
+
+$string['special_custom_fields_header'] = 'Campos por defecto';
+$string['reportfields_header'] = 'Campos que aparecen en reportes';
+
+$string['signinfields'] = 'Alta de usuarios';
+$string['filterfields'] = 'Campos que sirven como filtros';
+$string['permissions_header'] = 'Permisos';
+ 
+$string['direcciones'] = 'Direcciónes';
+$string['direcciones_desc'] = 'Seleccione las direcciones en oficina central';
