@@ -38,7 +38,7 @@ DEFINE('local_hoteles_city_dashboard_ajustes', 'Ajustes dashboard administrativo
 
 
 DEFINE('local_hoteles_city_dashboard_gerente_ao', 'role_1');
-DEFINE('local_hoteles_city_dashboard_coordinador_ao', 'role_2');
+// DEFINE('local_hoteles_city_dashboard_coordinador_ao', 'role_2'); // Pidieron que se eliminara
 DEFINE('local_hoteles_city_dashboard_director_regional', 'role_3');
 DEFINE('local_hoteles_city_dashboard_personal_elearning', 'role_4');
 DEFINE('local_hoteles_city_dashboard_gerente_hotel', 'role_5');
@@ -147,14 +147,6 @@ function local_hoteles_city_dashboard_get_role_permissions(){
             local_hoteles_city_dashboard_listado_todos_los_usuarios,
             local_hoteles_city_dashboard_ajustes,
         ],
-        local_hoteles_city_dashboard_coordinador_ao => [
-            local_hoteles_city_dashboard_reportes,
-            local_hoteles_city_dashboard_alta_baja_usuarios,
-            local_hoteles_city_dashboard_cambio_usuarios,
-            local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
-            local_hoteles_city_dashboard_listado_todos_los_usuarios,
-            local_hoteles_city_dashboard_ajustes,
-        ],
         local_hoteles_city_dashboard_personal_elearning => [
             local_hoteles_city_dashboard_reportes,
             local_hoteles_city_dashboard_alta_baja_usuarios,
@@ -177,7 +169,6 @@ function local_hoteles_city_dashboard_get_role_permissions(){
 function local_hoteles_city_dashboard_get_dashboard_roles(){
     return array(
         local_hoteles_city_dashboard_gerente_ao         => "Gerente Aprendizaje Organizacional",
-        local_hoteles_city_dashboard_coordinador_ao     => "Coordinador Aprendizaje Organizacional",
         local_hoteles_city_dashboard_director_regional  => "Director regional",
         local_hoteles_city_dashboard_personal_elearning => "Personal Elearning",
         // local_hoteles_city_dashboard_gerente_hotel => "Gerente de hotel", // Se obtiene según campo institution de usuario
@@ -323,10 +314,6 @@ function local_hoteles_city_dashboard_get_gerentes_generales(){
 
 function local_hoteles_city_dashboard_get_gerentes_ao(){
     return local_hoteles_city_dashboard_get_role_users(local_hoteles_city_dashboard_gerente_ao);
-}
-
-function local_hoteles_city_dashboard_get_coordinadores_ao(){
-    return local_hoteles_city_dashboard_get_role_users(local_hoteles_city_dashboard_coordinador_ao);
 }
 
 function local_hoteles_city_dashboard_get_directores_regionales(){
@@ -1931,9 +1918,6 @@ function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
     if(local_hoteles_city_dashboard_is_gerente_ao()){
         return $DB->get_fieldset_sql($queryAllInstitutions);
     }
-    if(local_hoteles_city_dashboard_is_coordinador_ao()){
-        return $DB->get_fieldset_sql($queryAllInstitutions);
-    }
     if(local_hoteles_city_dashboard_is_personal_elearning()){
         return $DB->get_fieldset_sql($queryAllInstitutions);
     }
@@ -1948,10 +1932,6 @@ function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
 
 function local_hoteles_city_dashboard_is_gerente_ao(){
     return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_gerente_ao);
-}
-
-function local_hoteles_city_dashboard_is_coordinador_ao(){
-    return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_coordinador_ao);
 }
 
 function local_hoteles_city_dashboard_is_director_regional(){
@@ -2081,6 +2061,7 @@ function local_hoteles_city_dashboard_update_gerente_general(array $params){
 
 function local_hoteles_city_dashboard_get_dashboard_windows(array $params = array()){
     $response = array();
+    $response[0] = array();
     for ($i=0; $i < 6; $i++) { 
         $element = new stdClass();
         $element->name = "Marca " . $i;
@@ -2091,8 +2072,9 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
         $element->type = 'section_1';
-        array_push($response, $element);
+        array_push($response[0], $element);
     }
+    $response[1] = array();
     for ($i=0; $i < 6; $i++) { 
         $element = new stdClass();
         $element->name = "Región " . $i;
@@ -2103,8 +2085,9 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
         $element->type = 'section_2';
-        array_push($response, $element);
+        array_push($response[1], $element);
     }
+    $response[2] = array();
     for ($i=0; $i < 9; $i++) { 
         $element = new stdClass();
         $element->name = "Dirección " . $i;
@@ -2115,8 +2098,9 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
         $element->type = 'section_3';
-        array_push($response, $element);
+        array_push($response[2], $element);
     }
+    $response[3] = array();
     for ($i=0; $i < 12; $i++) { 
         $element = new stdClass();
         $element->name = "Puesto " . $i;
@@ -2127,7 +2111,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
         $element->type = 'section_4';
-        array_push($response, $element);
+        array_push($response[3], $element);
     }
     return $response;
 }
