@@ -28,43 +28,44 @@ function regresaInfoByCurso() {
     //showModal();
     //informacion = $('#filter_form').serializeArray();
     informacion = [];
-    informacion.push({ name: 'request_type', value: 'course_list' });
-    //informacion.push({name: 'type', value: currentTab});
-    //dateBegining = Date.now();
-    // $('#local_dominosdashboard_content').html('Cargando la información');
-    $.ajax({
-        type: "POST",
-        url: "services.php",
-        data: informacion,
-        dataType: "json"
-    })
-        .done(function (data) {
-            console.log('Aqui entra done');
-            isCourseLoading = false;
-            //console.log('Data obtenida ' + data);
-            respuesta = JSON.parse(JSON.stringify(data));
-            respuesta = respuesta.data;
-            console.log('Imprimiendo la respuesta', respuesta);
-
-            // var arr_data = Array();
-            // var labels_graph = Array();
-            // var info_graph = Array();                
-            for (var i = 0; i < respuesta.result.length; i++) {
-                resp = respuesta.result[i];
-                // info_graph.push(resp.approved_users);
-                // info_graph.push(resp.not_approved_users);
-                // labels_graph.push("Aprobados");
-                // labels_graph.push("No aprobados");
-                // arr_data.push(info_graph);
-                // arr_data.push(labels_graph);
-                //var chart_type = 'pie';
-                var curso = new GraphicsDashboard('contenedor_graficas', resp.title, resp.chart, resp, 5);
-                curso.printCard();
-                //curso.infoGraph();
-                if (resp.chart == 'bar-agrupadas') {
-                    curso.comparative_graph();
-                }
-                if (resp.chart == 'line') {
+            // informacion.push({name: 'request_type', value: 'course_list'});
+            informacion.push({name: 'request_type', value: 'dashboard'});
+            //informacion.push({name: 'type', value: currentTab});
+            //dateBegining = Date.now();
+            // $('#local_dominosdashboard_content').html('Cargando la información');
+            $.ajax({
+                type: "POST",
+                url: "services.php",
+                data: informacion,
+                dataType: "json"
+            })
+            .done(function(data) {
+                console.log('Aqui entra done');
+                isCourseLoading = false;
+                //console.log('Data obtenida ' + data);
+                respuesta = JSON.parse(JSON.stringify(data));
+                respuesta = respuesta.data;
+                console.log('Imprimiendo la respuesta', respuesta);
+                
+                // var arr_data = Array();
+                // var labels_graph = Array();
+                // var info_graph = Array();                
+                for (var i = 0; i < respuesta.length; i++) {
+                    resp = respuesta[i];
+                    // info_graph.push(resp.approved_users);
+                    // info_graph.push(resp.not_approved_users);
+                    // labels_graph.push("Aprobados");
+                    // labels_graph.push("No aprobados");
+                    // arr_data.push(info_graph);
+                    // arr_data.push(labels_graph);
+                    //var chart_type = 'pie';
+                    var curso = new GraphicsDashboard('contenedor_graficas',resp.title,resp.chart,resp,5);                    
+                    curso.printCard();
+                    //curso.infoGraph();
+                    if(resp.chart == 'bar-agrupadas'){
+                        curso.comparative_graph();
+                        }
+                    if(resp.chart == 'line'){
                     curso.comparative_graph();
                 }
                 if (resp.chart == 'burbuja') {
