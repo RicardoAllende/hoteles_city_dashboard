@@ -34,6 +34,7 @@ DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central', 'Admin
 DEFINE('local_hoteles_city_dashboard_listado_todos_los_usuarios', 'Administración de todos los usuarios');
 DEFINE('local_hoteles_city_dashboard_cambio_usuarios', 'Cambio de usuarios');
 DEFINE('local_hoteles_city_dashboard_reportes', 'Reporte de cursos');
+DEFINE('local_hoteles_city_dashboard_ajustes', 'Ajustes dashboard administrativo Hoteles City');
 
 
 DEFINE('local_hoteles_city_dashboard_gerente_ao', 'role_1');
@@ -52,6 +53,8 @@ DEFINE('local_hoteles_city_dashboard_suspended_users_pagination', 3);
 DEFINE('local_hoteles_city_dashboard_actived_users_pagination', 4);
 DEFINE('local_hoteles_city_dashboard_oficina_central_pagination', 5);
 
+DEFINE('local_hoteles_city_dashboard_filter_prefix_default_field', 'default_');
+DEFINE('local_hoteles_city_dashboard_filter_prefix_custom_field', 'custom_');
 
 DEFINE('local_hoteles_city_dashboard_theme_colors', [
     'Primary' => "#4e73df",
@@ -713,19 +716,26 @@ function local_hoteles_city_dashboard_get_default_profile_fields(bool $profileFo
     return $fields;
 }
 
-function local_hoteles_city_dashboard_get_count_users($userids){
+function local_hoteles_city_dashboard_get_count_users($userids){ // Editado
     global $DB;
     // $whereids = implode(' AND _us_.id IN ', $userids->filters);
-    $whereids = local_hoteles_city_dashboard_get_whereids_clauses($userids->filters, '_us_.id');
+    $whereids = local_hoteles_city_dashboard_get_whereids_clauses($userids, '_us_.id');
     return $DB->count_records_sql("SELECT count(*) FROM {user} as _us_ WHERE 1 = 1 {$whereids}", $userids->params);
 }
 
-function local_hoteles_city_dashboard_get_whereids_clauses($filters, $fieldname){
-    if(empty($filters)){
-        return "";
+function local_hoteles_city_dashboard_get_whereids_clauses($userids, $fieldname){
+    $response = "";
+    if(!empty($userids->default_filters)){
+        $separator = " AND ";
+        $response .= ($separator . implode($separator, $userids->default_filters));
     }
-    $separator = " AND {$fieldname} IN ";
-    return $separator . implode($separator, $filters);
+    if(!empty($userids->custom_filters)){
+        $separator = " AND {$fieldname} IN ";
+        $response .= ($separator . $userids->custom_filters);
+    }
+    return $response;
+    // $separator = " AND {$fieldname} IN ";
+    // return $separator . implode($separator, $filters);
 }
 
 function local_hoteles_city_dashboard_get_enrolled_users_ids(int $courseid, string $fecha_inicial, string $fecha_final){
@@ -786,15 +796,6 @@ function local_hoteles_city_dashboard_get_course_information(int $courseid, arra
     $fecha_final = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_final');
 
     $userids = local_hoteles_city_dashboard_get_user_ids_with_params($courseid, $params);
-    if(empty($userids)){
-        $response->activities = [];
-        $response->enrolled_users = 0;
-        $response->approved_users = 0;
-        $response->percentage = 0;
-        $response->not_approved_users = $response->enrolled_users - $response->approved_users;
-        $response->value = 0;
-        return $response;
-    }
     // if($get_activities){
     //     $response->activities = local_hoteles_city_dashboard_get_activities_completion($courseid, $userids, $fecha_inicial, $fecha_final); //
     // }
@@ -1121,7 +1122,7 @@ function local_hoteles_city_dashboard_create_sql_dates($campo_fecha, $fecha_inic
 function local_hoteles_city_dashboard_get_approved_users(int $courseid, stdClass $userids, string $fecha_inicial, string $fecha_final){ //
     $response = 0;
 
-    $whereids = local_hoteles_city_dashboard_get_whereids_clauses($userids->filters, 'p.userid');
+    $whereids = local_hoteles_city_dashboard_get_whereids_clauses($userids, 'p.userid');
     $campo_fecha = "p.timecompleted";
     $filtro_fecha = local_hoteles_city_dashboard_create_sql_dates($campo_fecha, $fecha_inicial, $fecha_final);    
     $query = "SELECT count(*) AS completions FROM {course_completions} AS p
@@ -1142,7 +1143,7 @@ function local_hoteles_city_dashboard_percentage_of(int $number, int $total, int
     }
 }
 
-function local_hoteles_city_dashboard_get_user_ids_with_params(int $courseid, array $params = array()){
+function local_hoteles_city_dashboard_get_user_ids_with_params(int $courseid, array $params = array(), string $fieldname = ''){
     $fecha_inicial = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_inicial');
     $fecha_final = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_final');
     // Se omite $fecha_inicial debido a que si se incluye los usuarios inscritos anteriormente serían omitidos, activar si se pide explícitamente ese funcionamiento
@@ -1151,9 +1152,31 @@ function local_hoteles_city_dashboard_get_user_ids_with_params(int $courseid, ar
     $filters_sql = array();
     array_push($filters_sql, $ids);
     $query_parameters = array();
+    global $DB;
+    $whereClauses = array();
+    $whereinClauses = array();
+    $whereParams = array();
     if(!empty($params)){
-    $filterdefaultfields = local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filtercustomfields'));
-
+        $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
+        foreach ($params as $key => $value) {
+            if(empty($value) && $value != ''){
+                if($value != ''){ // '' Podría ser un valor esperado, no así un arreglo vacío
+                    continue;
+                }
+            }
+            
+            list($insql, $inparams) = $DB->get_in_or_equal($value);
+            array_merge($whereParams, $inparams);
+            if(in_array($key, $allowed_filters->filterdefaultfields )){
+                $where = " {$key} = {$insql} ";
+                array_push($whereClauses, $where);
+            }
+            if(in_array($key, $allowed_filters->filtercustomfields)){
+                $fieldid = str_replace(local_hoteles_city_dashboard_filter_prefix_custom_field, '', $key);
+                $where = " (SELECT DISTINCT userid FROM {user_info_data} WHERE fieldid = {$fieldid} AND value {$insql}) ";
+                array_push($whereinClauses, $where);
+            }
+        }
     }
     // Falta adaptar la lógica de las consultas
     // if(!empty($params)){
@@ -1199,7 +1222,9 @@ function local_hoteles_city_dashboard_get_user_ids_with_params(int $courseid, ar
     //     }
     // }
     $response = new stdClass();
-    $response->filters = $filters_sql;
+    $response->default_filters = $whereClauses;
+    $response->custom_filters = $whereinClauses;
+    // $response->filters = $filters_sql;
     $response->params = $query_parameters;
     return $response;
 }
@@ -1543,30 +1568,33 @@ function local_hoteles_city_dashboard_get_courses(string $andWhereClause = "", a
     return $DB->get_records_sql($query, $andWhereClauseParams);
 }
 
-DEFINE('local_hoteles_city_dashboard_filter_prefix_default_field', 'default_');
-DEFINE('local_hoteles_city_dashboard_filter_prefix_custom_field', 'custom_');
+/**
+ * Devuelve los filtros configurados por el usuario y los filtros por defecto (institution y department)
+ * @param bool $merge_filter_names Regresar los valores como arreglo de campos o como clase con los parámetros separados
+ * @return stdClass|array el objeto tiene las claves filterdefaultfields y filtercustomfields
+ */
+function local_hoteles_city_dashboard_get_allowed_filters(bool $merge_filter_names = false){
+    $response = new stdClass();
+    $required_keys = array('institution', 'department');
+    $response->filterdefaultfields = array_merge(local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filterdefaultfields')),
+     $required_keys);
+    $response->filtercustomfields = local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filtercustomfields'), ',', local_hoteles_city_dashboard_filter_prefix_custom_field);
+
+    $response->filters = array_unique(array_merge($required_keys, $response->filterdefaultfields, $response->filtercustomfields));
+    if($merge_filter_names){
+        return $response->filters;
+    }
+    return $response;
+}
 
 function local_hoteles_city_dashboard_get_catalogues($only = array()){
     global $DB;
     $returnAll = empty($only);
     $response = array();
     $required_keys = array('institution', 'department');
-    // foreach ($required_keys as $key => $value) {
-    //     if($returnAll || in_array(local_hoteles_city_dashboard_filter_prefix_default_field . $key, $only)){ // de la tabla usuarios
-    //         $result = $DB->get_records_sql_menu("SELECT distinct {$key}, {$key} as i FROM {user}
-    //         WHERE suspended = 0 AND deleted = 0 AND {$key} != ''"); // Puestos
-    //         if(!$returnAll && isset($required_keys[$key])) unset($required_keys[$key]);
-    //         if($result){
-    //             $response[local_hoteles_city_dashboard_filter_prefix_default_field . $key] = $result;
-    //         }
-    //     }
-    // }
+    $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
 
-    // if(!$returnAll && empty($only)) return $response;
-    
-    $filterdefaultfields = local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filterdefaultfields'));
-    $filterdefaultfields = array_merge($filterdefaultfields, $required_keys);
-    array_unique($filterdefaultfields);
+    $filterdefaultfields = $allowed_filters->filterdefaultfields;
     foreach ($filterdefaultfields as $key) {
         if($returnAll || in_array($key, $only)){ // de la tabla usuarios
             $result  = $DB->get_fieldset_sql("SELECT distinct {$key} FROM {user}
@@ -1580,23 +1608,20 @@ function local_hoteles_city_dashboard_get_catalogues($only = array()){
     
     if(!$returnAll && empty($only)) return $response;
     
-    $filtercustomfields = local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filtercustomfields'));
+    $filtercustomfields = $allowed_filters->filtercustomfields;
     foreach ($filtercustomfields as $id => $value) {
-        if($returnAll || in_array(local_hoteles_city_dashboard_filter_prefix_custom_field . $id, $only)){
-            // $allow_empty = " AND uid_.data != '' AND uid_.data IS NOT NULL ";
+        if($returnAll || in_array($id, $only)){
             $result = local_hoteles_city_dashboard_get_custom_catalogue($id);
-            // $result = $DB->get_records_sql_menu("SELECT DISTINCT data, data from {user_info_data} as uid_ WHERE uid_.fieldid = {$key} {$allow_empty}");
             
             if($result){
-                $response[local_hoteles_city_dashboard_filter_prefix_custom_field . $id] = $result;
+                $response[$id] = $result;
             }
         }
     }
-    // "SELECT data from {user_info_data} as uid_ WHERE uid_.fieldid = {$fieldid} AND uid_.userid = uid.userid {$_allow_empty} (SELECT data as menu_value FROM {user_info_data} where fieldid = {$fieldid} {$andWhereSql} {$allow_empty} group by data) ";
     return $response;
 }
 
-function local_hoteles_city_dashboard_get_array_from_config($config, $separator = ','){
+function local_hoteles_city_dashboard_get_array_from_config($config, string $separator = ',', string $prefix = ''){
     if($config === false){
         return array();
     }
@@ -1604,7 +1629,13 @@ function local_hoteles_city_dashboard_get_array_from_config($config, $separator 
         return array();
     }
     try{
-        return explode($separator, $config);
+        $response = explode($separator, $config);
+        if(!empty($prefix)){
+            foreach($response as $key => $r){
+                $response[$key] = $prefix . $r;
+            }
+        }
+        return $response;
     }catch(Exception $e){
         return array();
     }
