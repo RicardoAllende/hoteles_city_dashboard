@@ -113,7 +113,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                             {$region->name} {$status}&nbsp;<i class='fas fa-edit'></i></button>
                             </th>";
                         }
-                        echo "<th>Gerente de hotel</th>";
+                        echo "<th>Gerente general</th>";
                         echo '</tr>';
                     }
                     ?>

@@ -264,19 +264,20 @@ function local_hoteles_city_dashboard_user_has_access(){
 }
 
 function local_hoteles_city_dashboard_get_departments(){
-    $key = 'department';
+    $key = local_hoteles_city_dashboard_filter_prefix_default_field . 'department';
     $result = local_hoteles_city_dashboard_get_catalogues([$key]);
     return $result[$key];
 }
 
 function local_hoteles_city_dashboard_get_all_institutions(){
-    $key = 'institution';
+    $key = local_hoteles_city_dashboard_filter_prefix_default_field . 'institution';
     $result = local_hoteles_city_dashboard_get_catalogues([$key]);
     return $result[$key];
 }
 
 function local_hoteles_city_dashboard_get_marcas(){
-    if($config = 'marcafield'){
+    if($config = get_config('local_hoteles_city_dashboard', 'marcafield')){
+        local_hoteles_city_dashboard_filter_prefix_default_field . $config;
         $result = local_hoteles_city_dashboard_get_catalogues([$config]);
         if(isset($result[$config])){
             return $result[$config];
@@ -691,8 +692,8 @@ function local_hoteles_city_dashboard_get_default_profile_fields(bool $profileFo
         'yahoo' => 'ID Yahoo', 
         'aim' => 'ID AIM', 
         'msn' => 'ID MSN', 
-        // 'department' => 'Departamento',
-        // 'institution' => 'Institución', 
+        // 'department' => 'Puesto',
+        // 'institution' => 'Unidad operativa', 
         'interests' => 'Intereses', 
         'idnumber' => 'Número de ID', 
         // 'lang', 
@@ -1150,6 +1151,10 @@ function local_hoteles_city_dashboard_get_user_ids_with_params(int $courseid, ar
     $filters_sql = array();
     array_push($filters_sql, $ids);
     $query_parameters = array();
+    if(!empty($params)){
+    $filterdefaultfields = local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filtercustomfields'));
+
+    }
     // Falta adaptar la lógica de las consultas
     // if(!empty($params)){
     //     $indicators = local_hoteles_city_dashboard_get_indicators();
@@ -1538,52 +1543,60 @@ function local_hoteles_city_dashboard_get_courses(string $andWhereClause = "", a
     return $DB->get_records_sql($query, $andWhereClauseParams);
 }
 
+DEFINE('local_hoteles_city_dashboard_filter_prefix_default_field', 'default_');
+DEFINE('local_hoteles_city_dashboard_filter_prefix_custom_field', 'custom_');
+
 function local_hoteles_city_dashboard_get_catalogues($only = array()){
     global $DB;
     $returnAll = empty($only);
     $response = array();
-    $required_keys = array('institution' => 'institution', 'department' => 'department');
-    foreach ($required_keys as $key => $value) {
+    $required_keys = array('institution', 'department');
+    // foreach ($required_keys as $key => $value) {
+    //     if($returnAll || in_array(local_hoteles_city_dashboard_filter_prefix_default_field . $key, $only)){ // de la tabla usuarios
+    //         $result = $DB->get_records_sql_menu("SELECT distinct {$key}, {$key} as i FROM {user}
+    //         WHERE suspended = 0 AND deleted = 0 AND {$key} != ''"); // Puestos
+    //         if(!$returnAll && isset($required_keys[$key])) unset($required_keys[$key]);
+    //         if($result){
+    //             $response[local_hoteles_city_dashboard_filter_prefix_default_field . $key] = $result;
+    //         }
+    //     }
+    // }
+
+    // if(!$returnAll && empty($only)) return $response;
+    
+    $filterdefaultfields = local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filterdefaultfields'));
+    $filterdefaultfields = array_merge($filterdefaultfields, $required_keys);
+    array_unique($filterdefaultfields);
+    foreach ($filterdefaultfields as $key) {
         if($returnAll || in_array($key, $only)){ // de la tabla usuarios
-            $result = $DB->get_records_sql_menu("SELECT distinct {$key}, {$key} as i FROM {user}
-            WHERE suspended = 0 AND deleted = 0 AND {$key} != ''"); // Puestos
+            $result  = $DB->get_fieldset_sql("SELECT distinct {$key} FROM {user}
+            WHERE suspended = 0 AND deleted = 0 "); // AND {$key} != ''"); // Puestos
             if(!$returnAll && isset($required_keys[$key])) unset($required_keys[$key]);
             if($result){
                 $response[$key] = $result;
             }
         }
     }
-
+    
     if(!$returnAll && empty($only)) return $response;
     
     $filtercustomfields = local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filtercustomfields'));
-    foreach ($filtercustomfields as $key => $value) {
-        if($returnAll || in_array($key, $only)){ // de la tabla usuarios
-            $result  = $DB->get_records_sql_menu("SELECT distinct {$key}, {$key} as i FROM {user}
-            WHERE suspended = 0 AND deleted = 0 AND {$key} != ''"); // Puestos
-            if(!$returnAll && isset($required_keys[$key])) unset($required_keys[$key]);
+    foreach ($filtercustomfields as $id => $value) {
+        if($returnAll || in_array(local_hoteles_city_dashboard_filter_prefix_custom_field . $id, $only)){
+            // $allow_empty = " AND uid_.data != '' AND uid_.data IS NOT NULL ";
+            $result = local_hoteles_city_dashboard_get_custom_catalogue($id);
+            // $result = $DB->get_records_sql_menu("SELECT DISTINCT data, data from {user_info_data} as uid_ WHERE uid_.fieldid = {$key} {$allow_empty}");
+            
             if($result){
-                $response[$key] = $result;
+                $response[local_hoteles_city_dashboard_filter_prefix_custom_field . $id] = $result;
             }
-        }
-    }
-
-    if(!$returnAll && empty($only)) return $response;
-    
-    $filterdefaultfields = local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filterdefaultfields'));
-    foreach ($filterdefaultfields as $key => $value) {
-        $allow_empty = " AND uid_.data != '' AND uid_.data IS NOT NULL ";
-        $result = $DB->get_records_sql_menu("SELECT DISTINCT data, data from {user_info_data} as uid_ WHERE uid_.fieldid = {$key} {$allow_empty}");
-        
-        if($result){
-            $response[$key] = $result;
         }
     }
     // "SELECT data from {user_info_data} as uid_ WHERE uid_.fieldid = {$fieldid} AND uid_.userid = uid.userid {$_allow_empty} (SELECT data as menu_value FROM {user_info_data} where fieldid = {$fieldid} {$andWhereSql} {$allow_empty} group by data) ";
     return $response;
 }
 
-function local_hoteles_city_dashboard_get_array_from_config($config){
+function local_hoteles_city_dashboard_get_array_from_config($config, $separator = ','){
     if($config === false){
         return array();
     }
@@ -1591,7 +1604,7 @@ function local_hoteles_city_dashboard_get_array_from_config($config){
         return array();
     }
     try{
-        return explode(',', $config);
+        return explode($separator, $config);
     }catch(Exception $e){
         return array();
     }
@@ -1786,8 +1799,8 @@ function local_hoteles_city_dashboard_has_empty(... $params){
 
 function local_hoteles_city_dashboard_get_custom_catalogue(int $fieldid){
     global $DB;
-    $query = "SELECT DISTINCT data, data FROM {user_info_data} where fieldid = {$fieldid} group by data order by data ASC";
-    return $DB->get_records_sql_menu($query);
+    $query = "SELECT DISTINCT data FROM {user_info_data} where fieldid = {$fieldid} order by data ASC";
+    return $DB->get_fieldset_sql($query);
 }
 
 function local_hoteles_city_dashboard_slug(string $text){
@@ -1945,4 +1958,116 @@ function local_hoteles_city_dashboard_is_personal_elearning(){
 function local_hoteles_city_dashboard_is_gerente_general(){
     global $USER;
     return $USER->institution == local_hoteles_city_gerente_general_value;
+}
+
+function local_hoteles_city_dashboard_get_course_comparative(int $courseid, $selected_filter){
+    $response = new stdClass();
+    global $DB;
+    $course = $DB->get_record('course', array('id' => $courseid), 'id, shortname, fullname');
+    $response->title = $course->fullname;
+    $response->key = 'course_' . $course->id;
+    $response->id = $course->id;
+    $response->shortname = $course->shortname;
+    $response->fullname = $course->fullname;
+    $indicators = local_hoteles_city_dashboard_get_indicators();
+    // $conditions = local_hoteles_city_dashboard_get_wheresql_for_user_catalogues($params, $indicators);
+    if($course === false){
+        return array();
+    }
+    // $fecha_inicial = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_inicial');
+    // $fecha_final = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_final');
+    // $indicator = $params['selected_filter'];
+    // $catalogue = local_hoteles_city_dashboard_get_catalogue($indicator, $conditions->sql, $conditions->params);
+    // if(!in_array('', $catalogue)){
+    //     array_push($catalogue, '');
+    // }
+    // $key = $indicator;
+    // $comparative = array();
+    // foreach($catalogue as $catalogue_item){
+    //     $item_to_compare = new stdClass();
+    //     $params[$key] = [$catalogue_item];
+    //     $item_to_compare = local_hoteles_city_dashboard_get_info_from_cache($courseid, $params, $return_regions = true);
+    //     if($catalogue_item == ''){
+    //         $item_to_compare->name = '(Vacío)';
+    //     }else{
+    //         $item_to_compare->name = $catalogue_item;
+    //     }
+
+    //     // $userids = local_hoteles_city_dashboard_get_user_ids_with_params($courseid, $params);
+    //     // $item_to_compare->enrolled_users = local_hoteles_city_dashboard_get_count_users($userids);
+    //     // if($item_to_compare->enrolled_users == 0){
+    //     //     $item_to_compare->approved_users = 0;
+    //     // }else{
+    //     //     $item_to_compare->approved_users = local_hoteles_city_dashboard_get_approved_users($courseid, $userids, $fecha_inicial, $fecha_final);
+    //     // }
+    //     // $item_to_compare->percentage = local_hoteles_city_dashboard_percentage_of($item_to_compare->approved_users, $item_to_compare->enrolled_users);
+    //     array_push($comparative, $item_to_compare);
+    // }
+    // $response->comparative = $comparative;
+    // $response->filter = $indicator;
+    return $response;
+}
+
+function local_hoteles_city_dashboard_get_custom_field_filters_configuration(){
+
+}
+
+function local_hoteles_city_dashboard_update_gerente_regional(array $params){	
+    try{	
+        global $DB;	
+        $id = local_hoteles_city_dashboard_get_value_from_params($params, 'id', false);	
+        $userid = local_hoteles_city_dashboard_get_value_from_params($params, 'userid', false);	
+        if(local_hoteles_city_dashboard_has_empty($id, $userid)){	
+            _log('Faltan datos institution, userid', $params);	
+            return 'Por favor recargue la página';	
+        }	
+        $record = $DB->get_record('dashboard_region', compact('id'));	
+        if($record === false){ // Crear	
+            return "No existe la región a actualizar ({$id})";	
+            // $record = new stdClass();	
+            // // $record->institution = $institution;	
+            // $record->userid = $userid;	
+            // // $record->active = 1;	
+            // $insertion = $DB->insert_record('dashboard_region', $record);	
+        }else{ // Actualizar	
+            if($userid != $record->userid ){	
+                $record->userid = $userid;	
+                // $record->active = 1;	
+                $update = $DB->update_record('dashboard_region', $record);	
+            }	
+        }	
+        return "ok";	
+    }catch(Exception $e){	
+        _log('Error local_hoteles_city_dashboard_update_gerente_regional', $e);	
+        return 'Por favor, inténtelo de nuevo';	
+    }	
+}	
+function local_hoteles_city_dashboard_update_gerente_general(array $params){	
+    try{	
+        global $DB;	
+        $institution = local_hoteles_city_dashboard_get_value_from_params($params, 'institution', false);	
+        $userid = local_hoteles_city_dashboard_get_value_from_params($params, 'userid', false);	
+        if(local_hoteles_city_dashboard_has_empty($institution, $userid)){	
+            _log('Faltan datos institution, userid', $params);	
+            return 'Por favor recargue la página';	
+        }	
+        $record = $DB->get_record('dashboard_region_ins', compact('institution'));	
+        if($record === false){ // Crear	
+            $record = new stdClass();	
+            $record->institution = $institution;	
+            $record->userid = $userid;	
+            $record->active = 1;	
+            $insertion = $DB->insert_record('dashboard_region_ins', $record);	
+        }else{ // Actualizar	
+            if($userid != $record->userid ){	
+                $record->userid = $userid;	
+                $record->active = 1;	
+                $update = $DB->update_record('dashboard_region_ins', $record);	
+            }	
+        }	
+        return "ok";	
+    }catch(Exception $e){	
+        _log('Error local_hoteles_city_dashboard_update_gerente_general', $e);	
+        return 'Por favor, inténtelo de nuevo';	
+    }	
 }

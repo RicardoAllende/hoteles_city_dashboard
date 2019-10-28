@@ -1,0 +1,13 @@
+Campo marca id=6
+
+Opciones: 
+
+City Express
+City Express Plus
+City Express Suites
+City Express Junior
+City Centro
+Oficina Central
+
+
+Valor por defecto: Oficina Central
