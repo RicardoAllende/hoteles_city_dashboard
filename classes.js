@@ -28,7 +28,8 @@ function regresaInfoByCurso(){
     //showModal();
     //informacion = $('#filter_form').serializeArray();
     informacion = [];
-            informacion.push({name: 'request_type', value: 'course_list'});
+            // informacion.push({name: 'request_type', value: 'course_list'});
+            informacion.push({name: 'request_type', value: 'dashboard'});
             //informacion.push({name: 'type', value: currentTab});
             //dateBegining = Date.now();
             // $('#local_dominosdashboard_content').html('Cargando la información');
@@ -49,8 +50,8 @@ function regresaInfoByCurso(){
                 // var arr_data = Array();
                 // var labels_graph = Array();
                 // var info_graph = Array();                
-                for (var i = 0; i < respuesta.result.length; i++) {
-                    resp = respuesta.result[i];
+                for (var i = 0; i < respuesta.length; i++) {
+                    resp = respuesta[i];
                     // info_graph.push(resp.approved_users);
                     // info_graph.push(resp.not_approved_users);
                     // labels_graph.push("Aprobados");
