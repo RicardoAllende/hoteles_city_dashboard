@@ -2087,7 +2087,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->name = "Marca " . $i;
         $element->enrolled_users = random_int(10, 10000);
         $element->approved_users = random_int(5, $element->enrolled_users);
-        $element->percentage = local_dominosdashboard_percentage_of($element->approved_users, $element->enrolled_users);
+        $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
         array_push($response->section_1, $element);
@@ -2098,7 +2098,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->name = "Región " . $i;
         $element->enrolled_users = random_int(10, 10000);
         $element->approved_users = random_int(5, $element->enrolled_users);
-        $element->percentage = local_dominosdashboard_percentage_of($element->approved_users, $element->enrolled_users);
+        $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
         array_push($response->section_2, $element);
@@ -2109,7 +2109,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->name = "Dirección " . $i;
         $element->enrolled_users = random_int(10, 10000);
         $element->approved_users = random_int(5, $element->enrolled_users);
-        $element->percentage = local_dominosdashboard_percentage_of($element->approved_users, $element->enrolled_users);
+        $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
         array_push($response->section_3, $element);
@@ -2120,7 +2120,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         $element->name = "Puesto " . $i;
         $element->enrolled_users = random_int(10, 10000);
         $element->approved_users = random_int(5, $element->enrolled_users);
-        $element->percentage = local_dominosdashboard_percentage_of($element->approved_users, $element->enrolled_users);
+        $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
         array_push($response->section_4, $element);
