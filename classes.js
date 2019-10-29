@@ -46,36 +46,42 @@ function regresaInfoByCurso() {
                 respuesta = JSON.parse(JSON.stringify(data));
                 respuesta = respuesta.data;
                 console.log('Imprimiendo la respuesta', respuesta);
+                //graph_data();
                 
                 // var arr_data = Array();
                 // var labels_graph = Array();
-                // var info_graph = Array();                
+                // var info_graph = Array();
+
                 for (var i = 0; i < respuesta.length; i++) {
                     resp = respuesta[i];
-                    // info_graph.push(resp.approved_users);
-                    // info_graph.push(resp.not_approved_users);
-                    // labels_graph.push("Aprobados");
-                    // labels_graph.push("No aprobados");
-                    // arr_data.push(info_graph);
-                    // arr_data.push(labels_graph);
-                    //var chart_type = 'pie';
-                    var curso = new GraphicsDashboard('contenedor_graficas',resp.title,resp.chart,resp,5);                    
-                    curso.printCard();
+                                       
                     //curso.infoGraph();
-                    if(resp.chart == 'bar-agrupadas'){
+                    
+                    for(j=0; j<resp.length; j++){
+
+                        console.log('resp.chart');
+                    console.log(resp[j].chart);
+                    console.log(resp[j])
+                    var curso = new GraphicsDashboard('contenedor_graficas','Titulo',resp[j].chart,resp[j],5);                                        
+                     
+
+                    if(resp[j].chart == 'bar-agrupadas'){
                         curso.comparative_graph();
                         }
-                    if(resp.chart == 'line'){
+                    if(resp[j].chart == 'line'){
                     curso.comparative_graph();
-                }
-                if (resp.chart == 'burbuja') {
-                    curso.comparative_graph();
-                }
-                if (resp.chart == 'pie') {
-                    curso.indivial_graph();
-                }
-                if (resp.chart == 'bar') {
-                    curso.indivial_graph();
+                    }
+                    if (resp[j].chart == 'burbuja') {
+                        curso.comparative_graph();
+                    }
+                    if (resp[j].chart == 'pie') {
+                        curso.indivial_graph();
+                    }
+                    if (resp[j].chart == 'bar') {
+                        curso.indivial_graph();
+                    }
+
+                    curso.printCard();
                 }
             }
 
@@ -100,7 +106,43 @@ function regresaInfoByCurso() {
 //   document.getElementById("modal").style.display = "none";
 //   //document.getElementById(id_div).style.display = "block";
 // }
+function graph_data(data){    
+    console.log('INICIA INFORMACION DE LA GRAFICA');    
+    for(i=0; i<data.length; i++){
+        data_labels = [];        
+        resp= data[i];
+        arr_datasets_aprobados = [];
+        arr_datasets_no_aprobados = [];
+        arr_datasets_inscritos = [];
+        datasets_aprobados = {label: 'Aprobados', backgroundColor: '#1cc88a',data: arr_datasets_aprobados}
+        datasets_no_aprobados = {label: 'No Aprobados', backgroundColor: '#1cc88a',data: arr_datasets_no_aprobados}
+        datasets_inscritos = {label: 'Inscritos', backgroundColor: '#B5928B',data: arr_datasets_no_aprobados}
+        dataset = [];
+        for(j=0; j<resp.length; j++){
+            data_labels.push(resp[j].name);
+            arr_datasets_aprobados.push(resp[j].approved_users);
+            arr_datasets_no_aprobados.push(resp[j].not_approved_users);
+            arr_datasets_inscritos.push(resp[j].enrolled_users);
+        }
+        dataset.push(datasets_aprobados);
+        dataset.push(datasets_no_aprobados);
+        dataset.push(datasets_inscritos);
+        d_graph = {labels : data_labels,datasets : dataset};
 
+        console.log('data_graph.d_graph');
+        console.log(d_graph);
+
+        return d_graph;
+    // console.log('LABELS');
+    // console.log(data_labels);
+    // console.log('APROBADOS');
+    // console.log(arr_datasets_aprobados);
+    // console.log('NO APROBADOS');
+    // console.log(arr_datasets_no_aprobados);    
+    }
+        
+    
+}
 
 class GraphicsDashboard {
     constructor(div_print_card, title, type_graph, data_graph, col_size_graph) {
@@ -177,265 +219,265 @@ class GraphicsDashboard {
     </div>        
     `);
         }
-        console.log('PRINT CARD');
+        
 
     }
 
-    infoGraph() {
-        console.log('INFO GRAPH')
-        switch (this.type_graph) {
-            case 'bar-agrupadas':
-                var d_graph = Array();
-                d_graph.push(this.data_graph.approved_users);
-                d_graph.push(this.data_graph.not_approved_users);
-                // console.log('INFO');                    
-                // console.log(d_graph[1]);                     
-                if (this.data_graph.enrolled_users > 0) {
-                    var ctx = document.getElementById(this.div_graph);
-                    var chart = new Chart(ctx, {
-                        // The type of chart we want to create
-                        type: 'bar',
+    // infoGraph() {
+    //     console.log('INFO GRAPH')
+    //     switch (this.type_graph) {
+    //         case 'bar-agrupadas':
+    //             var d_graph = Array();
+    //             d_graph.push(this.data_graph.approved_users);
+    //             d_graph.push(this.data_graph.not_approved_users);
+    //             // console.log('INFO');                    
+    //             // console.log(d_graph[1]);                     
+    //             if (this.data_graph.enrolled_users > 0) {
+    //                 var ctx = document.getElementById(this.div_graph);
+    //                 var chart = new Chart(ctx, {
+    //                     // The type of chart we want to create
+    //                     type: 'bar',
 
-                        // The data for our dataset
-                        data: {
-                            labels: ['Centro', 'Suites', 'Plus', 'Express', 'Junior', 'OC'],
-                            datasets: [{
-                                label: 'Aprobados',
-                                backgroundColor: '#1cc88a',
-                                //data: d_graph[0],
-                                data: [1, 2, 3]
-                            }, {
-                                label: 'No Aprobados',
-                                backgroundColor: '#e74a3b',
-                                //data: d_graph[1],
-                                data: [5, 4, 3]
-                            }]
-                        },
+    //                     // The data for our dataset
+    //                     data: {
+    //                         labels: ['Centro', 'Suites', 'Plus', 'Express', 'Junior', 'OC'],
+    //                         datasets: [{
+    //                             label: 'Aprobados',
+    //                             backgroundColor: '#1cc88a',
+    //                             //data: d_graph[0],
+    //                             data: [1, 2, 3]
+    //                         }, {
+    //                             label: 'No Aprobados',
+    //                             backgroundColor: '#e74a3b',
+    //                             //data: d_graph[1],
+    //                             data: [5, 4, 3]
+    //                         }]
+    //                     },
 
-                        // Configuration options go here
-                        options: {
+    //                     // Configuration options go here
+    //                     options: {
 
-                        }
-                    });
-                }
-                else {
-                    var ctx = document.getElementById(this.div_graph)
-                    ctx.innerHTML = "No existen usuarios inscritos";
-                }
-                break;
+    //                     }
+    //                 });
+    //             }
+    //             else {
+    //                 var ctx = document.getElementById(this.div_graph)
+    //                 ctx.innerHTML = "No existen usuarios inscritos";
+    //             }
+    //             break;
 
-            case 'horizontalBar':
-                var d_graph = Array();
-                d_graph.push(this.data_graph.approved_users);
-                //d_graph.push(this.data_graph.not_approved_users);
-                console.log('HORIZONTAL');
-                console.log(d_graph);
-                if (this.data_graph.enrolled_users > 0) {
-                    var ctx = document.getElementById(this.div_graph);
-                    var chart = new Chart(ctx, {
-                        // The type of chart we want to create
-                        type: 'horizontalBar',
+    //         case 'horizontalBar':
+    //             var d_graph = Array();
+    //             d_graph.push(this.data_graph.approved_users);
+    //             //d_graph.push(this.data_graph.not_approved_users);
+    //             console.log('HORIZONTAL');
+    //             console.log(d_graph);
+    //             if (this.data_graph.enrolled_users > 0) {
+    //                 var ctx = document.getElementById(this.div_graph);
+    //                 var chart = new Chart(ctx, {
+    //                     // The type of chart we want to create
+    //                     type: 'horizontalBar',
 
-                        // The data for our dataset
-                        data: {
-                            labels: ['EVD', 'JVD', 'GV'],
-                            datasets: [{
-                                label: 'A',
-                                //borderColor: 'rgb(255, 99, 132)',
-                                data: d_graph,
-                            }]
-                        },
+    //                     // The data for our dataset
+    //                     data: {
+    //                         labels: ['EVD', 'JVD', 'GV'],
+    //                         datasets: [{
+    //                             label: 'A',
+    //                             //borderColor: 'rgb(255, 99, 132)',
+    //                             data: d_graph,
+    //                         }]
+    //                     },
 
-                        // Configuration options go here
-                        options: {
-                            legend: { display: false },
-                        }
-                    });
-                }
-                else {
-                    var ctx = document.getElementById(this.div_graph)
-                    ctx.innerHTML = "No existen usuarios inscritos";
-                }
+    //                     // Configuration options go here
+    //                     options: {
+    //                         legend: { display: false },
+    //                     }
+    //                 });
+    //             }
+    //             else {
+    //                 var ctx = document.getElementById(this.div_graph)
+    //                 ctx.innerHTML = "No existen usuarios inscritos";
+    //             }
 
-                break;
+    //             break;
 
-            case 'pie':
-                var d_graph = Array();
-                d_graph.push(this.data_graph.approved_users);
-                d_graph.push(this.data_graph.not_approved_users);
-                if (this.data_graph.enrolled_users > 0) {
-                    var ctx = document.getElementById(this.div_graph);
-                    var chart = new Chart(ctx, {
-                        type: 'pie',
-                        data: {
-                            labels: ["Aprobado", "No Aprobados"],
-                            datasets: [{
-                                label: "Population (millions)",
-                                backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
-                                data: d_graph
-                            }]
-                        },
-                        options: {
-                        }
-                    });
-                }
-                else {
-                    var ctx = document.getElementById(this.div_graph)
-                    ctx.innerHTML = "No existen usuarios inscritos";
-                }
-
-
-                break;
-
-            case 'line': //Tendencia
-                if (this.data_graph.enrolled_users > 0) {
-                    var ctx = document.getElementById(this.div_graph);
-                    var chart = new Chart(ctx, {
-                        // The type of chart we want to create
-                        type: 'line',
-
-                        // The data for our dataset
-                        data: {
-                            labels: ['Variable 1', 'Variable 2', 'Variable 3', 'Variable 4', 'Variable 5', 'Variable 6'],
-                            datasets: [{
-                                label: 'A',
-                                borderColor: "#3e95cd",
-                                backgroundColor: 'transparent',
-                                data: [15, 40, 30, 26, 12, 34, 0],
-                            }, {
-                                label: 'B',
-                                borderColor: "#8e5ea2",
-                                backgroundColor: 'transparent',
-                                data: [5, 45, 26, 31, 41, 10, 0],
-                            }]
-                        },
-
-                        // Configuration options go here
-                        options: {
-
-                        }
-                    });
-                }
-                else {
-                    var ctx = document.getElementById(this.div_graph)
-                    ctx.innerHTML = "No existen usuarios inscritos";
-                }
-
-                break;
-
-            case 'bar':
-                var d_graph = Array();
-                d_graph.push(this.data_graph.approved_users);
-                d_graph.push(this.data_graph.not_approved_users);
-                if (this.data_graph.enrolled_users > 0) {
-                    var ctx = document.getElementById(this.div_graph);
-                    var chart = new Chart(ctx, {
-                        // The type of chart we want to create
-                        type: 'bar',
-                        data: {
-                            labels: ["Aprobados", "No aprobados"],
-                            datasets: [{
-                                backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
-                                data: d_graph
-                            }]
-                        },
-                        options: {
-                            legend: { display: false }
-                        }
-                    });
-                }
-                else {
-                    var ctx = document.getElementById(this.div_graph)
-                    ctx.innerHTML = "No existen usuarios inscritos";
-                }
-
-                break;
-
-            case 'burbuja':
-                console.log('DIV GRAF');
-                console.log(this.div_graph);
-                if (this.data_graph.enrolled_users > 0) {
-                    var ctx = document.getElementById(this.div_graph);
-                    var chart = new Chart(ctx, {
-                        type: 'bubble',
-                        data: {
-                            labels: "Africa",
-                            datasets: [
-                                {
-                                    label: ["Hotel 1"],
-                                    backgroundColor: "rgba(255,221,50,0.2)",
-                                    borderColor: "rgba(255,221,50,1)",
-                                    data: [{
-                                        x: 212,//inscritos
-                                        y: 207,//aprobados
-                                        r: 5 //no aprobados
-                                    }]
-                                }, {
-                                    label: ["Hotel 2"],
-                                    backgroundColor: "rgba(60,186,159,0.2)",
-                                    borderColor: "rgba(60,186,159,1)",
-                                    data: [{
-                                        x: 258,
-                                        y: 726,
-                                        r: 10
-                                    }]
-                                }, {
-                                    label: ["Hotel 3"],
-                                    backgroundColor: "rgba(0,0,0,0.2)",
-                                    borderColor: "#000",
-                                    data: [{
-                                        x: 397,
-                                        y: 994,
-                                        r: 15
-                                    }]
-                                }
-                            ]
-                        },
-                        options: {
-                            title: {
-                                display: true,
-                                text: 'Predicted world population (millions) in 2050'
-                            }, scales: {
-                                yAxes: [{
-                                    scaleLabel: {
-                                        display: true,
-                                        labelString: "Happiness"
-                                    }
-                                }],
-                                xAxes: [{
-                                    scaleLabel: {
-                                        display: true,
-                                        labelString: "GDP (PPP)"
-                                    }
-                                }]
-                            }
-                        }
-                    });
-                }
-                else {
-                    var ctx = document.getElementById(this.div_graph)
-                    ctx.innerHTML = "No existen usuarios inscritos";
-                }
-
-                break;
+    //         case 'pie':
+    //             var d_graph = Array();
+    //             d_graph.push(this.data_graph.approved_users);
+    //             d_graph.push(this.data_graph.not_approved_users);
+    //             if (this.data_graph.enrolled_users > 0) {
+    //                 var ctx = document.getElementById(this.div_graph);
+    //                 var chart = new Chart(ctx, {
+    //                     type: 'pie',
+    //                     data: {
+    //                         labels: ["Aprobado", "No Aprobados"],
+    //                         datasets: [{
+    //                             label: "Population (millions)",
+    //                             backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
+    //                             data: d_graph
+    //                         }]
+    //                     },
+    //                     options: {
+    //                     }
+    //                 });
+    //             }
+    //             else {
+    //                 var ctx = document.getElementById(this.div_graph)
+    //                 ctx.innerHTML = "No existen usuarios inscritos";
+    //             }
 
 
+    //             break;
+
+    //         case 'line': //Tendencia
+    //             if (this.data_graph.enrolled_users > 0) {
+    //                 var ctx = document.getElementById(this.div_graph);
+    //                 var chart = new Chart(ctx, {
+    //                     // The type of chart we want to create
+    //                     type: 'line',
+
+    //                     // The data for our dataset
+    //                     data: {
+    //                         labels: ['Variable 1', 'Variable 2', 'Variable 3', 'Variable 4', 'Variable 5', 'Variable 6'],
+    //                         datasets: [{
+    //                             label: 'A',
+    //                             borderColor: "#3e95cd",
+    //                             backgroundColor: 'transparent',
+    //                             data: [15, 40, 30, 26, 12, 34, 0],
+    //                         }, {
+    //                             label: 'B',
+    //                             borderColor: "#8e5ea2",
+    //                             backgroundColor: 'transparent',
+    //                             data: [5, 45, 26, 31, 41, 10, 0],
+    //                         }]
+    //                     },
+
+    //                     // Configuration options go here
+    //                     options: {
+
+    //                     }
+    //                 });
+    //             }
+    //             else {
+    //                 var ctx = document.getElementById(this.div_graph)
+    //                 ctx.innerHTML = "No existen usuarios inscritos";
+    //             }
+
+    //             break;
+
+    //         case 'bar':
+    //             var d_graph = Array();
+    //             d_graph.push(this.data_graph.approved_users);
+    //             d_graph.push(this.data_graph.not_approved_users);
+    //             if (this.data_graph.enrolled_users > 0) {
+    //                 var ctx = document.getElementById(this.div_graph);
+    //                 var chart = new Chart(ctx, {
+    //                     // The type of chart we want to create
+    //                     type: 'bar',
+    //                     data: {
+    //                         labels: ["Aprobados", "No aprobados"],
+    //                         datasets: [{
+    //                             backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
+    //                             data: d_graph
+    //                         }]
+    //                     },
+    //                     options: {
+    //                         legend: { display: false }
+    //                     }
+    //                 });
+    //             }
+    //             else {
+    //                 var ctx = document.getElementById(this.div_graph)
+    //                 ctx.innerHTML = "No existen usuarios inscritos";
+    //             }
+
+    //             break;
+
+    //         case 'burbuja':
+    //             console.log('DIV GRAF');
+    //             console.log(this.div_graph);
+    //             if (this.data_graph.enrolled_users > 0) {
+    //                 var ctx = document.getElementById(this.div_graph);
+    //                 var chart = new Chart(ctx, {
+    //                     type: 'bubble',
+    //                     data: {
+    //                         labels: "Africa",
+    //                         datasets: [
+    //                             {
+    //                                 label: ["Hotel 1"],
+    //                                 backgroundColor: "rgba(255,221,50,0.2)",
+    //                                 borderColor: "rgba(255,221,50,1)",
+    //                                 data: [{
+    //                                     x: 212,//inscritos
+    //                                     y: 207,//aprobados
+    //                                     r: 5 //no aprobados
+    //                                 }]
+    //                             }, {
+    //                                 label: ["Hotel 2"],
+    //                                 backgroundColor: "rgba(60,186,159,0.2)",
+    //                                 borderColor: "rgba(60,186,159,1)",
+    //                                 data: [{
+    //                                     x: 258,
+    //                                     y: 726,
+    //                                     r: 10
+    //                                 }]
+    //                             }, {
+    //                                 label: ["Hotel 3"],
+    //                                 backgroundColor: "rgba(0,0,0,0.2)",
+    //                                 borderColor: "#000",
+    //                                 data: [{
+    //                                     x: 397,
+    //                                     y: 994,
+    //                                     r: 15
+    //                                 }]
+    //                             }
+    //                         ]
+    //                     },
+    //                     options: {
+    //                         title: {
+    //                             display: true,
+    //                             text: 'Predicted world population (millions) in 2050'
+    //                         }, scales: {
+    //                             yAxes: [{
+    //                                 scaleLabel: {
+    //                                     display: true,
+    //                                     labelString: "Happiness"
+    //                                 }
+    //                             }],
+    //                             xAxes: [{
+    //                                 scaleLabel: {
+    //                                     display: true,
+    //                                     labelString: "GDP (PPP)"
+    //                                 }
+    //                             }]
+    //                         }
+    //                     }
+    //                 });
+    //             }
+    //             else {
+    //                 var ctx = document.getElementById(this.div_graph)
+    //                 ctx.innerHTML = "No existen usuarios inscritos";
+    //             }
+
+    //             break;
 
 
 
-            default:
-                break;
-        }
 
-    }
+
+    //         default:
+    //             break;
+    //     }
+
+    // }
+
+    
+
     comparative_graph() {
+       
         switch (this.type_graph) {
-            case 'bar-agrupadas':
-                var d_graph = Array();
-                d_graph.push(this.data_graph.approved_users);
-                d_graph.push(this.data_graph.not_approved_users);
-                // console.log('INFO');                    
-                // console.log(d_graph[1]);                     
+            case 'bar-agrupadas':                
+                var data_agrupadas = graph_data(this.data_graph);                                   
                 if (this.data_graph.enrolled_users > 0) {
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
@@ -443,20 +485,7 @@ class GraphicsDashboard {
                         type: 'bar',
 
                         // The data for our dataset
-                        data: {
-                            labels: ['Centro', 'Suites', 'Plus', 'Express', 'Junior', 'OC'],
-                            datasets: [{
-                                label: 'Aprobados',
-                                backgroundColor: '#1cc88a',
-                                //data: d_graph[0],
-                                data: [1, 2, 3]
-                            }, {
-                                label: 'No Aprobados',
-                                backgroundColor: '#e74a3b',
-                                //data: d_graph[1],
-                                data: [5, 4, 3]
-                            }]
-                        },
+                        data: data_agrupadas,
 
                         // Configuration options go here
                         options: {
