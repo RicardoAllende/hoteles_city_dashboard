@@ -40,10 +40,7 @@ $PAGE->set_title(get_string('pluginname', $pluginname));
 echo $OUTPUT->header();
 // Institution -> hotel
 // Department -> puesto
-$catalogues = local_hoteles_city_dashboard_get_catalogues();
-// _print('Catálogos devueltos', $catalogues);
-// _log(compact('catalogues'));
-$institutions = $catalogues['institution'];
+$institutions = local_hoteles_city_dashboard_get_institutions();
 $hasInstitutions = count($institutions) > 0;
 // $regions = $catalogues['departments'];
 $regions = local_hoteles_city_dashboard_get_regions();
@@ -113,7 +110,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                             {$region->name} {$status}&nbsp;<i class='fas fa-edit'></i></button>
                             </th>";
                         }
-                        echo "<th>Gerente general</th>";
+                        // echo "<th>Gerente general</th>";
                         echo '</tr>';
                     }
                     ?>
@@ -129,7 +126,8 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                                 }
                             }
                             echo '<tr>';
-                            echo "<td scope=\"col\" class=\"text-center\">{$institution}</td>";
+                            echo "<td scope=\"col\" class=\"text-center btn Info\" onclick='showInstitution(\"{$institution}\")'>
+                            {$institution} &nbsp;&nbsp;<i class='fas fa-info-circle'></td>";
                             $ins = local_hoteles_city_dashboard_slug($institution);
                             foreach ($regions as $region) {
                                 $checked = "";
@@ -150,13 +148,13 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                                 $default = $relationship->userid;
                                 $relationshipid = $relationship->id ;
                             }
-                            echo "<td><select class='form-control' id='manager_{$ins}' onchange=\"establecer_gerente_general('{$institution}', '#manager_{$ins}')\">";
-                            echo "<option>Seleccionar</option>";
-                            foreach($gerentes_generales as $id => $gg){
-                                $selected = ($id == $default) ? 'selected' : '';
-                                echo "<option {$selected} value='{$id}'>{$gg}</option>";
-                            }
-                            echo "</select></td>";
+                            // echo "<td><select class='form-control' id='manager_{$ins}' onchange=\"establecer_gerente_general('{$institution}', '#manager_{$ins}')\">";
+                            // echo "<option>Seleccionar</option>";
+                            // foreach($gerentes_generales as $id => $gg){
+                            //     $selected = ($id == $default) ? 'selected' : '';
+                            //     echo "<option {$selected} value='{$id}'>{$gg}</option>";
+                            // }
+                            // echo "</select></td>";
                             // echo "<td class='manager_fillable' id='manager_fillable'></td>";
                             echo '</tr>';
                         }
@@ -597,6 +595,10 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                     Swal.fire('Hubo un error, recargue la página e intente de nuevo');
                     console.log(error, error2);
                 });
+        }
+
+        function showInstitution(institution){
+
         }
         //     });
         // });
