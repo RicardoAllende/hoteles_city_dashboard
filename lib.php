@@ -2089,57 +2089,77 @@ function local_hoteles_city_dashboard_update_gerente_general(array $params){
 
 function local_hoteles_city_dashboard_get_dashboard_windows(array $params = array()){
     $response = array();
-    $response[0] = array();
-    for ($i=0; $i < 6; $i++) { 
+    $item = new stdClass();
+    $item->elements = array();
+    $item->name = "Avance global de capacitación";
+    $item->chart = 'bar-agrupadas';
+    for ($i=0; $i < 6; $i++) { // Marcas
         $element = new stdClass();
         $element->name = "Marca " . $i;
         $element->enrolled_users = random_int(10, 10000);
         $element->approved_users = random_int(5, $element->enrolled_users);
-        $element->chart = 'bar-agrupadas';
+        // $element->chart = 'bar-agrupadas';
         $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
         $element->type = 'section_1';
-        array_push($response[0], $element);
+        array_push($item->elements, $element);
     }
-    $response[1] = array();
+    array_push($response, $item);
+    $item = new stdClass();
+    $item->elements = array();
+    $item->name = "Avance por regiones";
+    $item->chart = 'bar-agrupadas';
     for ($i=0; $i < 6; $i++) { 
         $element = new stdClass();
         $element->name = "Región " . $i;
         $element->enrolled_users = random_int(10, 10000);
         $element->approved_users = random_int(5, $element->enrolled_users);
-        $element->chart = 'bar-agrupadas';
+        // $element->chart = 'bar-agrupadas';
         $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
         $element->type = 'section_2';
-        array_push($response[1], $element);
+        array_push($item->elements, $element);
     }
-    $response[2] = array();
+    array_push($response, $item);
+    $item = new stdClass();
+    $item->elements = array();
+    $item->name = "Avance de capacitaciones en Oficina Central";
+    $item->chart = 'bar-agrupadas';
     for ($i=0; $i < 9; $i++) { // Direcciones
         $element = new stdClass();
         $element->name = "Dirección " . $i;
         $element->enrolled_users = random_int(10, 10000);
         $element->approved_users = random_int(5, $element->enrolled_users);
-        $element->chart = 'bar-agrupadas';
+        // $element->chart = 'bar-agrupadas';
         $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
         $element->type = 'section_3';
-        array_push($response[2], $element);
+        array_push($item->elements, $element);
     }
-    $response[3] = array();
-    for ($i=0; $i < 12; $i++) { 
+    array_push($response, $item);
+    $item = new stdClass();
+    $item->elements = array();
+    $item->name = "Avance de capacitación por puesto en hoteles";
+    $item->chart = 'horizontalBar';
+    for ($i=0; $i < 12; $i++) { // Puestos
         $element = new stdClass();
         $element->name = "Puesto " . $i;
-        $element->chart = 'horizontalBar';
+        // $element->chart = 'horizontalBar';
         $element->enrolled_users = random_int(10, 10000);
         $element->approved_users = random_int(5, $element->enrolled_users);
         $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
         $element->not_approved_users = $element->enrolled_users - $element->approved_users;
         $element->value = $element->percentage;
         $element->type = 'section_4';
-        array_push($response[3], $element);
+        array_push($item->elements, $element);
     }
+    array_push($response, $item);
     return $response;
+}
+
+function local_hoteles_city_dashboard_get_overview_all_courses(array $params){
+    $query = "";
 }
