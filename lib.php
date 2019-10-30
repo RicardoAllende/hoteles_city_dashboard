@@ -1153,7 +1153,7 @@ function local_hoteles_city_dashboard_get_approved_users(int $courseid, stdClass
     $query = "SELECT count(*) AS completions FROM {course_completions} AS cc JOIN {user} AS u ON cc.userid = u.id
     WHERE cc.course = {$courseid} AND cc.timecompleted IS NOT NULL {$filtro_fecha} {$whereids} ";
 
-    _sql($query, $userids->params, 'Aprobados');
+    // _sql($query, $userids->params, 'Aprobados');
     global $DB;
     if($result = $DB->get_record_sql($query, $userids->params)){
         $response = $result->completions;
@@ -1880,7 +1880,7 @@ $global_user_permissions = null;
  */
 function local_hoteles_city_dashboard_get_user_permissions(){
     global $global_user_permissions;
-    if($global_user_permissions === null){
+    if($global_user_permissions !== null){
         return $global_user_permissions;
     }
     // $roles = local_hoteles_city_dashboard_get_user_roles();
@@ -2140,22 +2140,38 @@ function local_hoteles_city_dashboard_update_gerente_general(array $params){
 function local_hoteles_city_dashboard_get_dashboard_windows(array $params = array()){
     $response = array();
     $item = new stdClass();
-    $item->elements = array();
-    $item->name = "Avance global de capacitación";
-    $item->chart = 'bar-agrupadas';
-    for ($i=0; $i < 6; $i++) { // Marcas
-        $element = new stdClass();
-        $element->name = "Marca " . $i;
-        $element->enrolled_users = random_int(10, 10000);
-        $element->approved_users = random_int(5, $element->enrolled_users);
-        // $element->chart = 'bar-agrupadas';
-        $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
-        $element->not_approved_users = $element->enrolled_users - $element->approved_users;
-        $element->value = $element->percentage;
-        $element->type = 'section_1';
-        array_push($item->elements, $element);
+
+
+    $marcafield = get_config('local_hoteles_city_dashboard', 'marcafield');
+    if(!empty($marcafield)){
+        $marcas = local_hoteles_city_dashboard_get_custom_catalogue($marcafield);
+        $item->elements = array();
+        $item->name = "Avance global de capacitación";
+        $item->chart = 'bar-agrupadas';
+        $marca_param = local_hoteles_city_dashboard_filter_prefix_custom_field . $marcafield;
+        foreach($marcas as $marca){
+            $params = array();
+            $params[$marca_param] = $marca;
+            
+
+        // }
+        // for ($i=0; $i < 6; $i++) { // Marcas
+            $element = new stdClass();
+            $element->name = $marca;
+            $element->enrolled_users = random_int(10, 10000);
+            $element->approved_users = random_int(5, $element->enrolled_users);
+            // $element->chart = 'bar-agrupadas';
+            $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
+            $element->not_approved_users = $element->enrolled_users - $element->approved_users;
+            $element->value = $element->percentage;
+            $element->type = 'section_1';
+            array_push($item->elements, $element);
+        }
+        array_push($response, $item);
     }
-    array_push($response, $item);
+
+
+
     $item = new stdClass();
     $item->elements = array();
     $item->name = "Avance por regiones";
@@ -2173,6 +2189,8 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         array_push($item->elements, $element);
     }
     array_push($response, $item);
+
+
     $item = new stdClass();
     $item->elements = array();
     $item->name = "Avance de capacitaciones en Oficina Central";
@@ -2190,6 +2208,8 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
         array_push($item->elements, $element);
     }
     array_push($response, $item);
+
+
     $item = new stdClass();
     $item->elements = array();
     $item->name = "Avance de capacitación por puesto en hoteles";
