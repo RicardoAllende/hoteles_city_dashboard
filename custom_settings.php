@@ -59,13 +59,15 @@ class filter_settings extends moodleform {
         
         $mform->addElement('header', 'special_custom_fields', get_string('special_custom_fields_header', $pluginname));
 
-        $name = 'marcafield';
-        $title = get_string($name, $pluginname);
-        $description = get_string($name . '_desc', $pluginname);
-        $default = !empty($configs[$name]) ? $configs[$name] : "";
-        $select = $mform->addElement('select', $name, $title, $custom_fields);
-        $mform->setDefault($name, $default);
-        $mform->addElement('static', 'description', '', $description);
+        foreach (local_hoteles_city_dashboard_special_custom_fields as $key => $value) {
+            $name = $key;
+            $title = $value;
+            $description = "Seleccione el campo personalizado que tiene el campo " . strtolower($value); // get_string($name . '_desc', $pluginname);
+            $default = !empty($configs[$name]) ? $configs[$name] : "";
+            $select = $mform->addElement('select', $name, $title, $custom_fields);
+            $mform->setDefault($name, $default);
+            $mform->addElement('static', 'description', '', $description);
+        }
 
         $courses = local_hoteles_city_dashboard_get_courses();
         $name = 'dashboard_courses';
