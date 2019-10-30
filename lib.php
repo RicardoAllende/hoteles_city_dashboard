@@ -1161,7 +1161,7 @@ function local_hoteles_city_dashboard_get_approved_users($course, stdClass $user
     $query = "SELECT count(*) AS completions FROM {course_completions} AS cc JOIN {user} AS u ON cc.userid = u.id
     WHERE cc.course {$wherecourse} AND cc.timecompleted IS NOT NULL {$filtro_fecha} {$whereids} ";
 
-    _sql($query, $userids->params, 'Aprobados');
+    // _sql($query, $userids->params, 'Aprobados');
     global $DB;
     if($result = $DB->get_record_sql($query, $userids->params)){
         $response = $result->completions;
@@ -1173,6 +1173,9 @@ function local_hoteles_city_dashboard_get_approved_users($course, stdClass $user
 }
 
 function local_hoteles_city_dashboard_percentage_of(int $number, int $total, int $decimals = 2 ){
+    if($number > $total){
+        _log('El valor total es mayor ');
+    }
     if($total != 0){
         return round($number / $total * 100, $decimals);
     }else{
@@ -1195,6 +1198,7 @@ function local_hoteles_city_dashboard_get_user_ids_with_params($course, array $p
     $fecha_final = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_final');
     // Se omite $fecha_inicial debido a que si se incluye los usuarios inscritos anteriormente serían omitidos, activar si se pide explícitamente ese funcionamiento
     list($ids, $enrol_params) = local_hoteles_city_dashboard_get_enrolled_userids($course, '', $fecha_final, $params);
+    // _log('Desde inscripción', $ids);
     $query_parameters = array_merge($query_parameters, $enrol_params);
     array_push($whereinClauses, $ids); // Campos de usuario personalizados
     global $DB;
@@ -1213,12 +1217,12 @@ function local_hoteles_city_dashboard_get_user_ids_with_params($course, array $p
                 array_push($whereinClauses, $where);
             }
         }
-        if(!$hasCustomField && !empty($user_table_sql)){
-            _log('Agregando cláusula ');
-            $where = " (SELECT id FROM {user} WHERE 1 = 1 {$user_table_sql} ) ";
-            array_push($whereinClauses, $where);
-            $query_parameters = array_merge($query_parameters, $user_table_params);
-        }
+        // if(!$hasCustomField && !empty($user_table_sql)){
+        //     _log('Agregando cláusula ');
+        //     $where = " (SELECT id FROM {user} WHERE 1 = 1 {$user_table_sql} ) ";
+        //     array_push($whereinClauses, $where);
+        //     $query_parameters = array_merge($query_parameters, $user_table_params);
+        // }
     }
     $response = new stdClass();
     // $response->default_filters = $whereClauses;
@@ -1237,7 +1241,7 @@ function local_hoteles_city_dashboard_get_user_ids_with_params($course, array $p
  */
 function local_hoteles_city_dashboard_count_users_many_courses(string $courses, $params = array()){
     if(empty($courses)){
-        print_error('No se ha enviado id del curso local_hoteles_city_dashboard_get_enrolled_userids');
+        print_error('No se ha enviado id del curso local_hoteles_city_dashboard_count_users_many_courses');
     }
     $fecha_inicial = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_inicial');
     $fecha_final = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_final');
@@ -1760,7 +1764,6 @@ function local_hoteles_city_dashboard_create_region(array $params){
         $region->userid = intval($userid);
         $region->active = 1;
         $insertion = $DB->insert_record('dashboard_region', $region);
-        _log(compact('insertion'), $region);
         return "ok";
     }catch(Exception $e){
         _log('Error al crear región', $e);
@@ -1828,7 +1831,7 @@ function local_hoteles_city_dashboard_update_region(array $params){
         if($change_status) { $region->active = !$region->active; }
         // $record = $DB->get_record('dashboard_region_ins', array('regionid' => $regionid));
         $update = $DB->update_record('dashboard_region', $region, false);
-        _log(compact('update', 'region'));
+        // _log(compact('update', 'region'));
         // if($record === false){ // Inexistent
         //     $relation = new stdClass();
         //     $relation->regionid = $regionid;
