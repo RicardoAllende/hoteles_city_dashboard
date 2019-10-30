@@ -752,7 +752,8 @@ function local_hoteles_city_dashboard_get_whereids_clauses($userids, $fieldname)
  * @param string $fecha_final Fecha final de inscripción a un curso
  * @return string cadena para agregar como where in de los usuarios inscritos en el curso
  */
-function local_hoteles_city_dashboard_get_enrolled_users_ids($course, string $fecha_inicial, string $fecha_final, bool $applyDistinct = true, $params = array()){
+function local_hoteles_city_dashboard_get_enrolled_users_ids($course, string $fecha_inicial, string $fecha_final, $params = array()){
+    $several_courses = strpos($course, ',') !== false;
     $query_parameters = array();
     $campo_fecha = "__ue__.timestart";
     $filtro_fecha = local_hoteles_city_dashboard_create_sql_dates($campo_fecha, $fecha_inicial, $fecha_final);
@@ -761,7 +762,7 @@ function local_hoteles_city_dashboard_get_enrolled_users_ids($course, string $fe
     }else{ // Se trata de varios cursos
         $wherecourse = " IN ({$course})";
     }
-    $distinctClause = ($applyDistinct) ? 'DISTINCT' : '';
+    $distinctClause = (!$several_courses) ? 'DISTINCT' : '';
     /* User is active participant (used in user_enrolments->status) -- Documentación tomada de enrollib.php 
     define('ENROL_USER_ACTIVE', 0);*/
     // $user_conditions = array();
@@ -1170,9 +1171,12 @@ function local_hoteles_city_dashboard_percentage_of(int $number, int $total, int
 }
 
 /**
+ * Devuelve información para consulta de usuarios según los filtros agregados
+ * @param int|string $course Id o ids en formato  "1,2,3" de los que se planea tomar la información del curso
+ * @param array $params parámetros de búsqueda de cursos, son permitidos campos personalizados y campos de la tabla usuarios
  * @return stdClass
  */
-function local_hoteles_city_dashboard_get_user_ids_with_params($course, array $params = array(), string $fieldname = ''){
+function local_hoteles_city_dashboard_get_user_ids_with_params($course, array $params = array()){
     $whereClauses = array(); // Aplicables sobre campos de la tabla user
     $whereinClauses = array(); // Aplicables sobre campos de usuario personalizados
     $whereParams = array();
@@ -1180,7 +1184,7 @@ function local_hoteles_city_dashboard_get_user_ids_with_params($course, array $p
     $fecha_inicial = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_inicial');
     $fecha_final = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_final');
     // Se omite $fecha_inicial debido a que si se incluye los usuarios inscritos anteriormente serían omitidos, activar si se pide explícitamente ese funcionamiento
-    list($ids, $enrol_params) = local_hoteles_city_dashboard_get_enrolled_users_ids($course, '', $fecha_final, true, $params);
+    list($ids, $enrol_params) = local_hoteles_city_dashboard_get_enrolled_users_ids($course, '', $fecha_final, $params);
     $whereParams = array_merge($whereParams, $enrol_params);
     array_push($whereinClauses, $ids);
     global $DB;
@@ -1254,7 +1258,7 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     // _log($params);
     switch($type){
         case local_hoteles_city_dashboard_course_users_pagination:
-            list($enrol_sql_query, $enrol_params) = " user.id IN " . local_hoteles_city_dashboard_get_enrolled_users_ids($courseid, $desde = '', $hasta = '', true, $params);
+            list($enrol_sql_query, $enrol_params) = " user.id IN " . local_hoteles_city_dashboard_get_enrolled_users_ids($courseid, $desde = '', $hasta = '', $params);
         break;
 
         case local_hoteles_city_dashboard_all_users_pagination:
@@ -2231,6 +2235,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
 }
 
 function local_hoteles_city_dashboard_get_overview_all_courses(array $params){
+
     $query = "";
 }
 
