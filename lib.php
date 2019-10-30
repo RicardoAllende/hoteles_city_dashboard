@@ -2145,6 +2145,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
     $response = array();
     $item = new stdClass();
 
+    $courses = get_config('local_hoteles_city_dashboard', 'dashboard_courses');
 
     $marcafield = get_config('local_hoteles_city_dashboard', 'marcafield');
     if(!empty($marcafield)){
@@ -2157,11 +2158,20 @@ function local_hoteles_city_dashboard_get_dashboard_windows(array $params = arra
             $params = array();
             $params[$marca_param] = $marca;
             
-
-        // }
-        // for ($i=0; $i < 6; $i++) { // Marcas
+            // }
+            // for ($i=0; $i < 6; $i++) { // Marcas
             $element = new stdClass();
             $element->name = $marca;
+            if(empty($courses)){
+                $userids = local_hoteles_city_dashboard_get_user_ids_with_params($courses, $params);
+                _log($userids);
+                _log(local_hoteles_city_dashboard_get_count_users($userids)); //
+                _log(local_hoteles_city_dashboard_get_approved_users($courses, $userids, '', '')); //
+
+                // $element->enrolled_users = 0;
+                // $element->approved_users = 0;
+            }else{
+            }
             $element->enrolled_users = random_int(10, 10000);
             $element->approved_users = random_int(5, $element->enrolled_users);
             // $element->chart = 'bar-agrupadas';
