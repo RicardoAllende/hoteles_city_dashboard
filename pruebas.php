@@ -35,7 +35,13 @@ global $DB, $USER;
 // _print(list($enrolledsql, $params) = get_enrolled_sql(
 //     context_course::instance(8)));
 // _print(get_config('local_hoteles_city_dashboard'));
-_print(local_hoteles_city_dashboard_format_response(local_hoteles_city_dashboard_get_dashboard_windows()));
+$params = array('institution' => 'Institución 1', 'department' => ['Primer departamento', 'Segundo departamento']);
+_print(local_hoteles_city_dashboard_create_user_filters_sql( $params ));
+// $params = [
+//     'institution' => 'Hotel 2',
+//     'department' => 'Gerente General'
+// ];
+_print(local_hoteles_city_dashboard_get_user_ids_with_params('8,9,10', $params));
 // _print($USER->institution);
 // _log(local_hoteles_city_dashboard_get_course_information(9));
 // _log($USER);
