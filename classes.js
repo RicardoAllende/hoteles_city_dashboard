@@ -46,7 +46,7 @@ function regresaInfoByCurso() {
                 respuesta = JSON.parse(JSON.stringify(data));
                 respuesta = respuesta.data;
                 console.log('Imprimiendo la respuesta', respuesta);
-                //graph_data();
+                graph_data();
                 
                 // var arr_data = Array();
                 // var labels_graph = Array();
@@ -59,7 +59,7 @@ function regresaInfoByCurso() {
                     
                     for(j=0; j<resp.length; j++){
 
-                        console.log('resp.chart');
+                    console.log('resp.chart');
                     console.log(resp[j].chart);
                     console.log(resp[j])
                     var curso = new GraphicsDashboard('contenedor_graficas','Titulo',resp[j].chart,resp[j],5);                                        
@@ -106,39 +106,41 @@ function regresaInfoByCurso() {
 //   document.getElementById("modal").style.display = "none";
 //   //document.getElementById(id_div).style.display = "block";
 // }
-function graph_data(data){    
-    console.log('INICIA INFORMACION DE LA GRAFICA');    
-    for(i=0; i<data.length; i++){
+function graph_data(){    
+    console.log('INICIA INFORMACION DE LA GRAFICA');        
+    for(i=0; i<respuesta.length; i++){
         data_labels = [];        
-        resp= data[i];
+        resp= respuesta[i];
         arr_datasets_aprobados = [];
         arr_datasets_no_aprobados = [];
         arr_datasets_inscritos = [];
         datasets_aprobados = {label: 'Aprobados', backgroundColor: '#1cc88a',data: arr_datasets_aprobados}
         datasets_no_aprobados = {label: 'No Aprobados', backgroundColor: '#1cc88a',data: arr_datasets_no_aprobados}
         datasets_inscritos = {label: 'Inscritos', backgroundColor: '#B5928B',data: arr_datasets_no_aprobados}
-        dataset = [];
-        for(j=0; j<resp.length; j++){
-            data_labels.push(resp[j].name);
-            arr_datasets_aprobados.push(resp[j].approved_users);
-            arr_datasets_no_aprobados.push(resp[j].not_approved_users);
-            arr_datasets_inscritos.push(resp[j].enrolled_users);
+        dataset = [];        
+        for(j=0; j<resp.elements.length; j++){            
+            data_labels.push(resp.elements[j].name);            
+            arr_datasets_aprobados.push(resp.elements[j].approved_users);
+            arr_datasets_no_aprobados.push(resp.elements[j].not_approved_users);
+            arr_datasets_inscritos.push(resp.elements[j].enrolled_users);            
         }
         dataset.push(datasets_aprobados);
         dataset.push(datasets_no_aprobados);
         dataset.push(datasets_inscritos);
         d_graph = {labels : data_labels,datasets : dataset};
 
-        console.log('data_graph.d_graph');
-        console.log(d_graph);
+        // console.log('data_graph.d_graph');
+        // console.log(d_graph);
 
-        return d_graph;
-    // console.log('LABELS');
-    // console.log(data_labels);
-    // console.log('APROBADOS');
-    // console.log(arr_datasets_aprobados);
-    // console.log('NO APROBADOS');
-    // console.log(arr_datasets_no_aprobados);    
+        console.log('LABELS');
+        console.log(data_labels);
+        console.log('APROBADOS');
+        console.log(arr_datasets_aprobados);
+        // console.log('NO APROBADOS');
+        // console.log(arr_datasets_no_aprobados);
+
+    //return d_graph;    
+        
     }
         
     
@@ -477,7 +479,7 @@ class GraphicsDashboard {
        
         switch (this.type_graph) {
             case 'bar-agrupadas':                
-                var data_agrupadas = graph_data(this.data_graph);                                   
+                //var data_agrupadas = graph_data(this.data_graph);                                   
                 if (this.data_graph.enrolled_users > 0) {
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
