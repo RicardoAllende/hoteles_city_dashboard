@@ -727,6 +727,7 @@ function local_hoteles_city_dashboard_get_count_users($userids){ // Editado
     // $whereids = implode(' AND _us_.id IN ', $userids->filters);
     $whereids = local_hoteles_city_dashboard_get_whereids_clauses($userids, '_us_.id');
     $query = "SELECT count(*) FROM {user} as _us_ WHERE 1 = 1 {$whereids}";
+    _sql($query, $userids->params);
     return $DB->count_records_sql($query, $userids->params);
 }
 
@@ -753,6 +754,9 @@ function local_hoteles_city_dashboard_get_whereids_clauses($userids, $fieldname)
  * @return string cadena para agregar como where in de los usuarios inscritos en el curso
  */
 function local_hoteles_city_dashboard_get_enrolled_users_ids($course, string $fecha_inicial, string $fecha_final, $params = array()){
+    if(empty($course)){
+        print_error('No se ha enviado id del curso local_hoteles_city_dashboard_get_enrolled_users_ids');
+    }
     $several_courses = strpos($course, ',') !== false;
     $query_parameters = array();
     $campo_fecha = "__ue__.timestart";
@@ -763,6 +767,10 @@ function local_hoteles_city_dashboard_get_enrolled_users_ids($course, string $fe
         $wherecourse = " IN ({$course})";
     }
     $distinctClause = (!$several_courses) ? 'DISTINCT' : '';
+
+    list($user_table_sql, $user_table_params) = local_hoteles_city_dashboard_create_user_filters_sql($params, $prefix = '__user__'); // Filtros de la tabla user
+    $query_parameters = array_merge($query_parameters, $user_table_params);
+
     /* User is active participant (used in user_enrolments->status) -- Documentación tomada de enrollib.php 
     define('ENROL_USER_ACTIVE', 0);*/
     // $user_conditions = array();
@@ -772,7 +780,7 @@ function local_hoteles_city_dashboard_get_enrolled_users_ids($course, string $fe
     $query = "( SELECT {$distinctClause} __user__.id FROM {user} AS __user__
     JOIN {user_enrolments} AS __ue__ ON __ue__.userid = __user__.id
     JOIN {enrol} __enrol__ ON (__enrol__.id = __ue__.enrolid AND __enrol__.courseid $wherecourse)
-    WHERE __ue__.status = 0 AND __user__.deleted = 0 {$filtro_fecha} AND __user__.suspended = 0)";
+    WHERE __ue__.status = 0 AND __user__.deleted = 0 {$filtro_fecha} AND __user__.suspended = 0 {$user_table_sql} )";
     // $query = "( SELECT DISTINCT __user__.id FROM {user} AS __user__
     // JOIN {user_enrolments} AS __ue__ ON __ue__.userid = __user__.id
     // JOIN {enrol} __enrol__ ON (__enrol__.id = __ue__.enrolid AND __enrol__.courseid = {$course})
@@ -1186,10 +1194,10 @@ function local_hoteles_city_dashboard_get_user_ids_with_params($course, array $p
     // Se omite $fecha_inicial debido a que si se incluye los usuarios inscritos anteriormente serían omitidos, activar si se pide explícitamente ese funcionamiento
     list($ids, $enrol_params) = local_hoteles_city_dashboard_get_enrolled_users_ids($course, '', $fecha_final, $params);
     $whereParams = array_merge($whereParams, $enrol_params);
-    array_push($whereinClauses, $ids);
+    array_push($whereinClauses, $ids); // Campos de usuario personalizados
     global $DB;
     if(!empty($params)){
-        list($user_table_sql, $user_table_params) = local_hoteles_city_dashboard_create_user_filters_sql($params);
+        list($user_table_sql, $user_table_params) = local_hoteles_city_dashboard_create_user_filters_sql($params); // Filtros de la tabla user
         $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
         foreach ($params as $key => $value) {
             if(in_array($key, $allowed_filters->filtercustomfields)){
