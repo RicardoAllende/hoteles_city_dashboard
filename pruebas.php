@@ -36,12 +36,27 @@ global $DB, $USER;
 //     context_course::instance(8)));
 // _print(get_config('local_hoteles_city_dashboard'));
 $params = array('institution' => 'Institución 1', 'department' => ['Primer departamento', 'Segundo departamento']);
-_print(local_hoteles_city_dashboard_create_user_filters_sql( $params ));
+// _print(local_hoteles_city_dashboard_create_user_filters_sql( $params ));
 // $params = [
 //     'institution' => 'Hotel 2',
 //     'department' => 'Gerente General'
 // ];
-_print(local_hoteles_city_dashboard_get_user_ids_with_params('8,9,10', $params));
+$total_elements = $DB->count_records_sql('SELECT count(*) FROM {user} WHERE id > 1 AND suspended = 0 AND deleted = 0');
+_print('Total de elementos', $total_elements);
+$limite = 500;
+$iterations = ceil($total_elements / $limite);
+_print('Número de interacciones', $iterations);
+
+for ($i=0; $i < $iterations; $i++) { 
+    $limitfrom = $limite * $i;
+
+    $users = $DB->get_records_sql('SELECT id, alternatename, imagealt, email, middlename, picture, firstnamephonetic, lastnamephonetic,
+    id as userid, firstname, lastname, id as userid FROM {user} WHERE id > 1 AND suspended = 0 AND deleted = 0', array(), $limitfrom, $limite );
+    _print(count($users), "$limitfrom, $limite");
+    echo "<br>";
+}
+
+// _print(local_hoteles_city_dashboard_get_user_ids_with_params('8,9,10', $params));
 // _print($USER->institution);
 // _log(local_hoteles_city_dashboard_get_course_information(9));
 // _log($USER);
