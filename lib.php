@@ -1339,7 +1339,6 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     switch($type){
         case local_hoteles_city_dashboard_course_users_pagination:
             list($enrol_sql_query, $enrol_params) = local_hoteles_city_dashboard_get_enrolled_userids($courseid, $desde = '', $hasta = '', $params);
-            // list($enrol_sql_query, $enrol_params) = " user.id IN " . local_hoteles_city_dashboard_get_enrolled_userids($courseid, $desde = '', $hasta = '', $params);
             $enrol_sql_query = " user.id IN " . $enrol_sql_query;
             $queryParams = array_merge($queryParams, $enrol_params);
         break;
