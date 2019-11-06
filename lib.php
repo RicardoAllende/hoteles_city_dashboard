@@ -272,7 +272,8 @@ function local_hoteles_city_dashboard_get_courses_overview(array $params = array
     return $courses_in_order;
 }
 
-function local_hoteles_city_dashboard_user_has_access(){
+function local_hoteles_city_dashboard_user_has_access(bool $throwError = true){
+    require_login();
     return true;
 }
 
@@ -750,7 +751,7 @@ function local_hoteles_city_dashboard_get_whereids_clauses($userids, $fieldname)
  * @param string|int $course id (o ids) de los cursos que se desea crear el segmento de la consulta
  * @param string $fecha_inicial Fecha inicial de inscripción a un curso
  * @param string $fecha_final Fecha final de inscripción a un curso
- * @return string cadena para agregar como where in de los usuarios inscritos en el curso
+ * @return array ($query, $query_parameters) para agregar como where in de los usuarios inscritos en el curso
  */
 function local_hoteles_city_dashboard_get_enrolled_userids($course, string $fecha_inicial, string $fecha_final,
     $params = array(), bool $apply_distinct = true){
@@ -1332,10 +1333,15 @@ function local_hoteles_city_dashboard_get_custom_profile_fields(string $ids = ''
 function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     $courseid = local_hoteles_city_dashboard_get_value_from_params($params, 'courseid');
     $courseid = intval($courseid);
+    $queryParams = array();
+
     // _log($params);
     switch($type){
         case local_hoteles_city_dashboard_course_users_pagination:
-            list($enrol_sql_query, $enrol_params) = " user.id IN " . local_hoteles_city_dashboard_get_enrolled_userids($courseid, $desde = '', $hasta = '', $params);
+            list($enrol_sql_query, $enrol_params) = local_hoteles_city_dashboard_get_enrolled_userids($courseid, $desde = '', $hasta = '', $params);
+            // list($enrol_sql_query, $enrol_params) = " user.id IN " . local_hoteles_city_dashboard_get_enrolled_userids($courseid, $desde = '', $hasta = '', $params);
+            $enrol_sql_query = " user.id IN " . $enrol_sql_query;
+            $queryParams = array_merge($queryParams, $enrol_params);
         break;
 
         case local_hoteles_city_dashboard_all_users_pagination:
@@ -1387,7 +1393,6 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     if(!empty($searchValue) && strpos($columnName, 'link') !== false){
         $searched = $columnName;
     }
-    $queryParams = array();
     
     
     $report_info = local_hoteles_city_dashboard_get_report_columns($type, $courseid, $searched);
