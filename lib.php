@@ -906,7 +906,7 @@ function local_hoteles_city_dashboard_print_theme_variables(){
 }
 
 function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_information = '', $searched = '', $prefix = 'user.'){
-    $select_sql = array("concat({$prefix}id, '||', {$prefix}firstname, ' ', {$prefix}lastname ) as name, institution, department");
+    $select_sql = array("concat({$prefix}firstname, ' ', {$prefix}lastname, '||',  {$prefix}id) as name, institution, department");
     $ajax_names = array("name", 'institution', 'department');
     $visible_names = array('Nombre', 'Unidad operativa', 'Puesto');
     $slim_query = array("id");
@@ -1067,7 +1067,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
                 $ajax_code .= "{data: '{$an}', render: 
                     function ( data, type, row ) { 
                         parts = data.split('||');
-                        return '<a class=\"\" href=\"administrar_usuarios.php?id=' + parts[0] + '\">' + parts[1] + '</a>'; 
+                        return '<a class=\"\" href=\"administrar_usuarios.php?id=' + parts[1] + '\">' + parts[0] + '</a>'; 
                     } 
                 }, ";
             // $ajax_code .= "{data: '{$an}', render: function ( data, type, row ) { return data; }  }, ";
@@ -2309,12 +2309,14 @@ function local_hoteles_city_dashboard_get_dashboard_windows(){
         }
     }
     array_push($response, $item);
-
     /**
      * Termina cálculo de regiones
      */
 
 
+    /**
+     * Avance de direcciones en oficina central
+     */
     $item = new stdClass();
     $item->elements = array();
     $item->name = "Avance de capacitaciones en Oficina Central";
@@ -2340,21 +2342,15 @@ function local_hoteles_city_dashboard_get_dashboard_windows(){
             array_push($item->elements, $element);
         }
     }
-    // for ($i=0; $i < 9; $i++) { // direcciones_oficina_central
-    //     $element = new stdClass();
-    //     $element->name = "Dirección " . $i;
-    //     $element->enrolled_users = random_int(10, 10000);
-    //     $element->approved_users = random_int(5, $element->enrolled_users);
-    //     // $element->chart = 'bar-agrupadas';
-    //     $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
-    //     $element->not_approved_users = $element->enrolled_users - $element->approved_users;
-    //     $element->value = $element->percentage;
-    //     $element->type = 'section_3';
-    //     array_push($item->elements, $element);
-    // }
     array_push($response, $item);
+    /**
+     * Termina avance de direcciones en oficina central
+     */
 
 
+    /**
+     * Avance por puestos
+     */
     $item = new stdClass();
     $item->elements = array();
     $item->name = "Avance de capacitación por puesto en hoteles";
@@ -2381,18 +2377,10 @@ function local_hoteles_city_dashboard_get_dashboard_windows(){
             array_push($item->elements, $element);
         }
     }
-    // for ($i=0; $i < 12; $i++) { // Puestos
-    //     $element = new stdClass();
-    //     $element->name = "Puesto " . $i;
-    //     // $element->chart = 'horizontalBar';
-    //     $element->enrolled_users = random_int(10, 10000);
-    //     $element->approved_users = random_int(5, $element->enrolled_users);
-    //     $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
-    //     $element->not_approved_users = $element->enrolled_users - $element->approved_users;
-    //     $element->value = $element->percentage;
-    //     $element->type = 'section_4';
-    //     array_push($item->elements, $element);
-    // }
     array_push($response, $item);
+    /**
+     * Termina avance por puestos
+     */
+
     return $response;
 }
