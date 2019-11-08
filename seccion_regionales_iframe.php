@@ -213,23 +213,19 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     <script>
     var ctx = document.getElementById('myAreaChart1');
     var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'pie',
-
-    // The data for our dataset
+        type: 'horizontalBar',        
     data: {
-        labels: ['Variable1', 'Variable2', 'Variable3'],
-        datasets: [{
-            label: 'A',           
-            borderColor: 'rgb(255, 99, 132)',
-            data: [35, 40, 10],
-        }]
-    },
-
-    // Configuration options go here
-    options: {
         
-    }
+      labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
+      datasets: [
+        {
+          label: "Datos",
+          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+          borderColor : "#F3FF33",
+          data: [2478,5267,734,784,433]
+        }
+      ]
+    },    
     });
     </script>
 

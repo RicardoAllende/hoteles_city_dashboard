@@ -24,7 +24,7 @@ function regresaInfoByCurso() {
                 
                 
                 
-                total = [];
+                
                                                
                 for (var i = 0; i < respuesta.length; i++) {
                     resp = respuesta[i];                
@@ -52,8 +52,8 @@ function regresaInfoByCurso() {
 
                                          
                 
-                }
-                
+                }                
+                printInfoCards();                
 
         })
         .fail(function (error, error2) {
@@ -76,8 +76,20 @@ function regresaInfoByCurso() {
 //   document.getElementById("modal").style.display = "none";
 //   //document.getElementById(id_div).style.display = "block";
 // }
+
+
+var suma_inscritos = 0;
+var suma_no_aprobados = 0;
+var suma_aprobados = 0;
+arr_total_inscritos = [];
+arr_total_no_aprobados = [];
+arr_total_aprobados = [];
+var total_inscritos = 0;
+var total_no_aprobados = 0;
+var total_aprobados = 0;
+var porcentaje_aprobados = 0;
 function graph_data(respuesta){    
-    console.log('INICIA INFORMACION DE LA GRAFICA');   
+    //console.log('INICIA INFORMACION DE LA GRAFICA');   
     //console.log(respuesta);    
         data_labels = [];        
         resp= respuesta;
@@ -86,36 +98,48 @@ function graph_data(respuesta){
         arr_datasets_inscritos = [];
         if(resp.chart == 'bar-agrupadas'){        
         datasets_aprobados = {label: 'Aprobados', backgroundColor: '#1cc88a', stack: 'Stack 0', data: arr_datasets_aprobados} 
-        datasets_no_aprobados = {label: 'No Aprobados', backgroundColor: '#33CAFF', stack: 'Stack 0', data: arr_datasets_no_aprobados}
-        datasets_inscritos = {label: 'Inscritos', backgroundColor: '#B5928B', stack: 'Stack 1', data: arr_datasets_inscritos}
+        datasets_no_aprobados = {label: 'No Aprobados', backgroundColor: '#e74a3b', stack: 'Stack 0', data: arr_datasets_no_aprobados}
+        datasets_inscritos = {label: 'Inscritos', backgroundColor: '#858796', stack: 'Stack 1', data: arr_datasets_inscritos}
         }
+        if(resp.chart == 'line'){        
+            datasets_aprobados = {label: 'Aprobados', borderColor: "#1cc88a", backgroundColor: 'transparent', data: arr_datasets_aprobados} 
+            datasets_no_aprobados = {label: 'No Aprobados', borderColor: "#e74a3b", backgroundColor: 'transparent', data: arr_datasets_no_aprobados}
+            datasets_inscritos = {label: 'Inscritos', backgroundColor: '#858796', data: arr_datasets_inscritos}
+            }
         if(resp.chart == 'horizontalBar'){
             datasets_aprobados = {label: 'Aprobados', backgroundColor: '#1cc88a', data: arr_datasets_aprobados} 
-            datasets_no_aprobados = {label: 'No Aprobados', backgroundColor: '#33CAFF', data: arr_datasets_no_aprobados}
-            datasets_inscritos = {label: 'Inscritos', backgroundColor: '#B5928B', data: arr_datasets_inscritos}
+            datasets_no_aprobados = {label: 'No Aprobados', backgroundColor: '#e74a3b', data: arr_datasets_no_aprobados}
+            datasets_inscritos = {label: 'Inscritos', backgroundColor: '#858796', data: arr_datasets_inscritos}
         }
         dataset = []; 
-        var suma_inscritos = 0;  
+          
                  
         for(j=0; j<resp.elements.length; j++){            
             data_labels.push(resp.elements[j].name);            
             arr_datasets_aprobados.push(resp.elements[j].approved_users);
             arr_datasets_no_aprobados.push(resp.elements[j].not_approved_users);
             arr_datasets_inscritos.push(resp.elements[j].enrolled_users);             
-            var suma_inscritos = suma_inscritos + resp.elements[j].enrolled_users;                                
+            suma_inscritos = suma_inscritos + resp.elements[j].enrolled_users; 
+            suma_no_aprobados = suma_no_aprobados + resp.elements[j].not_approved_users;
+            suma_aprobados = suma_aprobados + resp.elements[j].approved_users;                               
                               
         }
         
-        total.push(suma_inscritos);
-        console.log(total)
+        arr_total_inscritos.push(suma_inscritos);
+        arr_total_no_aprobados.push(suma_no_aprobados);
+        arr_total_aprobados.push(suma_aprobados);
+        //console.log(total)
         // console.log('suma_inscritos.length');
         // console.log(total.length)
-        var total_inscritos = 0;
-        for(z=0; z<total.length; z++){
-            var total_inscritos = total_inscritos + total[z];
+        
+        for(z=0; z<arr_total_inscritos.length; z++){
+            total_inscritos = total_inscritos + arr_total_inscritos[z];
+            total_no_aprobados = total_no_aprobados + arr_total_no_aprobados[z];
+            total_aprobados = total_aprobados + arr_total_aprobados[z];
         }
-        console.log('TOTAL');
-        console.log(total_inscritos)
+        porcentaje_aprobados = (total_aprobados * 100) / total_inscritos;
+        // console.log('TOTAL');
+        // console.log(porcentaje_aprobados.toFixed(2))
         
         
         
@@ -124,6 +148,11 @@ function graph_data(respuesta){
         dataset.push(datasets_no_aprobados);
         dataset.push(datasets_inscritos);
         d_graph = {labels : data_labels,datasets : dataset};
+        }
+        if(resp.chart == 'line'){
+            dataset.push(datasets_aprobados);
+            dataset.push(datasets_no_aprobados);            
+            d_graph = {labels : data_labels,datasets : dataset};
         }
         if(resp.chart == 'horizontalBar'){
             dataset.push(datasets_aprobados);            
@@ -142,6 +171,14 @@ function graph_data(respuesta){
 
         return d_graph;
     
+}
+
+//Funcion para imprimir datos en las 4 cards (hoteles, inscritos, aprobados, no aprobados)
+function printInfoCards(){
+    $('#card_cantidad_usarios').html(total_inscritos);
+    $('#card_no_aprobados').html(total_no_aprobados);
+    $('#card_aprobados').html(porcentaje_aprobados.toFixed(2)+"%");
+    $('#progress_aprobados').css("width", porcentaje_aprobados.toFixed(2)+"%");
 }
 
 class GraphicsDashboard {
@@ -484,6 +521,8 @@ class GraphicsDashboard {
                 
                 
                     var ctx = document.getElementById(this.div_graph);
+                    console.log('DIV')
+                    console.log(this.div_graph)
                     var chart = new Chart(ctx, {
                         // The type of chart we want to create
                         type: 'bar',
@@ -529,16 +568,12 @@ class GraphicsDashboard {
                         data: data_agrupadas,
 
                         // Configuration options go here
-                        options: {
-                            legend: { display: false },
-                        }
+                        
                     });                
 
                 break;
 
-            case 'burbuja':
-                console.log('DIV GRAF');
-                console.log(this.div_graph);
+            case 'burbuja':                
                 if (this.data_graph.enrolled_users > 0) {
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
