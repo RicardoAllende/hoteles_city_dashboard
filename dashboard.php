@@ -142,12 +142,12 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
 
         <!-- Card  Cantidad de usuarios-->
         <div class="col-sm-3 mb-4">
-        <div class="card border_left_color_warning shadow h-100 py-2">
+        <div class="card border_left_color_secondary shadow h-100 py-2">
             <div class="card-body">
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
-                <div class="txt_warning text-uppercase mb-1">Cantidad de usuarios</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_cantidad_usarios">15,000</div>
+                <div class="txt_secondary text-uppercase mb-1">Cantidad de usuarios</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_cantidad_usarios"></div>
                 </div>
                 <div class="col-auto">
                 <i class="fas fa-user-friends fa-2x text-gray-300"></i>
@@ -155,7 +155,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             </div>
             </div>
         </div>
-        </div>
+        </div>       
 
         <!-- Card Aprobados-->
         <div class="col-sm-3 mb-4">
@@ -166,11 +166,11 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
                 <div class="txt_success text-uppercase mb-1">Aprobados</div>
                 <div class="row no-gutters align-items-center">
                     <div class="col-auto">
-                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800" id="card_aprobados">90%</div>
+                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800" id="card_aprobados"></div>
                     </div>
                     <div class="col">
                     <div class="progress progress-sm mr-2">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 90%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-success" role="progressbar" style="width:0%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" id="progress_aprobados"></div>
                     </div>
                     </div>
                 </div>
@@ -190,7 +190,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                 <div class="txt_danger text-uppercase mb-1">No aprobados</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_no_aprobados">18</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_no_aprobados"></div>
                 </div>
                 <div class="col-auto">
                 <i class="fas fa-user-times fa-2x text-gray-300"></i>

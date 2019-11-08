@@ -37,6 +37,7 @@ echo $OUTPUT->header();
 $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_course_users_pagination, $courseid);
 echo local_hoteles_city_dashboard_print_theme_variables();
 ?>
+<link href="style_tabla.css" rel="stylesheet">
 
 <table id='empTable' class='display dataTable table table-bordered'>    
     <thead>
@@ -51,7 +52,7 @@ echo local_hoteles_city_dashboard_print_theme_variables();
     </tfoot>
 </table>
 
-<link href="style_tabla.css" rel="stylesheet">
+
 <!-- Datatable CSS -->
 <link href='datatables/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
 
