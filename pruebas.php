@@ -32,6 +32,8 @@ $PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/pruebas.php');
 echo $OUTPUT->header();
 global $DB, $USER;
 
+dd(local_hoteles_city_dashboard_get_allowed_filters());
+dd(local_hoteles_city_dashboard_get_catalogues());
 // _print(list($enrolledsql, $params) = get_enrolled_sql(
 //     context_course::instance(8)));
 // _print(get_config('local_hoteles_city_dashboard'));

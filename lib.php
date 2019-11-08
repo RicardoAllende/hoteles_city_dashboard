@@ -69,7 +69,7 @@ DEFINE('local_hoteles_city_dashboard_theme_colors', [
 ]);
 
 DEFINE('local_hoteles_city_dashboard_marca_field', 'marcafield');
-DEFINE('local_hoteles_city_dashboard_special_custom_fields', [
+DEFINE('local_hoteles_city_dashboard_special_custom_fields', [ // Campos personalizados necesarios
     local_hoteles_city_dashboard_marca_field => "Marca"
 ]);
 
@@ -1092,11 +1092,11 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
     // $ajax_code .= "{data: '{$an}', render: function ( data, type, row ) // Ejemplo agregando una columna de alguna ya generada
     //                 { return 'Otra cosa con el mismo {$an}' + data; } // Ejemplo agregando una columna de alguna ya generada
     //             }, "; // Ejemplo agregando una columna de alguna ya generada
+    // $table_code .= "<th>Una última columna</th>"; // Ejemplo agregando una columna de alguna ya generada
     $table_code = "";
     foreach($visible_names as $vn){
         $table_code .= "<th>{$vn}</th>";
     }
-    // $table_code .= "<th>Una última columna</th>"; // Ejemplo agregando una columna de alguna ya generada
     $response = new stdClass();
     $response->select_sql = $prefix . 'id, ' . $imploded_sql;
     $response->ajax_code = $ajax_code;
@@ -1211,7 +1211,6 @@ function local_hoteles_city_dashboard_get_user_ids_with_params($course, array $p
     $hasCustomField = false;
     if(!empty($params)){
         list($user_table_sql, $user_table_params) = local_hoteles_city_dashboard_create_user_filters_sql($params); // Filtros de la tabla user
-        // $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
         foreach ($params as $key => $value) {
             if(strpos($key, local_hoteles_city_dashboard_filter_prefix_custom_field) !== false){
                 $hasCustomField = true;
@@ -1270,7 +1269,6 @@ function local_hoteles_city_dashboard_count_users_many_courses(string $courses, 
     global $DB;
     $whereinClauses = array();
     if(!empty($params)){
-        // $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
         foreach ($params as $key => $value) {
             if(strpos($key, local_hoteles_city_dashboard_filter_prefix_custom_field) !== false){
                 list($insql, $inparams) = $DB->get_in_or_equal($value);
@@ -1319,17 +1317,24 @@ function local_hoteles_city_dashboard_create_user_filters_sql(array $params, str
     return array($clauses, $query_params);
 }
 
+$cache_custom_profile_fields = null;
 /**
  * Devuelve un menú (clave => valor ... ) de los campos de usuario personalizados
  * @param string $ids ids de los campos personalizados. Ejemplo: 1,2,3
  * @return array|false Menú de los campos de usuario personalizados o false si no se encuentran
  */
 function local_hoteles_city_dashboard_get_custom_profile_fields(string $ids = ''){
+    global $cache_custom_profile_fields;
+    if($cache_custom_profile_fields !== null){
+        return $cache_custom_profile_fields;
+    }
     global $DB;
     if(!empty($ids)){
         return $DB->get_records_sql_menu("SELECT id, name FROM {user_info_field} WHERE id IN ({$ids}) ORDER BY name");
     }
-    return $DB->get_records_menu('user_info_field', array(), 'name', "id, name");
+    $response = $DB->get_records_menu('user_info_field', array(), 'name', "id, name");
+    $cache_custom_profile_fields = $response;
+    return $response;
 }
 
 /**
@@ -1676,10 +1681,31 @@ function local_hoteles_city_dashboard_get_allowed_filters(bool $merge_filter_nam
         return $global_allowed_fields;
     }
     $response = new stdClass();
+    $response->filter_names = array();
+    $defaultFields = local_hoteles_city_dashboard_get_default_profile_fields();
     $required_keys = array('institution', 'department');
     $response->filterdefaultfields = array_merge(local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filterdefaultfields')),
      $required_keys);
-    $response->filtercustomfields = local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filtercustomfields'), ',', local_hoteles_city_dashboard_filter_prefix_custom_field);
+
+    foreach ($response->filterdefaultfields as $filter_value) {
+        switch ($filter_value) {
+            case 'institution':
+                $name = "Unidad operativa";
+                break;
+
+            case 'department':
+                $name = "Puesto";
+                break;
+            
+            default:
+                $name = $defaultFields[$filter_value];
+                break;
+        }
+        $response->filter_names[$filter_value] = $name;
+    }
+
+    $config_custom_fields = get_config('local_hoteles_city_dashboard', 'filtercustomfields');
+    $response->filtercustomfields = local_hoteles_city_dashboard_get_array_from_config($config_custom_fields, ',', local_hoteles_city_dashboard_filter_prefix_custom_field);
     foreach (local_hoteles_city_dashboard_special_custom_fields as $key => $value) {
         $config = get_config('local_hoteles_city_dashboard', $key);
         if(!empty($config)){
@@ -1687,6 +1713,15 @@ function local_hoteles_city_dashboard_get_allowed_filters(bool $merge_filter_nam
             array_push($response->filtercustomfields, $filtername);
         }
     }
+
+    $customFields = local_hoteles_city_dashboard_get_custom_profile_fields();
+    
+    foreach ($response->filtercustomfields as $filter_value) {
+        // $response->filter_names[$filter_value] = $customFields[$filter_value];
+
+        $response->filter_names[$filter_value] = $customFields[str_replace(local_hoteles_city_dashboard_filter_prefix_custom_field, '', $filter_value)];
+    }
+
 
     $response->filters = array_unique(array_merge($required_keys, $response->filterdefaultfields, $response->filtercustomfields));
     $global_allowed_fields = $response;
@@ -1718,7 +1753,7 @@ function local_hoteles_city_dashboard_get_catalogues($only = array()){
     if(!$returnAll && empty($only)) return $response;
     
     $filtercustomfields = $allowed_filters->filtercustomfields;
-    foreach ($filtercustomfields as $id => $value) {
+    foreach ($filtercustomfields as $id) {
         if($returnAll || in_array($id, $only)){
             $result = local_hoteles_city_dashboard_get_custom_catalogue($id);
             
@@ -1936,7 +1971,10 @@ function local_hoteles_city_dashboard_has_empty(... $params){
     return false;
 }
 
-function local_hoteles_city_dashboard_get_custom_catalogue(int $fieldid){
+function local_hoteles_city_dashboard_get_custom_catalogue($fieldid){
+    if(strpos($fieldid, local_hoteles_city_dashboard_filter_prefix_custom_field) !== false){
+        $fieldid = str_replace(local_hoteles_city_dashboard_filter_prefix_custom_field, '', $fieldid);
+    }
     global $DB;
     $query = "SELECT DISTINCT data FROM {user_info_data} where fieldid = {$fieldid} 
     AND data != '' AND userid NOT IN (SELECT id FROM {user} WHERE deleted = 1) order by data ASC";
@@ -2383,4 +2421,16 @@ function local_hoteles_city_dashboard_get_dashboard_windows(){
      */
 
     return $response;
+}
+
+function local_hoteles_city_dashboard_print_filters(string $formname = 'local_hoteles_city_dashboard_filters'){
+    $catalogues = local_hoteles_city_dashboard_get_catalogues();
+    $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
+    foreach($catalogues as $catalogue_name => $catalogue_items){
+        $name = $catalogue_name;
+        $title = $allowed_filters->filter_names[$catalogue_name];
+        $description = "";
+        $default = "";
+        echo local_hoteles_city_dashboard_print_multiselect($name, $title, $description, $default, $catalogue_items);
+    }
 }
