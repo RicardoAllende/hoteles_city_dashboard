@@ -37,7 +37,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 *Otra información*
 - Clasificación de gráficas:
-    - Comparativa: bar-agrupadas, line, burbuja
+    - Comparativa: bar-agrupadas, line, horizontalBar, burbuja
     - Individual: pie, bar
 
 - Tipo de gráfica (clave chart):

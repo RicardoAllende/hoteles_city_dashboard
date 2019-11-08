@@ -1,9 +1,0 @@
-approved_users: "0"
-enrolled_users: 2
-id: 8
-key: "course8"
-not_approved_users: 2
-percentage: 0
-status: "ok"
-title: "WOW Rewards"
-value: 0.

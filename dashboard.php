@@ -271,7 +271,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
         
         
     </script>   
-
+    
     <script src="classes.js"></script>
     <script>
         regresaInfoByCurso(); 
