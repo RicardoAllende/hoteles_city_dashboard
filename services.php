@@ -27,9 +27,7 @@ header("Content-Type: application/json");
 require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 $context_system = context_system::instance();
-if( ! has_capability('local/hoteles_city_dashboard:view', $context_system) ){
-    die(local_hoteles_city_dashboard_error_response("Usuario no autenticado"));
-}
+local_hoteles_city_dashboard_user_has_access();
 if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
     $request_type = $_POST['request_type'];
     switch($request_type){

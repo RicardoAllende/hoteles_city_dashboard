@@ -78,7 +78,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
         <a class="nav-link" id="report-tab" data-toggle="tab" href="#permission_settings" role="tab" aria-controls="Reporte" aria-selected="false">Permisos del dashboard</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link show active" id="report-tab" data-toggle="tab" href="#filter-settings" role="tab" aria-controls="Reporte" aria-selected="true">Filtros</a>
+        <a class="nav-link show active" id="report-tab" data-toggle="tab" href="#filter-settings" role="tab" aria-controls="Reporte" aria-selected="true">Configuración de campos</a>
     </li>
     <!-- <li class="nav-item">
         <a class="nav-link" id="theme-tab" data-toggle="tab" href="#theme-settings" role="tab" aria-controls="Tema" aria-selected="false">Colores del tema</a>

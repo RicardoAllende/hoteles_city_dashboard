@@ -52,7 +52,7 @@ class filter_settings extends moodleform {
         $default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields(true);
         $all_default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields();
         $custom_fields = local_hoteles_city_dashboard_get_custom_profile_fields();
-        echo local_hoteles_city_dashboard_print_theme_variables();
+        // echo local_hoteles_city_dashboard_print_theme_variables();
         // $configs = get_config('local_hoteles_city_dashboard');
         // $configs = (array) $configs;
         $pluginname = 'local_hoteles_city_dashboard';
@@ -81,11 +81,21 @@ class filter_settings extends moodleform {
         
 
         $institutions = local_hoteles_city_dashboard_get_institutions();
-        $name = 'direcciones';
-        $title = get_string('direcciones', $pluginname);
-        $description = get_string('direcciones' . '_desc', $pluginname);
+        $name = 'direcciones_oficina_central';
+        $title = get_string('direcciones_oficina_central', $pluginname);
+        $description = get_string('direcciones_oficina_central' . '_desc', $pluginname);
         $default = !empty($configs[$name]) ? $configs[$name] : '';
         $select = $mform->addElement('select', $name, $title, $institutions, 'class = " multiselect-setting "');
+        $select->setMultiple(true);
+        $mform->getElement($name)->setSelected(explode(',', $default));
+        $mform->addElement('static', 'description', '', $description);
+
+        $puestos = local_hoteles_city_dashboard_get_departments();
+        $name = 'puestos_en_dashboard';
+        $title = get_string('puestos_en_dashboard', $pluginname);
+        $description = get_string('puestos_en_dashboard' . '_desc', $pluginname);
+        $default = !empty($configs[$name]) ? $configs[$name] : '';
+        $select = $mform->addElement('select', $name, $title, $puestos, 'class = " multiselect-setting "');
         $select->setMultiple(true);
         $mform->getElement($name)->setSelected(explode(',', $default));
         $mform->addElement('static', 'description', '', $description);
