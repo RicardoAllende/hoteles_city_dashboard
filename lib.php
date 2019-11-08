@@ -819,9 +819,9 @@ function local_hoteles_city_dashboard_get_course_information(int $courseid, arra
         ]
     ];
     $response->chart = 'bar';// local_hoteles_city_dashboard_get_course_chart($courseid);
-    $response->comparative = [
-        // ...
-    ];
+    // $response->comparative = [
+    //     // ...
+    // ];
     $response->title = $course->fullname;
     $response->status = 'ok';
     $fecha_inicial = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_inicial');
@@ -832,8 +832,12 @@ function local_hoteles_city_dashboard_get_course_information(int $courseid, arra
     //     $response->activities = local_hoteles_city_dashboard_get_activities_completion($courseid, $userids, $fecha_inicial, $fecha_final); //
     // }
 
-    $response->enrolled_users = local_hoteles_city_dashboard_get_count_users($userids); //
-    $response->approved_users = local_hoteles_city_dashboard_get_approved_users($courseid, $userids, $fecha_inicial, $fecha_final); //
+    // $response->enrolled_users = local_hoteles_city_dashboard_get_count_users($userids); //
+    // $response->approved_users = local_hoteles_city_dashboard_get_approved_users($courseid, $userids, $fecha_inicial, $fecha_final); //
+
+    $response->enrolled_users = random_int(100, 2000);
+    $response->approved_users = random_int(0, $response->enrolled_users);
+
     $response->not_approved_users = $response->enrolled_users - $response->approved_users;
     $response->percentage = local_hoteles_city_dashboard_percentage_of($response->approved_users, $response->enrolled_users);
     $response->value = $response->percentage;
@@ -2436,10 +2440,10 @@ function local_hoteles_city_dashboard_get_dashboard_windows(){
     return $response;
 }
 
-function local_hoteles_city_dashboard_print_filters(string $identifier = 'local_hoteles_city_dashboard_filters'){
+function local_hoteles_city_dashboard_print_filters(){
     $catalogues = local_hoteles_city_dashboard_get_catalogues();
     $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
-    echo "<form name='$identifier' class='row' id='$identifier'>";
+    // echo "<form name='$identifier' class='row' id='$identifier'>";
     foreach($catalogues as $catalogue_name => $catalogue_items){
         $name = $catalogue_name;
         $title = $allowed_filters->filter_names[$catalogue_name];
@@ -2447,6 +2451,6 @@ function local_hoteles_city_dashboard_print_filters(string $identifier = 'local_
         $default = "";
         echo local_hoteles_city_dashboard_print_multiselect($name, $title, $description, $default, $catalogue_items);
     }
-    // echo "<button type="submit" form="form1" value="Submit">Submit</button>";
-    echo "</form>";
+    // echo "<button value='Submit'>Submit</button>";
+    // echo "</form>";
 }

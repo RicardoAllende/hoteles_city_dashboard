@@ -17,7 +17,7 @@
 /**
  * Plugin strings are defined here.
  *
- * @package     local_dominosdashboard
+ * @package     local_hoteles_city_dashboard
  * @category    dashboard
  * @copyright   2019 Subitus <contacto@subitus.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,13 +29,13 @@ require_login();
 require_once(__DIR__ . '/lib.php');
 
 global $DB;
-$PAGE->set_url($CFG->wwwroot . "/local/dominosdashboard/inner.php");
+$PAGE->set_url($CFG->wwwroot . "/local/hoteles_city_dashboard/graficas.php");
 $PAGE->set_context($context_system);
 $PAGE->set_pagelayout('admin');
-$PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
+$PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
 
 
-//$tabOptions = local_dominosdashboard_get_course_tabs();
+//$tabOptions = local_hoteles_city_dashboard_get_course_tabs();
 
 ?>
 <!DOCTYPE html>
@@ -65,57 +65,22 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
 
 <body style="background-color: #ecedf1;">
 
-    <?php
-        local_hoteles_city_dashboard_print_filters();
-     ?>
+    <form action="" name='local_hoteles_city_dashboard_filters' class='row' id='local_hoteles_city_dashboard_filters' >
+        <?php
+            local_hoteles_city_dashboard_print_filters();
+        ?>
+    </form>
+    <div class="row">
+        <div class="col-12 text-right" style="padding-right: 2%;">
+            <button class='btn btn-primary' onclick="obtenerGraficas()">Aplicar filtros</button>
+        </div>
+    </div>
 
     <!-- Título -->
     <div>
         <h3 style="text-align: center;">Reportes</h3>
     </div>
 
-    <!-- Filtro -->
-    <div class="row" style="margin-bottom: 10px;">
-        <div class="col-sm-6" style="padding-left: 20px;">
-            <select multiple="multiple" id="my-select" name="my-select[]">
-                <option value='elem_1'>elem 1</option>
-                <option value='elem_2'>elem 2</option>
-                <option value='elem_3'>elem 3</option>
-                <option value='elem_4'>elem 4</option>
-                <option value='elem_100'>elem 100</option>
-            </select>
-            <!-- <div class="btn-group">
-                <button type="button" class="btn Primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Marca
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                    <a class="dropdown-item" href="#">Separated link</a>
-                </div>
-            </div> -->
-        </div>
-
-        <div class="col-sm-6" style="text-align: end;">
-            <div class="btn-group dropleft">
-                <button type="button" class="btn Primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Generar Reporte
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Avances de todos los cursos disponibles en Moodle</a>
-                    <a class="dropdown-item" href="#">Estatus de consulta de cursos</a>
-                    <a class="dropdown-item" href="#">Aprobaciones de cursos, calificaciones obtenidas por curso por persona</a>
-                    <a class="dropdown-item" href="#">Avances de capacitación en Oficina Central, por direcciones (centro de costos)</a>
-                    <a class="dropdown-item" href="#">Avance de capacitación por curso en Hoteles: por región, por hotel, por persona y por puesto</a>
-                    <a class="dropdown-item" href="#">Avance de capacitación por curso en Oficina Central y por direcciones</a>
-                    <a class="dropdown-item" href="#">Personal activo en City Campus</a>
-                    <a class="dropdown-item" href="#">Avance de capacitaciones por curso de Directores Regionales de Operaciones y Subdirectores Regionales de Venta</a>
-                    <a class="dropdown-item" href="#">Avance de capacitación por módulo en los cursos que aplica</a>
-                </div>
-            </div>
-        </div>
-    </div>
     
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
@@ -128,13 +93,37 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
 
     <script>
         $(document).ready(function(){
-            $('.multiselect-setting').each(function(index, element){
+            $('.multiselect-setting').each(function(index, element){ // Generación de filtros con herramenta choices.js
                 var multipleCancelButton = new Choices( '#' + element.id, { removeItemButton: true, searchEnabled: true,
                     placeholderValue: 'Presione aquí para agregar un filtro', searchPlaceholderValue: 'Buscar filtro', 
                     placeholder: true,
                 } );
             });
         });
+        function obtenerGraficas(){
+            // peticion = [];
+            peticion = $('#local_hoteles_city_dashboard_filters').serializeArray();
+            peticion.push({name: 'request_type', value: 'course_list'});
+            // peticion.push({name: 'request_type', value: 'dashboard'});
+            //peticion.push({name: 'type', value: currentTab});
+            //dateBegining = Date.now();
+            // $('#local_hoteles_city_dashboard_content').html('Cargando la información');
+            $.ajax({
+                type: "POST",
+                url: "services.php",
+                data: peticion,
+                dataType: "json"
+            })
+                .done(function(data) {
+                    console.log(data);
+                })
+                .fail(function (error, error2) {
+                    isCourseLoading = false;
+                    console.log('Entra a fail');
+                    console.log(error);
+                    console.log(error2);
+                });
+        }
     </script>
 
 </body>
