@@ -32,6 +32,12 @@ $PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/pruebas.php');
 echo $OUTPUT->header();
 global $DB, $USER;
 
+$tiempo_inicial = microtime(true); //true es para que sea calculado en segundos
+// $tiempo_final = microtime(true);
+// $tiempo = $tiempo_final - $tiempo_inicial; //este resultado estará en segundos
+// _log("<br>El tiempo de ejecución del archivo ha sido de " . $tiempo . " segundos");
+
+
 dd(local_hoteles_city_dashboard_get_allowed_filters());
 dd(local_hoteles_city_dashboard_get_catalogues());
 // _print(list($enrolledsql, $params) = get_enrolled_sql(
@@ -57,6 +63,10 @@ for ($i=0; $i < $iterations; $i++) {
     _print(count($users), "$limitfrom, $limite");
     echo "<br>";
 }
+
+$tiempo_final = microtime(true);
+$tiempo = $tiempo_final - $tiempo_inicial; //este resultado estará en segundos
+_log("<br>El tiempo de ejecución del archivo ha sido de " . $tiempo . " segundos");
 
 // _print(local_hoteles_city_dashboard_get_user_ids_with_params('8,9,10', $params));
 // _print($USER->institution);

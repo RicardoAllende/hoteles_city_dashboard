@@ -122,14 +122,19 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     <!-- Core plugin JavaScript-->
     <!-- <script src="vendor/jquery-easing/jquery.easing.min.js"></script> -->
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> -->
-    <!-- <script src="bootstrap/bootstrap-multiselect.min.js"></script>
-    <script src="bootstrap/bootstrap-multiselect.css"></script> -->
+
+    <link rel="stylesheet" href="choicesjs/styles/choices.min.css" />
+    <script src="choicesjs/scripts/choices.min.js"></script>
 
     <script>
-        // $(document).ready(function(){
-        //     $('#my-select').multiSelect();
-        // });
+        $(document).ready(function(){
+            $('.multiselect-setting').each(function(index, element){
+                var multipleCancelButton = new Choices( '#' + element.id, { removeItemButton: true, searchEnabled: true,
+                    placeholderValue: 'Presione aquí para agregar un filtro', searchPlaceholderValue: 'Buscar filtro', 
+                    placeholder: true,
+                } );
+            });
+        });
     </script>
 
 </body>

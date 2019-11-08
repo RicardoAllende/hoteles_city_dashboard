@@ -1684,7 +1684,8 @@ function local_hoteles_city_dashboard_get_allowed_filters(bool $merge_filter_nam
     $response->filter_names = array();
     $defaultFields = local_hoteles_city_dashboard_get_default_profile_fields();
     $required_keys = array('institution', 'department');
-    $response->filterdefaultfields = array_merge(local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filterdefaultfields')),
+    $response->filterdefaultfields = array_merge(
+        local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'filterdefaultfields')),
      $required_keys);
 
     foreach ($response->filterdefaultfields as $filter_value) {
@@ -1731,7 +1732,13 @@ function local_hoteles_city_dashboard_get_allowed_filters(bool $merge_filter_nam
     return $response;
 }
 
+$cache_catalogues = null;
 function local_hoteles_city_dashboard_get_catalogues($only = array()){
+    global $cache_catalogues;
+    if($cache_catalogues !== null && empty($only)){
+        return $cache_catalogues;
+    }
+    $tiempo_inicial = microtime(true); // true es para que sea calculado en segundos
     global $DB;
     $returnAll = empty($only);
     $response = array();
@@ -1743,14 +1750,14 @@ function local_hoteles_city_dashboard_get_catalogues($only = array()){
         if($returnAll || in_array($key, $only)){ // de la tabla usuarios
             $result  = $DB->get_fieldset_sql("SELECT distinct {$key} FROM {user}
             WHERE suspended = 0 AND deleted = 0 AND {$key} != ''"); // Puestos
-            if(!$returnAll && isset($required_keys[$key])) unset($required_keys[$key]);
+            // if(!$returnAll && isset($required_keys[$key])) unset($required_keys[$key]);
             if($result){
                 $response[$key] = $result;
             }
         }
     }
     
-    if(!$returnAll && empty($only)) return $response;
+    // if(!$returnAll && empty($only)) return $response;
     
     $filtercustomfields = $allowed_filters->filtercustomfields;
     foreach ($filtercustomfields as $id) {
@@ -1762,6 +1769,10 @@ function local_hoteles_city_dashboard_get_catalogues($only = array()){
             }
         }
     }
+    $tiempo_final = microtime(true);
+    $tiempo = $tiempo_final - $tiempo_inicial; //este resultado estará en segundos
+    _log("El tiempo de ejecución de los catálogos es: " . $tiempo . " segundos");
+    $cache_catalogues = $response;
     return $response;
 }
 
@@ -1903,7 +1914,9 @@ function local_hoteles_city_dashboard_get_region_institution_relationships(){
 function local_hoteles_city_dashboard_print_multiselect(string $name, string $title = "", $description = "", string $default, array $menu){
     $class = 'multiselect-setting';
     $element = "";
-    $element .= "<select class=\"{$class} hoteles_city_dashboard_input\" default=\"{$default}\" form='hoteles_city_dashboard' multiple=\"multiple\" id=\"{$name}\" name=\"{$name}\">";
+    $element .= "<select class=\"{$class} form-control hoteles_city_dashboard_input\" default=\"{$default}\" form='hoteles_city_dashboard' multiple=\"multiple\" id=\"{$name}\" name=\"{$name}\">";
+    
+    $element .= "<option value=''>Seleccione {$title}</option>";
     $original_default = $default;
     if(!empty($default)){
         $default = explode(',', $default);
@@ -1916,15 +1929,15 @@ function local_hoteles_city_dashboard_print_multiselect(string $name, string $ti
         if(in_array($key, $default)){
             $selected = "selected";
         }
-        $element .= "<option {$selected} value=\"{$key}\">{$value}</option>";
+        $element .= "<option {$selected} value=\"{$value}\">{$value}</option>";
     }
     $element .= "</select>";
-    return local_hoteles_city_dashboard_create_form_part($element, $title, $description, $original_default, $name);
-}
-
-function local_hoteles_city_dashboard_print_colorselect(string $name, string $title = "", $description = "", string $default){
-    $element = "<input type='color' form='hoteles_city_dashboard' class=\" hoteles_city_dashboard_input \" id=\"{$name}\" name=\"{$name}\">";
-    return local_hoteles_city_dashboard_create_form_part($element, $title, $description, $default, $name);
+    return "<div class=\"form-group col-sm-3\">
+                <label class=\"form-label text-sm-right col-form-label\" for=\"{$name}\">{$title}</label>
+                <div class=\"\">
+                    {$element}
+                </div>
+            </div>";
 }
 
 function local_hoteles_city_dashboard_create_form_part($content, $title, $description, $default, $name = ""){
@@ -1976,8 +1989,8 @@ function local_hoteles_city_dashboard_get_custom_catalogue($fieldid){
         $fieldid = str_replace(local_hoteles_city_dashboard_filter_prefix_custom_field, '', $fieldid);
     }
     global $DB;
-    $query = "SELECT DISTINCT data FROM {user_info_data} where fieldid = {$fieldid} 
-    AND data != '' AND userid NOT IN (SELECT id FROM {user} WHERE deleted = 1) order by data ASC";
+    $query = "SELECT DISTINCT data FROM {user_info_data} AS info_data JOIN {user} AS user ON info_data.userid = user.id where fieldid = {$fieldid} 
+    AND data != '' AND user.deleted = 0 AND user.suspended = 0 order by data ASC";
     return $DB->get_fieldset_sql($query);
 }
 
@@ -2423,9 +2436,10 @@ function local_hoteles_city_dashboard_get_dashboard_windows(){
     return $response;
 }
 
-function local_hoteles_city_dashboard_print_filters(string $formname = 'local_hoteles_city_dashboard_filters'){
+function local_hoteles_city_dashboard_print_filters(string $identifier = 'local_hoteles_city_dashboard_filters'){
     $catalogues = local_hoteles_city_dashboard_get_catalogues();
     $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
+    echo "<form name='$identifier' class='row' id='$identifier'>";
     foreach($catalogues as $catalogue_name => $catalogue_items){
         $name = $catalogue_name;
         $title = $allowed_filters->filter_names[$catalogue_name];
@@ -2433,4 +2447,6 @@ function local_hoteles_city_dashboard_print_filters(string $formname = 'local_ho
         $default = "";
         echo local_hoteles_city_dashboard_print_multiselect($name, $title, $description, $default, $catalogue_items);
     }
+    // echo "<button type="submit" form="form1" value="Submit">Submit</button>";
+    echo "</form>";
 }
