@@ -99,6 +99,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     placeholder: true,
                 } );
             });
+            obtenerGraficas();
         });
         function obtenerGraficas(){
             // peticion = [];
