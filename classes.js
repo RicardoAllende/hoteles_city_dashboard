@@ -44,10 +44,10 @@ function regresaInfoByCurso() {
                         curso.comparative_graph();
                     }
                     if (resp.chart == 'pie') {
-                        curso.indivial_graph();
+                        curso.individual_graph();
                     }
                     if (resp.chart == 'bar') {
-                        curso.indivial_graph();
+                        curso.individual_graph();
                     }
 
                                          
@@ -709,7 +709,7 @@ class GraphicsDashboard {
         }
 
     }
-}
+} 
 
 
 
