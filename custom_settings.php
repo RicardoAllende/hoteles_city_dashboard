@@ -101,7 +101,7 @@ class filter_settings extends moodleform {
         $mform->addElement('static', 'description', '', $description);
 
         $mform->addElement('header', 'reportfields_header', get_string('reportfields_header', $pluginname));
-        $mform->setExpanded('reportfields_header', true);
+        $mform->setExpanded('reportfields_header', false);
 
         $name = 'reportdefaultfields';
         $title = get_string('reportdefaultfields', $pluginname);
@@ -124,7 +124,7 @@ class filter_settings extends moodleform {
 
 
         $mform->addElement('header', 'signinfields', get_string('signinfields', $pluginname));
-        $mform->setExpanded('signinfields', true);
+        $mform->setExpanded('signinfields', false);
 
         $name = 'userformdefaultfields';    
         $title = get_string('userformdefaultfields', 'local_hoteles_city_dashboard');
@@ -147,7 +147,7 @@ class filter_settings extends moodleform {
 
 
         $mform->addElement('header', 'filterfields', get_string('filterfields', $pluginname));
-        $mform->setExpanded('filterfields', true);
+        $mform->setExpanded('filterfields', false);
 
         $name = 'filterdefaultfields';
         $title = get_string('filterdefaultfields', $pluginname);

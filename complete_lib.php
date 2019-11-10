@@ -520,7 +520,7 @@
 //         $item_to_compare = new stdClass();
 //         $item_to_compare->name = $catalogue_item;
 //         $params[$key] = [$catalogue_item];
-//         $userids = local_hoteles_city_dashboard_get_user_ids_with_params($courseid, $params, false);                
+//         $userids = local_hoteles_city_dashboard_get_userids_with_params($courseid, $params, false);                
 //         if(empty($userids)){
 //             $item_to_compare->enrolled_users = 0;
 //             $item_to_compare->approved_users = 0;

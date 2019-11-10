@@ -68,7 +68,7 @@ $tiempo_final = microtime(true);
 $tiempo = $tiempo_final - $tiempo_inicial; //este resultado estará en segundos
 _log("<br>El tiempo de ejecución del archivo ha sido de " . $tiempo . " segundos");
 
-// _print(local_hoteles_city_dashboard_get_user_ids_with_params('8,9,10', $params));
+// _print(local_hoteles_city_dashboard_get_userids_with_params('8,9,10', $params));
 // _print($USER->institution);
 // _log(local_hoteles_city_dashboard_get_course_information(9));
 // _log($USER);

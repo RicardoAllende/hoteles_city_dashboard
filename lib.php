@@ -195,6 +195,25 @@ function local_hoteles_city_dashboard_get_all_roles_with_users(){
     return $response;
 }
 
+$cache_marcafield = null;
+/**
+ * Devuelve el id o el campo con formato para aplicar en filtros del campo personalizado de marcas
+ * @param bool $returnOnlyId
+ * @return int|string dependiendo el id de los
+ */
+function local_hoteles_city_dashboard_get_marcafield($returnOnlyId = false){
+    global $cache_marcafield;
+    if($cache_marcafield !== null){
+        return ($returnOnlyId) ? $cache_marcafield : local_hoteles_city_dashboard_filter_prefix_custom_field . $cache_marcafield ;
+    }
+    $marcafield = get_config('local_hoteles_city_dashboard', 'marcafield');
+    if(empty($marcafield)){
+        $marcafield = -1;
+    }
+    $cache_marcafield = $marcafield;
+    return ($returnOnlyId) ? $cache_marcafield : local_hoteles_city_dashboard_filter_prefix_custom_field . $cache_marcafield ;
+}
+
 function local_hoteles_city_dashboard_get_role_users($id){
     $roles = local_hoteles_city_dashboard_get_dashboard_roles();
     $role_ids = array_keys($roles);
@@ -301,12 +320,10 @@ function local_hoteles_city_dashboard_get_institutions(){
 }
 
 function local_hoteles_city_dashboard_get_marcas(){
-    if($config = get_config('local_hoteles_city_dashboard', 'marcafield')){
-        local_hoteles_city_dashboard_filter_prefix_custom_field . $config;
-        $result = local_hoteles_city_dashboard_get_catalogues([$config]);
-        if(isset($result[$config])){
-            return $result[$config];
-        }
+    $marcafield = local_hoteles_city_dashboard_get_marcafield();
+    $result = local_hoteles_city_dashboard_get_catalogues([$marcafield]);
+    if(isset($result[$marcafield])){
+        return $result[$marcafield];
     }
     return array();
 }
@@ -739,7 +756,9 @@ function local_hoteles_city_dashboard_get_count_users($userids){ // Editado
     // $whereids = implode(' AND _us_.id IN ', $userids->filters);
     $whereids = local_hoteles_city_dashboard_get_whereids_clauses($userids, '_us_.id');
     $query = "SELECT count(*) FROM {user} as _us_ WHERE 1 = 1 {$whereids}";
-    return $DB->count_records_sql($query, $userids->params);
+    $response = $DB->count_records_sql($query, $userids->params);
+    _sql($query, $userids->params, 'Inscritos ' . $response);
+    return $response;
 }
 
 function local_hoteles_city_dashboard_get_whereids_clauses($userids, $fieldname){
@@ -827,7 +846,7 @@ function local_hoteles_city_dashboard_get_course_information(int $courseid, arra
     $fecha_inicial = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_inicial');
     $fecha_final = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_final');
 
-    $userids = local_hoteles_city_dashboard_get_user_ids_with_params($courseid, $params);
+    $userids = local_hoteles_city_dashboard_get_userids_with_params($courseid, $params);
     // if($get_activities){
     //     $response->activities = local_hoteles_city_dashboard_get_activities_completion($courseid, $userids, $fecha_inicial, $fecha_final); //
     // }
@@ -1150,7 +1169,7 @@ function local_hoteles_city_dashboard_create_sql_dates($campo_fecha, $fecha_inic
 /**
  * Devuelve el conteo de los estudiantes aprobados en el curso
  * @param int|string $course id del curso a buscar
- * @param stdClass $userids obtenido desde local_hoteles_city_dashboard_get_user_ids_with_params()
+ * @param stdClass $userids obtenido desde local_hoteles_city_dashboard_get_userids_with_params()
  * @param string $fecha_inicial fecha inicial en formato YYYY-MM-DD o ''
  * @param string $fecha_final fecha final en formato YYYY-MM-DD o ''
  * @return int Número de estudiantes aprobados
@@ -1199,7 +1218,7 @@ function local_hoteles_city_dashboard_percentage_of(int $number, int $total, int
  * @param array $params parámetros de búsqueda de cursos, son permitidos campos personalizados y campos de la tabla usuarios
  * @return stdClass
  */
-function local_hoteles_city_dashboard_get_user_ids_with_params($course, array $params = array()){
+function local_hoteles_city_dashboard_get_userids_with_params($course, array $params = array()){
     // $whereClauses = array(); // Aplicables sobre campos de la tabla user
     $whereinClauses = array(); // Aplicables sobre campos de usuario personalizados
     $query_parameters = array();
@@ -1213,8 +1232,6 @@ function local_hoteles_city_dashboard_get_user_ids_with_params($course, array $p
     array_push($whereinClauses, $ids); // Campos de usuario personalizados
     global $DB;
     if(!empty($params)){
-        // list($user_table_sql, $user_table_params) = local_hoteles_city_dashboard_create_user_filters_sql($params); // Filtros de la tabla user
-        $innerInfoDataClauses = array();
         foreach ($params as $key => $value) {
             if(strpos($key, local_hoteles_city_dashboard_filter_prefix_custom_field) !== false){
                 $hasCustomField = true;
@@ -1222,15 +1239,9 @@ function local_hoteles_city_dashboard_get_user_ids_with_params($course, array $p
                 $query_parameters = array_merge($query_parameters, $inparams);
                 // $query_parameters = array_merge($query_parameters, $user_table_params);
                 $fieldid = str_replace(local_hoteles_city_dashboard_filter_prefix_custom_field, '', $key);
-                // $where = " (SELECT DISTINCT userid FROM {user_info_data} WHERE fieldid = {$fieldid} AND data {$insql} {$user_table_sql} ) ";
-                $where = "(fieldid = {$fieldid} AND data {$insql})";
-                array_push($innerInfoDataClauses, $where);
+                $where = " (SELECT DISTINCT userid FROM {user_info_data} WHERE fieldid = {$fieldid} AND data {$insql}) ";
+                array_push($whereinClauses, $where);
             }
-        }
-        if(!empty($innerInfoDataClauses)){
-            $innerInfoDataClauses = implode(' AND ', $innerInfoDataClauses);
-            $where = "(SELECT DISTINCT userid FROM {user_info_data} WHERE {$innerInfoDataClauses})";
-            array_push($whereinClauses, $where);
         }
     }
     $response = new stdClass();
@@ -1364,22 +1375,17 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
         break;
 
         case local_hoteles_city_dashboard_actived_users_pagination:
-            $marcafield = get_config('local_hoteles_city_dashboard', 'marcafield');
+            $marcafield = local_hoteles_city_dashboard_get_marcafield(true);
             $marcaValue = local_hoteles_city_dashboard_oficina_central_value;
-            if(empty($marcafield)){
-                $marcafield = -1;
-            }
             $enrol_sql_query = " user.id > 1 AND user.suspended = 0 AND user.deleted = 0
             userid.id NOT IN (SELECT distinct userid FROM {user_info_data} WHERE fieldid = {$marcafield} AND data = '{$marcaValue}')";
         break;
 
         case local_hoteles_city_dashboard_oficina_central_pagination:
-            $marcafield = get_config('local_hoteles_city_dashboard', 'marcafield');
+            $marcafield = local_hoteles_city_dashboard_get_marcafield(true);
             $marcaValue = local_hoteles_city_dashboard_oficina_central_value;
-            if(empty($marcafield)){
-                $marcafield = -1;
-            }
-            $enrol_sql_query = " user.id > 1 AND user.deleted = 0 AND user.id IN (SELECT distinct userid FROM {user_info_data} WHERE fieldid = {$marcafield} AND data = '{$marcaValue}')";
+            $enrol_sql_query = " user.id > 1 AND user.deleted = 0 AND user.id IN 
+             (SELECT distinct userid FROM {user_info_data} WHERE fieldid = {$marcafield} AND data = '{$marcaValue}')";
         break;
 
         default:
@@ -1744,17 +1750,27 @@ function local_hoteles_city_dashboard_get_catalogues($only = array()){
     global $DB;
     $returnAll = empty($only);
     $response = array();
-    $required_keys = array('institution', 'department');
+    // $required_keys = array('institution', 'department');
     $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
 
     $filterdefaultfields = $allowed_filters->filterdefaultfields;
     foreach ($filterdefaultfields as $key) {
         if($returnAll || in_array($key, $only)){ // de la tabla usuarios
-            $result  = $DB->get_fieldset_sql("SELECT distinct {$key} FROM {user}
-            WHERE suspended = 0 AND deleted = 0 AND {$key} != ''"); // Puestos
-            // if(!$returnAll && isset($required_keys[$key])) unset($required_keys[$key]);
-            if($result){
-                $response[$key] = $result;
+            switch ($key) {
+                case 'institution':
+                    $institutions = local_hoteles_city_dashboard_get_institutions_for_dashboard_user();
+                    $response[$key] = $institutions;
+                    break;
+                
+                default:
+                    $result  = $DB->get_fieldset_sql("SELECT distinct {$key} FROM {user}
+                    WHERE suspended = 0 AND deleted = 0 AND {$key} != ''"); // Puestos
+                    if($result){
+                        $response[$key] = $result;
+                    }else{
+                        $response[$key] = array();
+                    }
+                    break;
             }
         }
     }
@@ -2215,7 +2231,7 @@ function local_hoteles_city_dashboard_get_course_comparative(int $courseid, $sel
     //         $item_to_compare->name = $catalogue_item;
     //     }
 
-    //     // $userids = local_hoteles_city_dashboard_get_user_ids_with_params($courseid, $params);
+    //     // $userids = local_hoteles_city_dashboard_get_userids_with_params($courseid, $params);
     //     // $item_to_compare->enrolled_users = local_hoteles_city_dashboard_get_count_users($userids);
     //     // if($item_to_compare->enrolled_users == 0){
     //     //     $item_to_compare->approved_users = 0;
@@ -2371,35 +2387,26 @@ function local_hoteles_city_dashboard_get_dashboard_windows(){
     
     $courses = get_config('local_hoteles_city_dashboard', 'dashboard_courses');
     
-    $marcafield = get_config('local_hoteles_city_dashboard', 'marcafield');
+    $marcafield = local_hoteles_city_dashboard_get_marcafield(true);
+    $marca_param = local_hoteles_city_dashboard_get_marcafield();
     $item = new stdClass();
     $item->elements = array();
     $item->name = "Avance global de capacitación";
     $item->chart = 'bar-agrupadas';
-    if(!empty($marcafield)){
-        $marcas = local_hoteles_city_dashboard_get_custom_catalogue($marcafield);
-        $marca_param = local_hoteles_city_dashboard_filter_prefix_custom_field . $marcafield;
-        foreach($marcas as $marca){
-            $params = array();
-            $params[$marca_param] = $marca;
-            
-            // }
-            // for ($i=0; $i < 6; $i++) { // Marcas
-            $element = new stdClass();
-            $element->name = $marca;
-            // _log();
-            $userids = local_hoteles_city_dashboard_get_user_ids_with_params($courses, $params);
-            // _log($userids);
-            // _log(local_hoteles_city_dashboard_get_approved_users($courses, $userids, '', '')); //
-            $element->enrolled_users = local_hoteles_city_dashboard_count_users_many_courses($courses, $params);
-            $element->approved_users = local_hoteles_city_dashboard_get_approved_users($courses, $userids, '', '');
-            // $element->chart = 'bar-agrupadas';
-            $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
-            $element->not_approved_users = $element->enrolled_users - $element->approved_users;
-            $element->value = $element->percentage;
-            $element->type = 'section_1';
-            array_push($item->elements, $element);
-        }
+    $marcas = local_hoteles_city_dashboard_get_custom_catalogue($marcafield);
+    foreach($marcas as $marca){
+        $params = array();
+        $params[$marca_param] = $marca;
+        $element = new stdClass();
+        $element->name = $marca;
+        $userids = local_hoteles_city_dashboard_get_userids_with_params($courses, $params);
+        $element->enrolled_users = local_hoteles_city_dashboard_count_users_many_courses($courses, $params);
+        $element->approved_users = local_hoteles_city_dashboard_get_approved_users($courses, $userids, '', '');
+        $element->percentage = local_hoteles_city_dashboard_percentage_of($element->approved_users, $element->enrolled_users);
+        $element->not_approved_users = $element->enrolled_users - $element->approved_users;
+        $element->value = $element->percentage;
+        $element->type = 'section_1';
+        array_push($item->elements, $element);
     }
     array_push($response, $item);
 
@@ -2412,8 +2419,6 @@ function local_hoteles_city_dashboard_get_dashboard_windows(){
     $item->name = "Avance global de capacitación"; // Por regiones
     $item->chart = 'bar-agrupadas';
     if(!empty($regions)){
-        // $marcas = local_hoteles_city_dashboard_get_custom_catalogue($marcafield);
-        // $marca_param = local_hoteles_city_dashboard_filter_prefix_custom_field . $marcafield;
         foreach($regions as $region){
             $institutions = local_hoteles_city_dashboard_get_region_insitutions($region->id);
             $params = array();
@@ -2424,7 +2429,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(){
             $element->name = $region->name;
             
             if(!empty($institutions)){
-                $userids = local_hoteles_city_dashboard_get_user_ids_with_params($courses, $params);
+                $userids = local_hoteles_city_dashboard_get_userids_with_params($courses, $params);
                 
                 $element->enrolled_users = local_hoteles_city_dashboard_count_users_many_courses($courses, $params);
                 $element->approved_users = local_hoteles_city_dashboard_get_approved_users($courses, $userids, '', '');
@@ -2463,7 +2468,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(){
             $element = new stdClass();
             $element->name = $direccion_oficina_central;
             
-            $userids = local_hoteles_city_dashboard_get_user_ids_with_params($courses, $params);
+            $userids = local_hoteles_city_dashboard_get_userids_with_params($courses, $params);
             
             $element->enrolled_users = local_hoteles_city_dashboard_count_users_many_courses($courses, $params);
             $element->approved_users = local_hoteles_city_dashboard_get_approved_users($courses, $userids, '', '');
@@ -2498,7 +2503,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(){
             $element = new stdClass();
             $element->name = $puesto;
             
-            $userids = local_hoteles_city_dashboard_get_user_ids_with_params($courses, $params);
+            $userids = local_hoteles_city_dashboard_get_userids_with_params($courses, $params);
             
             $element->enrolled_users = local_hoteles_city_dashboard_count_users_many_courses($courses, $params);
             $element->approved_users = local_hoteles_city_dashboard_get_approved_users($courses, $userids, '', '');

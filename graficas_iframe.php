@@ -65,22 +65,28 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
 
 <body style="background-color: #ecedf1;">
 
-    <form action="" name='local_hoteles_city_dashboard_filters' class='row' id='local_hoteles_city_dashboard_filters' >
-        <?php
-            local_hoteles_city_dashboard_print_filters();
-        ?>
-    </form>
-    <div class="row">
-        <div class="col-12 text-right" style="padding-right: 2%;">
-            <button class='btn btn-primary' onclick="obtenerGraficas()">Aplicar filtros</button>
+    
+    <div class="row" style=" max-width: 100%; min-height: 400px;">
+        <form action="" name='local_hoteles_city_dashboard_filters' class='row' id='local_hoteles_city_dashboard_filters' >
+            <?php
+                local_hoteles_city_dashboard_print_filters();
+            ?>
+        </form>
+        <div class="row">
+            <div class="col-12 text-right" style="padding-right: 2%;">
+                <button class='btn btn-primary' onclick="obtenerGraficas()">Aplicar filtros</button>
+            </div>
+        </div>
+    
+        <!-- Título -->
+        <div>
+            <h3 style="text-align: center;">Reportes</h3>
         </div>
     </div>
 
-    <!-- Título -->
     <div>
-        <h3 style="text-align: center;">Reportes</h3>
+        <pre id="json"></pre>
     </div>
-
     
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
@@ -116,6 +122,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                 dataType: "json"
             })
                 .done(function(data) {
+                    document.getElementById("json").innerHTML = JSON.stringify(data, undefined, 2);
                     console.log(data);
                 })
                 .fail(function (error, error2) {
