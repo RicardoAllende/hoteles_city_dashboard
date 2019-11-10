@@ -125,6 +125,9 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     console.log(error2);
                 });
         }
+        function onchangeFilter(filterid){ // Se ejecuta esta función cuando el elemento ha cambiado
+            console.log('El elemento ha cambiado');
+        }
     </script>
 
 </body>
