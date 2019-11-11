@@ -54,7 +54,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
     <!-- Custom scripts for all pages-->
     <!-- <script src="js/sb-admin-2.min.js"></script> -->
 
-    <!-- <script src="vendor/chart.js/Chart.min.js"></script> -->
+    <script src="vendor/chart.js/Chart.min.js"></script>
 
     <!-- <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"> -->
     <!-- <link rel="stylesheet" href="css/jquery.loadingModal.css"> -->
@@ -87,6 +87,10 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
     <div>
         <pre id="json"></pre>
     </div>
+
+    <!-- Div para pintar las graficas de los cursos -->
+    <div id="curso_graficas" class="row" style="padding: 15px 25px;"></div>
+
     
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
@@ -124,6 +128,35 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                 .done(function(data) {
                     document.getElementById("json").innerHTML = JSON.stringify(data, undefined, 2);
                     console.log(data);
+                    //console.log(data);
+                    informacion = JSON.parse(JSON.stringify(data));
+                    informacion = informacion.data;
+                    console.log('Imprimiendo la respuesta', informacion);
+                    for(var i = 0; i < informacion.length; i++){                        
+                        info = informacion[i];
+                        //console.log(info);
+                        var course = new GraphicsDashboard('curso_graficas',info.title,info.chart,info,4);
+                        course.printCard();
+                        if(info.chart == 'bar-agrupadas'){                        
+                            course.comparative_graph();
+                        }
+                        if(info.chart == 'line'){
+                            course.comparative_graph();
+                        }
+                        if(info.chart == 'horizontalBar'){
+                            course.comparative_graph();
+                        }
+                        if (info.chart == 'burbuja') {
+                            course.comparative_graph();
+                        }
+                        if (info.chart == 'pie') {
+                            course.individual_graph();
+                        }
+                        if (info.chart == 'bar') {
+                            course.individual_graph();
+                        }
+ 
+                    }
                 })
                 .fail(function (error, error2) {
                     isCourseLoading = false;
@@ -136,6 +169,10 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
             console.log('El elemento ha cambiado');
         }
     </script>
+
+    
+
+    <script src="classes.js"></script>
 
 </body>
 
