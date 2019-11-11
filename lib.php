@@ -37,6 +37,7 @@ DEFINE('local_hoteles_city_dashboard_cambio_usuarios', 'Cambio de usuarios');
 DEFINE('local_hoteles_city_dashboard_reportes', 'Dashboard reporte de cursos');
 DEFINE('local_hoteles_city_dashboard_ajustes', 'Ajustes dashboard administrativo Hoteles City');
 DEFINE('local_hoteles_city_dashboard_services', 'Web service');
+DEFINE('local_hoteles_city_dashboard_apply_filters', 'Aplicar filtros'); // Aplicar filtros para personas con acceso a toda la información
 
 
 DEFINE('local_hoteles_city_dashboard_gerente_ao', 'role_1');
@@ -138,7 +139,17 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
 }
 
 function local_hoteles_city_dashboard_get_role_permissions(){
-    return array(
+    $all_permissions = [
+        local_hoteles_city_dashboard_reportes,
+        local_hoteles_city_dashboard_alta_baja_usuarios,
+        local_hoteles_city_dashboard_cambio_usuarios,
+        local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
+        local_hoteles_city_dashboard_listado_todos_los_usuarios,
+        local_hoteles_city_dashboard_ajustes,
+        local_hoteles_city_dashboard_services,
+        local_hoteles_city_dashboard_apply_filters,
+    ];
+    $response = array(
         local_hoteles_city_dashboard_director_regional => [
             local_hoteles_city_dashboard_reportes,
             local_hoteles_city_dashboard_services,
@@ -148,34 +159,11 @@ function local_hoteles_city_dashboard_get_role_permissions(){
             local_hoteles_city_dashboard_alta_baja_usuarios,
             local_hoteles_city_dashboard_services,
         ],
-        local_hoteles_city_dashboard_gerente_ao => [
-            local_hoteles_city_dashboard_reportes,
-            local_hoteles_city_dashboard_alta_baja_usuarios,
-            local_hoteles_city_dashboard_cambio_usuarios,
-            local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
-            local_hoteles_city_dashboard_listado_todos_los_usuarios,
-            local_hoteles_city_dashboard_ajustes,
-            local_hoteles_city_dashboard_services,
-        ],
-        local_hoteles_city_dashboard_personal_elearning => [
-            local_hoteles_city_dashboard_reportes,
-            local_hoteles_city_dashboard_alta_baja_usuarios,
-            local_hoteles_city_dashboard_cambio_usuarios,
-            local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
-            local_hoteles_city_dashboard_listado_todos_los_usuarios,
-            local_hoteles_city_dashboard_ajustes,
-            local_hoteles_city_dashboard_services,
-        ],
-        local_hoteles_city_dashboard_administrador => [
-            local_hoteles_city_dashboard_reportes,
-            local_hoteles_city_dashboard_alta_baja_usuarios,
-            local_hoteles_city_dashboard_cambio_usuarios,
-            local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
-            local_hoteles_city_dashboard_listado_todos_los_usuarios,
-            local_hoteles_city_dashboard_ajustes,
-            local_hoteles_city_dashboard_services,
-        ], 
     );
+    $response[local_hoteles_city_dashboard_gerente_ao] = $all_permissions;
+    $response[local_hoteles_city_dashboard_personal_elearning] = $all_permissions;
+    $response[local_hoteles_city_dashboard_administrador] = $all_permissions;
+    return $response;
 }
 
 function local_hoteles_city_dashboard_get_dashboard_roles(){
@@ -288,6 +276,7 @@ function local_hoteles_city_dashboard_get_courses_overview(array $params = array
     // $courses = local_hoteles_city_dashboard_get_courses();
     $courses = local_hoteles_city_dashboard_get_array_from_config(get_config('local_hoteles_city_dashboard', 'dashboard_courses'));
     $courses_in_order = array();
+    $params = local_hoteles_city_dashboard_get_restricted_params($params);
     foreach($courses as $courseid){
         $course_information = local_hoteles_city_dashboard_get_course_information(intval($courseid), $params);        
         if(empty($course_information)){
@@ -328,7 +317,12 @@ function local_hoteles_city_dashboard_get_departments(){
     return $response;
 }
 
+$cache_institutions = null;
 function local_hoteles_city_dashboard_get_institutions(){
+    global $cache_institutions;
+    if($cache_institutions !== null){
+        return $cache_institutions;
+    }
     $key = 'institution';
     $result = local_hoteles_city_dashboard_get_catalogues([$key]);
     $result = $result[$key];
@@ -336,6 +330,7 @@ function local_hoteles_city_dashboard_get_institutions(){
     foreach($result as $result){
         $response[$result] = $result;
     }
+    $cache_institutions = $response;
     return $response;
 }
 
@@ -828,7 +823,7 @@ function local_hoteles_city_dashboard_get_whereids_clauses($userids, $fieldname)
  * @return array ($query, $query_parameters) para agregar como where in de los usuarios inscritos en el curso
  */
 function local_hoteles_city_dashboard_get_enrolled_userids($course, string $fecha_inicial, string $fecha_final,
-    $params = array(), bool $apply_distinct = true){
+        $params = array(), bool $apply_distinct = true){
     if(empty($course)){
         print_error('No se ha enviado id del curso local_hoteles_city_dashboard_get_enrolled_userids');
     }
@@ -836,6 +831,7 @@ function local_hoteles_city_dashboard_get_enrolled_userids($course, string $fech
     $query_parameters = array();
     $campo_fecha = "__ue__.timestart";
     $filtro_fecha = local_hoteles_city_dashboard_create_sql_dates($campo_fecha, $fecha_inicial, $fecha_final);
+    $params = local_hoteles_city_dashboard_get_restricted_params($params);
 
     $wherecourse = ($many_courses) ? " IN ({$course}) " : " = {$course} ";
     $distinctClause = ($apply_distinct) ? 'DISTINCT' : '';
@@ -2237,18 +2233,38 @@ function local_hoteles_city_dashboard_get_temporal_institutions(string $user_ema
 }
 
 function local_hoteles_city_dashboard_is_gerente_ao(){
+    global $global_user_permissions;
+    if($global_user_permissions !== null){
+        $global_user_permissions = (array) $global_user_permissions;
+        return in_array(local_hoteles_city_dashboard_gerente_ao, $global_user_permissions);
+    }
     return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_gerente_ao);
 }
 
 function local_hoteles_city_dashboard_is_director_regional(){
+    global $global_user_permissions;
+    if($global_user_permissions !== null){
+        $global_user_permissions = (array) $global_user_permissions;
+        return in_array(local_hoteles_city_dashboard_director_regional, $global_user_permissions);
+    }
     return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_director_regional);
 }
 
 function local_hoteles_city_dashboard_is_personal_elearning(){
+    global $global_user_permissions;
+    if($global_user_permissions !== null){
+        $global_user_permissions = (array) $global_user_permissions;
+        return in_array(local_hoteles_city_dashboard_personal_elearning, $global_user_permissions);
+    }
     return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_personal_elearning);
 }
 
 function local_hoteles_city_dashboard_is_gerente_general(){
+    global $global_user_permissions;
+    if($global_user_permissions !== null){
+        $global_user_permissions = (array) $global_user_permissions;
+        return in_array(local_hoteles_city_gerente_general_value, $global_user_permissions);
+    }
     global $USER;
     return $USER->institution == local_hoteles_city_gerente_general_value;
 }
@@ -2621,4 +2637,69 @@ function local_hoteles_city_dashboard_update_gerentes_temporales(array $params){
         _log('No se encontró el registro local_hoteles_city_dashboard_update_gerentes_temporales');
     }
     return "Error, recargue la página e inténtelo más tarde";
+}
+
+function local_hoteles_city_dashboard_print_institutions_in_js(){
+    $response = new stdClass();
+    $response->institutions = array_values(local_hoteles_city_dashboard_get_institutions());
+    $response->num_institutions = count($response->institutions);
+    $result = json_encode($response);
+    $result = "<script> var __hoteles__ = {$result}; </script>";
+    echo $result;
+}
+
+function local_hoteles_city_dashboard_has_permission($permission){
+    $permissions = local_hoteles_city_dashboard_get_user_permissions();
+    return in_array($permission, $permissions);
+}
+
+/**
+ * Devuelve el arreglo de parámetros sin los filtros que no le corresponden a algún usuario
+ * En caso de ser gerente regional o de hotel, sólo permite consultar el filtro de institution y elimina las instituciones que no le pertenezcan
+ * @param array $params Petición con los filtros
+ * @return array
+ */
+function local_hoteles_city_dashboard_get_restricted_params(array $params){
+    if(local_hoteles_city_dashboard_has_permission(local_hoteles_city_dashboard_apply_filters)){
+        return $params;
+    }else{
+        $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
+        if(local_hoteles_city_dashboard_is_director_regional() || local_hoteles_city_dashboard_is_gerente_general()){
+            $institutions = local_hoteles_city_dashboard_get_institutions();
+            foreach($allowed_filters->filters as $filter){
+                switch ($filter) {
+                    case 'institution':
+                        $allowed_elements = array();
+                        $institution_request = $params['institution'];
+                        if(is_string($institution_request) || is_numeric($institution_request)){
+                            if(!in_array($institution_request, $institutions)){ // No le corresponde esta institución
+                                unset($params['institution']);
+                            }
+                        }elseif(is_array($institution_request)){
+                            foreach($params['institution'] as $ins){
+                                array_push($allowed_elements, $ins);
+                            }
+                            if(empty($allowed_elements)){
+                                unset($params['institution']);                                
+                            }else{
+                                $params['institution'] = $allowed_elements;
+                            }
+                        }
+                        break;
+                    case 'department':
+
+                    default:
+                        if(isset($params[$filter])){
+                            unset($params[$filter]);
+                        }
+                        break;
+                }
+            }
+            if(!isset($params['institution'])){
+                $params['institution'] = $institutions;
+            }
+            return $params;
+        }
+    }
+    return array();
 }

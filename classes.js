@@ -179,6 +179,9 @@ function printInfoCards(){
     $('#card_no_aprobados').html(total_no_aprobados);
     $('#card_aprobados').html(porcentaje_aprobados.toFixed(2)+"%");
     $('#progress_aprobados').css("width", porcentaje_aprobados.toFixed(2)+"%");
+    if(typeof __hoteles__ === 'object'){
+        $('#card_numero_hoteles').html(__hoteles__.num_institutions);
+    }
 }
 
 class GraphicsDashboard {

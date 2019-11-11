@@ -222,7 +222,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     <!-- <script src="js/jquery.loadingModal.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
-    
+    <?php local_hoteles_city_dashboard_print_institutions_in_js(); ?>
     
     <script>
         var muestraComparativas = false;
