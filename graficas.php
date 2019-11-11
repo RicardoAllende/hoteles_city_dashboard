@@ -84,9 +84,9 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
         </div>
     </div>
 
-    <div>
+    <!-- <div>
         <pre id="json"></pre>
-    </div>
+    </div> -->
 
     <!-- Div para pintar las graficas de los cursos -->
     <div id="curso_graficas" class="row" style="padding: 15px 25px;"></div>
@@ -126,8 +126,8 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                 dataType: "json"
             })
                 .done(function(data) {
-                    document.getElementById("json").innerHTML = JSON.stringify(data, undefined, 2);
-                    console.log(data);
+                    // document.getElementById("json").innerHTML = JSON.stringify(data, undefined, 2);
+                    // console.log(data);
                     //console.log(data);
                     informacion = JSON.parse(JSON.stringify(data));
                     informacion = informacion.data;
