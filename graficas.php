@@ -67,19 +67,19 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
 
     
     <div class="row" style=" max-width: 100%; min-height: 400px;">
-        <form action="" name='local_hoteles_city_dashboard_filters' class='row' id='local_hoteles_city_dashboard_filters' >
+        <form action="" name='local_hoteles_city_dashboard_filters' class='row col-sm-12' id='local_hoteles_city_dashboard_filters' >
             <?php
                 local_hoteles_city_dashboard_print_filters();
             ?>
         </form>
-        <div class="row">
+        <div class="row col-sm-12">
             <div class="col-12 text-right" style="padding-right: 2%;">
                 <button class='btn btn-primary' onclick="obtenerGraficas()">Aplicar filtros</button>
             </div>
         </div>
     
         <!-- Título -->
-        <div>
+        <div class="col-sm-12 text-center">
             <h3 style="text-align: center;">Reportes</h3>
         </div>
     </div>
@@ -166,7 +166,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                 });
         }
         function onchangeFilter(filterid){ // Se ejecuta esta función cuando el elemento ha cambiado
-            console.log('El elemento ha cambiado');
+            // console.log('El elemento ha cambiado');
         }
     </script>
 
