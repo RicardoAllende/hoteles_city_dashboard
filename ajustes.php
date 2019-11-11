@@ -28,7 +28,7 @@ $context_system = context_system::instance();
 require_login();
 require_once(__DIR__ . '/lib.php');
 require_once(__DIR__ . '/custom_settings.php');
-local_hoteles_city_dashboard_user_has_access();
+local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_ajustes);
 
 global $DB;
 $PAGE->set_url($CFG->wwwroot . "/local/hoteles_city_dashboard/administrar_regiones.php");
@@ -279,6 +279,9 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
         </div>
     </div>
 
+    <link rel="stylesheet" href="choicesjs/styles/choices.min.css" />
+    <script src="choicesjs/scripts/choices.min.js"></script>
+
     <script>
         var editing;
         var Toast = Swal.mixin({
@@ -301,6 +304,12 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
             //     }
             // });
             // $('.multiselect-setting').hide(); // Si no se oculta en bootstrap alpha 4
+            // $('select').each(function(index, element){ // Generación de filtros con herramenta choices.js 
+            $('select[multiple]').each(function(index, element){ // Generación de filtros con herramenta choices.js
+                var multipleCancelButton = new Choices( '#' + element.id, { removeItemButton: true, searchEnabled: true,
+                    placeholder: true,
+                } );
+            });
         });
         
         function establecer_gerente_general(institution, inputId){

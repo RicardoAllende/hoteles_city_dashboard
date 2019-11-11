@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 $roles = null;
 $permissions = null;
 
-DEFINE('local_hoteles_city_dashboard_return_random_data', true);
+DEFINE('local_hoteles_city_dashboard_return_random_data', false);
 
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios', 'Administración de usuarios de hoteles');
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central', 'Administración de usuarios de Oficina Central');
@@ -36,6 +36,7 @@ DEFINE('local_hoteles_city_dashboard_listado_todos_los_usuarios', 'Administraci�
 DEFINE('local_hoteles_city_dashboard_cambio_usuarios', 'Cambio de usuarios');
 DEFINE('local_hoteles_city_dashboard_reportes', 'Dashboard reporte de cursos');
 DEFINE('local_hoteles_city_dashboard_ajustes', 'Ajustes dashboard administrativo Hoteles City');
+DEFINE('local_hoteles_city_dashboard_services', 'Web service');
 
 
 DEFINE('local_hoteles_city_dashboard_gerente_ao', 'role_1');
@@ -140,10 +141,12 @@ function local_hoteles_city_dashboard_get_role_permissions(){
     return array(
         local_hoteles_city_dashboard_director_regional => [
             local_hoteles_city_dashboard_reportes,
+            local_hoteles_city_dashboard_services,
         ],
         local_hoteles_city_dashboard_gerente_hotel => [
             local_hoteles_city_dashboard_reportes,
             local_hoteles_city_dashboard_alta_baja_usuarios,
+            local_hoteles_city_dashboard_services,
         ],
         local_hoteles_city_dashboard_gerente_ao => [
             local_hoteles_city_dashboard_reportes,
@@ -152,6 +155,7 @@ function local_hoteles_city_dashboard_get_role_permissions(){
             local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
             local_hoteles_city_dashboard_listado_todos_los_usuarios,
             local_hoteles_city_dashboard_ajustes,
+            local_hoteles_city_dashboard_services,
         ],
         local_hoteles_city_dashboard_personal_elearning => [
             local_hoteles_city_dashboard_reportes,
@@ -160,6 +164,7 @@ function local_hoteles_city_dashboard_get_role_permissions(){
             local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
             local_hoteles_city_dashboard_listado_todos_los_usuarios,
             local_hoteles_city_dashboard_ajustes,
+            local_hoteles_city_dashboard_services,
         ],
         local_hoteles_city_dashboard_administrador => [
             local_hoteles_city_dashboard_reportes,
@@ -168,6 +173,7 @@ function local_hoteles_city_dashboard_get_role_permissions(){
             local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
             local_hoteles_city_dashboard_listado_todos_los_usuarios,
             local_hoteles_city_dashboard_ajustes,
+            local_hoteles_city_dashboard_services,
         ], 
     );
 }
@@ -293,8 +299,21 @@ function local_hoteles_city_dashboard_get_courses_overview(array $params = array
     return $courses_in_order;
 }
 
-function local_hoteles_city_dashboard_user_has_access(bool $throwError = true){
+function local_hoteles_city_dashboard_user_has_access($section = '', bool $throwError = true){
+    $message = "Usted no tiene permiso para acceder a esta sección";
+    if(empty($section)){
+        print_error($message);
+    }
     require_login();
+    $permissions = local_hoteles_city_dashboard_get_user_permissions();
+    $hasAccess = in_array($section, $permissions);
+    if($throwError){
+        if(!$hasAccess){
+            print_error($message);
+        }
+    }else{
+        return $hasAccess;
+    }
     return true;
 }
 
@@ -2116,7 +2135,7 @@ function local_hoteles_city_dashboard_get_user_permissions(){
         if(!empty($config)){
             $config = explode(' ', $config);
             if(in_array($email, $config)){
-                $user_permissions = array_merge($user_permissions, $all_permissions[local_hoteles_city_dashboard_administrador]);
+                $user_permissions = array_merge($user_permissions, $all_permissions[$key]);
                 $user_permissions = array_unique($user_permissions);
                 if(count($user_permissions) == $count_all_permissions) return $user_permissions;
                 // $roles[$key] = $all_permissions[$key];

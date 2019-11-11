@@ -26,7 +26,7 @@
 require_once(__DIR__ . '/../../config.php');
 $context_system = context_system::instance();
 require_once(__DIR__ . '/lib.php');
-local_hoteles_city_dashboard_user_has_access();
+local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_reportes);
 require_login();
 
 $PAGE->set_url($CFG->wwwroot . "/local/hoteles_city_dashboard/dashboard.php");

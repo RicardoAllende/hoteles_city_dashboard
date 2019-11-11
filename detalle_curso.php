@@ -25,7 +25,7 @@
 
 require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
-local_hoteles_city_dashboard_user_has_access();
+local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_reportes);
 $PAGE->set_context(context_system::instance());
 $courseid = optional_param('courseid', 9, PARAM_INT);
 $course = $DB->get_record('course', array('id' => $courseid), 'id, fullname', MUST_EXIST);

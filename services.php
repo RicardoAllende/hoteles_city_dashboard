@@ -27,7 +27,7 @@ header("Content-Type: application/json");
 require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 $context_system = context_system::instance();
-local_hoteles_city_dashboard_user_has_access();
+local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_services);
 if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
     $request_type = $_POST['request_type'];
     switch($request_type){
