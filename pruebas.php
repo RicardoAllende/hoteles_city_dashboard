@@ -33,13 +33,18 @@ echo $OUTPUT->header();
 global $DB, $USER;
 
 $tiempo_inicial = microtime(true); //true es para que sea calculado en segundos
+
+$sql = "SELECT institution FROM {dashboard_region_ins} WHERE users LIKE ? ";
+_print($DB->get_fieldset_sql($sql, array('3')));
+
+
 // $tiempo_final = microtime(true);
 // $tiempo = $tiempo_final - $tiempo_inicial; //este resultado estará en segundos
 // _log("<br>El tiempo de ejecución del archivo ha sido de " . $tiempo . " segundos");
 
 
-dd(local_hoteles_city_dashboard_get_allowed_filters());
-dd(local_hoteles_city_dashboard_get_catalogues());
+// dd(local_hoteles_city_dashboard_get_allowed_filters());
+// dd(local_hoteles_city_dashboard_get_catalogues());
 // _print(list($enrolledsql, $params) = get_enrolled_sql(
 //     context_course::instance(8)));
 // _print(get_config('local_hoteles_city_dashboard'));
@@ -49,24 +54,23 @@ $params = array('institution' => 'Institución 1', 'department' => ['Primer depa
 //     'institution' => 'Hotel 2',
 //     'department' => 'Gerente General'
 // ];
-$total_elements = $DB->count_records_sql('SELECT count(*) FROM {user} WHERE id > 1 AND suspended = 0 AND deleted = 0');
-_print('Total de elementos', $total_elements);
-$limite = 500;
-$iterations = ceil($total_elements / $limite);
-_print('Número de interacciones', $iterations);
 
-for ($i=0; $i < $iterations; $i++) { 
-    $limitfrom = $limite * $i;
+// Prueba de paginación de usuarios
+// $total_elements = $DB->count_records_sql('SELECT count(*) FROM {user} WHERE id > 1 AND suspended = 0 AND deleted = 0');
+// _print('Total de elementos', $total_elements);
+// $limite = 500;
+// $iterations = ceil($total_elements / $limite);
+// _print('Número de interacciones', $iterations);
 
-    $users = $DB->get_records_sql('SELECT id, alternatename, imagealt, email, middlename, picture, firstnamephonetic, lastnamephonetic,
-    id as userid, firstname, lastname, id as userid FROM {user} WHERE id > 1 AND suspended = 0 AND deleted = 0', array(), $limitfrom, $limite );
-    _print(count($users), "$limitfrom, $limite");
-    echo "<br>";
-}
+// for ($i=0; $i < $iterations; $i++) { 
+//     $limitfrom = $limite * $i;
 
-$tiempo_final = microtime(true);
-$tiempo = $tiempo_final - $tiempo_inicial; //este resultado estará en segundos
-_log("<br>El tiempo de ejecución del archivo ha sido de " . $tiempo . " segundos");
+//     $users = $DB->get_records_sql('SELECT id, alternatename, imagealt, email, middlename, picture, firstnamephonetic, lastnamephonetic,
+//     id as userid, firstname, lastname, id as userid FROM {user} WHERE id > 1 AND suspended = 0 AND deleted = 0', array(), $limitfrom, $limite );
+//     _print(count($users), "$limitfrom, $limite");
+//     echo "<br>";
+// }
+
 
 // _print(local_hoteles_city_dashboard_get_userids_with_params('8,9,10', $params));
 // _print($USER->institution);
@@ -81,4 +85,10 @@ _log("<br>El tiempo de ejecución del archivo ha sido de " . $tiempo . " segundo
 //     _print($course->fullname, local_hoteles_city_dashboard_get_course_information($course->id));
 // }
 // _print(local_hoteles_city_dashboard_get_report_columns());
+    
+$tiempo_final = microtime(true);
+$tiempo = $tiempo_final - $tiempo_inicial; //este resultado estará en segundos
+
+_log("<br>El tiempo de ejecución del archivo ha sido de " . $tiempo . " segundos");
+
 echo $OUTPUT->footer();

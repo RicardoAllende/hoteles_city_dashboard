@@ -67,8 +67,6 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
 ?>
 <link rel="stylesheet" href="estilos_city.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
-<script src="bootstrap/bootstrap-multiselect.css"></script>
-<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
 
 <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
@@ -127,7 +125,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                             }
                             echo '<tr>';
                             echo "<td scope=\"col\" class=\"text-center btn Info\" onclick='showInstitution(\"{$institution}\")'>
-                            {$institution} &nbsp;&nbsp;<i class='fas fa-info-circle'></td>";
+                             {$institution} &nbsp;&nbsp;<i class='fas fa-info-circle'></td>";
                             $ins = local_hoteles_city_dashboard_slug($institution);
                             foreach ($regions as $region) {
                                 $checked = "";
@@ -178,7 +176,6 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
     </div>
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="sweetalert/sweetalert2.all.min.js"></script>
-    <script src="bootstrap/bootstrap-multiselect.min.js"></script>
     <form id="hoteles_city_dashboard" name="hoteles_city_dashboard"></form>
     <div class="modal fade" id="addRegion" tabindex="-1" role="dialog" aria-labelledby="addRegionLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -248,6 +245,34 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                     <button type="button" class="btn btn-danger" onclick="delete_region()" data-dismiss="modal">Eliminar Región</button>
                     <button type="button" class="btn btn-secondary" onclick="disable_region()" id="change_region" data-dismiss="modal">Cancelar</button>
                     <button type="button" onclick="update_region()" class="btn Primary">Guardar los cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="infoInstitution" tabindex="-1" role="dialog" aria-labelledby="showRegionLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="showRegionLabel"></h5>
+                </div>
+                <div class="modal-body">
+                    <!-- <form> -->
+                    <div class="form-group">
+                        <label class="col-form-label">Unidad operativa: <p id="institution_name"></p></label>
+                        
+                        <br>
+                        <!-- <p id="region-description"></p> -->
+                    </div>
+                    <div class="form-group">
+                        <label for="gerentes_temporales" class="col-form-label">Escriba el correo de los gerentes temporales separados por un espacio:</label>
+                        <input type="text" class="form-control" id="gerentes_temporales" name="gerentes_temporales">
+                        <br>
+                    </div>
+                    <!-- </form> -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="update_institution()" class="btn Primary">Guardar los cambios</button>
                 </div>
             </div>
         </div>
@@ -578,7 +603,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
 
         var informacion;
 
-        function saveAllChanges() {
+        function saveAllChanges() { // Guarda los ajustes
             informacion = $('#filter_settings, #permission_settings').serializeArray();
             informacion.push({ name: 'request_type', value: 'save_settings' });
             console.log(informacion);
@@ -597,11 +622,63 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                 });
         }
 
+        var currentInstitution;
         function showInstitution(institution){
+            currentInstitution = institution;
+            $('#gerentes_temporales').html('');
 
+            $('#institution-name').html(institution);
+            informacion = Array();
+            informacion.push({ name: 'request_type', value: 'obtener_gerentes_temporales' });
+            informacion.push({ name: 'institution', value: institution });
+            $('#institution_name').html(institution);
+
+            $.ajax({
+                    type: "POST",
+                    url: "services.php",
+                    data: informacion,
+                })
+                .done(function(data) {
+                    console.log('Información devuelta', data);
+                    $('#gerentes_temporales').val(data);
+                })
+                .fail(function(error, error2) {
+                    console.log('showInstitution Errores', error, error2);
+                });
+
+            $('#infoInstitution').modal();
         }
-        //     });
-        // });
+
+        function update_institution() {
+            informacion = Array();
+            gerentes_temporales = $('#gerentes_temporales').val();
+            informacion.push({ name: 'request_type', value: 'editar_gerentes_temporales' });
+            informacion.push({ name: 'institution', value: currentInstitution });
+            informacion.push({ name: 'gerentes_temporales', value: gerentes_temporales });
+            $.ajax({
+                    type: "POST",
+                    url: "services.php",
+                    data: informacion,
+                })
+                .done(function(data) {
+                    if (data == 'ok') {
+                        Swal.fire('Gerentes temporales asignados correctamente');
+                    } else { // Se trata de un error
+                        Swal.fire(data);
+                        reloadPage();
+                    }
+                    $('#infoInstitution').modal('hide');
+                })
+                .fail(function(error, error2) {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Oops...',
+                        text: 'Ocurrió un error al crear la región',
+                        footer: 'Por favor, inténtelo de nuevo'
+                    });
+                    console.log(error, error2);
+                });
+        }
     </script>
 <?php
 echo $OUTPUT->footer();

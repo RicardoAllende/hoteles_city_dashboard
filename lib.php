@@ -2056,7 +2056,6 @@ function local_hoteles_city_dashboard_get_user_permissions(){
     if($global_user_permissions !== null){
         return $global_user_permissions;
     }
-    // $roles = local_hoteles_city_dashboard_get_user_roles();
     global $USER;
     if(empty($USER->email)){
         return array();
@@ -2095,32 +2094,7 @@ function local_hoteles_city_dashboard_get_user_permissions(){
     return $user_permissions;
 }
 
-function local_hoteles_city_dashboard_get_user_roles(){
-    global $USER;
-    $email = $USER->email;
-    $roles = array();
-    $permissions = local_hoteles_city_dashboard_get_role_permissions();
-    if(is_siteadmin()){
-        $roles[local_hoteles_city_dashboard_administrador] = $permissions[local_hoteles_city_dashboard_administrador];
-    }
-    foreach (local_hoteles_city_dashboard_get_dashboard_roles() as $key => $name) {
-        $config_name = $key;
-        $config = get_config('local_hoteles_city_dashboard', $config_name);
-        if(!empty($config)){
-            $config = explode(' ', $config);
-            if(in_array($email, $config)){
-                $roles[$key] = $permissions[$key];
-            }
-        }
-    }
-    $roles = local_hoteles_city_dashboard_get_role_permissions();
-    if(local_hoteles_city_dashboard_is_gerente_general()){
-        $roles[local_hoteles_city_dashboard_gerente_hotel] = $permissions[local_hoteles_city_dashboard_gerente_hotel];
-    }
-    return $roles;
-}
-
-function local_hoteles_city_dashboard_user_has_role($key){
+function local_hoteles_city_dashboard_user_has_role(string $key){
     global $USER;
     $email = $USER->email;
     $config_name = $key;
@@ -2168,7 +2142,10 @@ function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
         }
         $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE dri.regionid = (SELECT regionid 
         FROM {dashboard_region_ins} WHERE institution = '{$institution}' LIMIT 1) AND institution != ''";
-        return $DB->get_fieldset_sql($query);
+        $institutions = $DB->get_fieldset_sql($query);
+        $temporal_institutions = local_hoteles_city_dashboard_get_temporal_institutions($email);
+        $institutions = array_unique(array_merge($institutions, $temporal_institutions));
+        return $institutions;
     }
     if(local_hoteles_city_dashboard_is_director_regional()){
         $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE institution != '' AND 
@@ -2179,6 +2156,26 @@ function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
         return $DB->get_fieldset_sql($queryAllInstitutions);
     }
     return $default;
+}
+
+/**
+ * Devuelve las instituciones temporales que le corresponden a un usuario
+ * @param string $user_email Email del usuario
+ * @return array Instituciones
+ */
+function local_hoteles_city_dashboard_get_temporal_institutions(string $user_email = null){
+    if($user_email === null){
+        global $USER;
+        $user_email = $USER->email;
+    }
+    if(empty($user_email)){
+        return array();
+    }
+    
+    global $DB;
+
+    $sql = "SELECT institution FROM {dashboard_region_ins} WHERE users LIKE ? ";
+    return $DB->get_fieldset_sql($sql, array('%' . $user_email . '%'));
 }
 
 function local_hoteles_city_dashboard_is_gerente_ao(){
@@ -2536,4 +2533,34 @@ function local_hoteles_city_dashboard_print_filters(){
     }
     // echo "<button value='Submit'>Submit</button>";
     // echo "</form>";
+}
+
+function local_hoteles_city_dashboard_get_gerentes_temporales_institution(string $institution, $returnAsArray = true){
+    global $DB;
+    $field = $DB->get_field('dashboard_region_ins', 'users', compact('institution'));
+    if(!empty($field)){
+        return $returnAsArray ? array() : '';
+    }
+    return $returnAsArray ? explode(' ', $field) : $field;
+}
+
+function local_hoteles_city_dashboard_update_gerentes_temporales(array $params){
+    $institution = local_hoteles_city_dashboard_get_value_from_params($params, 'institution');
+    $gerentes_temporales = trim(local_hoteles_city_dashboard_get_value_from_params($params, 'gerentes_temporales', ''));
+    global $DB;
+    $record = $DB->get_record('dashboard_region_ins', compact('institution'));
+    if($record){
+        if($record->users != $gerentes_temporales){
+            $record->users = $gerentes_temporales;
+            $DB->update_record('dashboard_region_ins', $record);
+        }else{
+            _log('No actualizado');
+        }
+        return 'ok';
+    }else{
+        _log('No se encontró el registro local_hoteles_city_dashboard_update_gerentes_temporales');
+    }
+    return "Error, recargue la página e inténtelo más tarde";
+    //  $DB->get_field('dashboard_region_ins', 'users', compact('institution'));
+
 }

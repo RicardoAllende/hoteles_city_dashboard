@@ -108,6 +108,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
         case 'establecer_gerente_hotel':	
             die(local_hoteles_city_dashboard_update_gerente_general($params = $_POST));	
         break;
+        case 'obtener_gerentes_temporales':
+            if(empty($_POST['institution'])){
+                print_error('institution not found');
+            }else{
+                die(local_hoteles_city_dashboard_get_gerentes_temporales_institution($_POST['institution'], false));
+            }
+        break;
+        case 'editar_gerentes_temporales':
+            die(local_hoteles_city_dashboard_update_gerentes_temporales($_POST));	
+        break;
         default:
             die(local_hoteles_city_dashboard_error_response("request_type not allowed"));
             break;
