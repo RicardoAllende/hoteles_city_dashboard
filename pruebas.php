@@ -34,8 +34,9 @@ global $DB, $USER;
 
 $tiempo_inicial = microtime(true); //true es para que sea calculado en segundos
 
-$sql = "SELECT institution FROM {dashboard_region_ins} WHERE users LIKE ? ";
-_print($DB->get_fieldset_sql($sql, array('3')));
+// $sql = "SELECT institution FROM {dashboard_region_ins} WHERE users LIKE ? ";
+// _print($DB->get_fieldset_sql($sql, array('3')));
+_print(local_hoteles_city_dashboard_get_institutions());
 
 
 // $tiempo_final = microtime(true);

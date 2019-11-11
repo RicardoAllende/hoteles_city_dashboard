@@ -336,14 +336,44 @@ function local_hoteles_city_dashboard_get_marcas(){
 //     $institution = 
 //     $query = "SELECT * FROM {dashboard_region_ins} WHERE regionid IN (SELECT distinct regionid FROM {dashboard_region_ins} WHERE institution = 'Hotel 2')";
 // }
-
+$cache_gerentes_generales = null;
 function local_hoteles_city_dashboard_get_gerentes_generales(){
+    global $cache_gerentes_generales;
+    if($cache_gerentes_generales !== null){
+        return $cache_gerentes_generales;
+    }
     global $DB;
     $gerente_general = local_hoteles_city_gerente_general_value;
     $query = "SELECT id, concat(firstname, ' ', lastname) as name
     FROM {user} AS u WHERE u.deleted = '0'AND u.department = ?";
     $query_params = array($gerente_general);
-    return $DB->get_records_sql_menu($query, $query_params);
+    $result = $DB->get_records_sql_menu($query, $query_params);
+    $cache_gerentes_generales = $result;
+    return $cache_gerentes_generales;
+}
+
+function local_hoteles_city_dashboard_get_gerentes_generales_de_institution(){
+    $institutions = local_hoteles_city_dashboard_get_institutions();
+    $response = array();
+    foreach ($institutions as $institution) {
+        $result[$institution] = local_hoteles_city_dashboard_get_institution_manager($institution, false);
+    }
+    return $response;
+}
+
+function local_hoteles_city_dashboard_get_institution_manager(string $institution, bool $returnAsArray = true){
+    $default = $returnAsArray ? array() : '- (No asignado)';
+    if(empty($institution)){
+        return $default;
+    }
+    global $DB;
+    $department = local_hoteles_city_gerente_general_value;
+    $sql = "SELECT id, concat(firstname, ' ', lastname) as name FROM {user} WHERE department = ? AND institution = ? AND deleted = 0 AND suspended = 0";
+    $result = $DB->get_records_sql_menu($sql, array($department, $institution));
+    if($result){
+        $default = $returnAsArray ? $result : implode(', ', $result);
+    }
+    return $default;
 }
 
 function local_hoteles_city_dashboard_get_gerentes_ao(){
@@ -2561,6 +2591,4 @@ function local_hoteles_city_dashboard_update_gerentes_temporales(array $params){
         _log('No se encontró el registro local_hoteles_city_dashboard_update_gerentes_temporales');
     }
     return "Error, recargue la página e inténtelo más tarde";
-    //  $DB->get_field('dashboard_region_ins', 'users', compact('institution'));
-
 }

@@ -38,6 +38,7 @@ $PAGE->set_pagelayout('admin');
 $pluginname = "local_hoteles_city_dashboard";
 $PAGE->set_title(get_string('pluginname', $pluginname));
 echo $OUTPUT->header();
+// $gerentes_generales
 // Institution -> hotel
 // Department -> puesto
 $institutions = local_hoteles_city_dashboard_get_institutions();
@@ -123,8 +124,9 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                                     $relationship = $rel;
                                 }
                             }
+                            $gerentes_generales = local_hoteles_city_dashboard_get_institution_manager($institution, false);
                             echo '<tr>';
-                            echo "<td scope=\"col\" class=\"text-center btn Info\" onclick='showInstitution(\"{$institution}\")'>
+                            echo "<td scope=\"col\" class=\"text-center btn Info\" onclick='showInstitution(\"{$institution}\", \"{$gerentes_generales}\")'>
                              {$institution} &nbsp;&nbsp;<i class='fas fa-info-circle'></td>";
                             $ins = local_hoteles_city_dashboard_slug($institution);
                             foreach ($regions as $region) {
@@ -259,10 +261,9 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                 <div class="modal-body">
                     <!-- <form> -->
                     <div class="form-group">
-                        <label class="col-form-label">Unidad operativa: <p id="institution_name"></p></label>
-                        
+                        <label class="col-form-label">Unidad operativa: <span id="institution_name"></span></label>
                         <br>
-                        <!-- <p id="region-description"></p> -->
+                        <label class="col-form-label">Unidad operativa: <span id="gerente_de_institucion"></span></label>
                     </div>
                     <div class="form-group">
                         <label for="gerentes_temporales" class="col-form-label">Escriba el correo de los gerentes temporales separados por un espacio:</label>
@@ -623,7 +624,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
         }
 
         var currentInstitution;
-        function showInstitution(institution){
+        function showInstitution(institution, gerentes){
             currentInstitution = institution;
             $('#gerentes_temporales').html('');
 
@@ -632,6 +633,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
             informacion.push({ name: 'request_type', value: 'obtener_gerentes_temporales' });
             informacion.push({ name: 'institution', value: institution });
             $('#institution_name').html(institution);
+            $('#gerente_de_institucion').html(gerentes);
 
             $.ajax({
                     type: "POST",
