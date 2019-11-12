@@ -844,16 +844,24 @@ function local_hoteles_city_dashboard_get_enrolled_userids($course, string $fech
     $params = local_hoteles_city_dashboard_get_restricted_params($params);
 
     $wherecourse = ($many_courses) ? " IN ({$course}) " : " = {$course} ";
-    $distinctClause = ($apply_distinct) ? 'DISTINCT' : '';
 
     list($user_table_sql, $user_table_params) = local_hoteles_city_dashboard_create_user_filters_sql($params, $prefix = '__user__'); // Filtros de la tabla user
     $query_parameters = array_merge($query_parameters, $user_table_params);
 
     /* User is active participant (used in user_enrolments->status) -- Documentación tomada de enrollib.php define('ENROL_USER_ACTIVE', 0); */
-    $query = "( SELECT {$distinctClause} __user__.id FROM {user} AS __user__
-    JOIN {user_enrolments} AS __ue__ ON __ue__.userid = __user__.id
-    JOIN {enrol} __enrol__ ON (__enrol__.id = __ue__.enrolid AND __enrol__.courseid $wherecourse)
-    WHERE __ue__.status = 0 AND __user__.deleted = 0 {$filtro_fecha} AND __user__.suspended = 0 {$user_table_sql} )";
+    if($apply_distinct){
+        $query = "( SELECT DISTINCT __user__.id FROM {user} AS __user__
+        JOIN {user_enrolments} AS __ue__ ON __ue__.userid = __user__.id
+        JOIN {enrol} __enrol__ ON (__enrol__.id = __ue__.enrolid AND __enrol__.courseid $wherecourse)
+        WHERE __ue__.status = 0 AND __user__.deleted = 0 {$filtro_fecha} AND __user__.suspended = 0 {$user_table_sql} )";
+    }else{
+        $query = "( SELECT __user__.id AS userid, __course__.fullname as coursename, __course__.id as courseid FROM {user} AS __user__
+        JOIN {user_enrolments} AS __ue__ ON __ue__.userid = __user__.id
+        JOIN {enrol} __enrol__ ON (__enrol__.id = __ue__.enrolid AND __enrol__.courseid $wherecourse)
+        JOIN {course} __course__ ON __enrol__.courseid = __course__.id
+        WHERE __ue__.status = 0 AND __user__.deleted = 0 {$filtro_fecha} AND __user__.suspended = 0 {$user_table_sql} )";
+    }
+
     // $query = "( SELECT DISTINCT __user__.id FROM {user} AS __user__
     // JOIN {user_enrolments} AS __ue__ ON __ue__.userid = __user__.id
     // JOIN {enrol} __enrol__ ON (__enrol__.id = __ue__.enrolid AND __enrol__.courseid = {$course})
@@ -1023,67 +1031,97 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
     }
     switch ($type) {
         case local_hoteles_city_dashboard_course_users_pagination:
-            global $DB;
-            $courseid = intval($custom_information);
-            $name = $DB->get_field('course', 'fullname', array('id' => $courseid));
-            if($name !== false){
+            $courses = get_config('local_hoteles_city_dashboard', 'dashboard_courses');
+                $key_name = 'coursename';
+                $field = "{$key_name}";
+                array_push($select_sql, $field);
+                array_push($ajax_names, $key_name);
+                if($key_name == $searched){
+                    array_push($slim_query, $field);
+                }
+                array_push($visible_names, 'Curso');
+
                 $key_name = 'custom_completion';
                 $field = "IF( EXISTS( SELECT id FROM {course_completions} AS cc WHERE user.id = cc.userid 
-                AND cc.course = {$courseid} AND cc.timecompleted IS NOT NULL), 'Completado', 'No completado') as {$key_name}";
+                AND cc.course = temporal.courseid AND cc.timecompleted IS NOT NULL), 'Completado', 'No completado') as {$key_name}";
                 array_push($select_sql, $field);
                 array_push($ajax_names, $key_name);
                 if($key_name == $searched){
                     array_push($slim_query, $field);
                 }
-                array_push($visible_names, $name);
+                array_push($visible_names, 'Estatus');
+                
+                // $key_name = 'custom_completion_date';
+                // $field = "COALESCE( ( SELECT DATE(FROM_UNIXTIME(cc.timecompleted)) FROM {course_completions} AS cc WHERE user.id = cc.userid 
+                // AND cc.course = temporal.courseid AND cc.timecompleted IS NOT NULL), '-') as {$key_name}";
+                // array_push($select_sql, $field);
+                // array_push($ajax_names, $key_name);
+                // if($key_name == $searched){
+                //     array_push($slim_query, $field);
+                // }
+                // array_push($visible_names, 'Fecha de completado');
+                
+            // global $DB;
+            // $courseid = intval($custom_information);
+            // $name = $DB->get_field('course', 'fullname', array('id' => $courseid));
+            // if($name !== false){
+            //     $key_name = 'custom_completion';
+            //     $field = "IF( EXISTS( SELECT id FROM {course_completions} AS cc WHERE user.id = cc.userid 
+            //     AND cc.course = {$courseid} AND cc.timecompleted IS NOT NULL), 'Completado', 'No completado') as {$key_name}";
+            //     array_push($select_sql, $field);
+            //     array_push($ajax_names, $key_name);
+            //     if($key_name == $searched){
+            //         array_push($slim_query, $field);
+            //     }
+            //     array_push($visible_names, $name);
 
-                $key_name = 'custom_completion_date';
-                $field = "COALESCE( ( SELECT DATE(FROM_UNIXTIME(cc.timecompleted)) FROM {course_completions} AS cc WHERE user.id = cc.userid 
-                AND cc.course = {$courseid} AND cc.timecompleted IS NOT NULL), '-') as {$key_name}";
-                array_push($select_sql, $field);
-                array_push($ajax_names, $key_name);
-                if($key_name == $searched){
-                    array_push($slim_query, $field);
-                }
-                array_push($visible_names, 'Fecha de completado');
+            //     $key_name = 'custom_completion_date';
+            //     $field = "COALESCE( ( SELECT DATE(FROM_UNIXTIME(cc.timecompleted)) FROM {course_completions} AS cc WHERE user.id = cc.userid 
+            //     AND cc.course = {$courseid} AND cc.timecompleted IS NOT NULL), '-') as {$key_name}";
+            //     array_push($select_sql, $field);
+            //     array_push($ajax_names, $key_name);
+            //     if($key_name == $searched){
+            //         array_push($slim_query, $field);
+            //     }
+            //     array_push($visible_names, 'Fecha de completado');
 
-                $grade_item = local_hoteles_city_dashboard_get_course_grade_item_id($courseid);
+            //     $grade_item = local_hoteles_city_dashboard_get_course_grade_item_id($courseid);
 
-                if($grade_item !== false){
-                    $key_name = "custom_grade";
-                    $field = "COALESCE( ( SELECT ROUND(gg.finalgrade, 2) FROM {grade_grades} AS gg
-                    WHERE user.id = gg.userid AND gg.itemid = {$grade_item}), '-') as {$key_name}";
-                    $field_slim = $field;
-                    array_push($select_sql, $field);
-                    if($key_name == $searched){
-                        array_push($slim_query, $field_slim);
-                    }
-                    array_push($ajax_names, $key_name);
-                    array_push($visible_names, 'Calificación actual');
+            //     if($grade_item !== false){
+            //         $key_name = "custom_grade";
+            //         $field = "COALESCE( ( SELECT ROUND(gg.finalgrade, 2) FROM {grade_grades} AS gg
+            //         WHERE user.id = gg.userid AND gg.itemid = {$grade_item}), '-') as {$key_name}";
+            //         $field_slim = $field;
+            //         array_push($select_sql, $field);
+            //         if($key_name == $searched){
+            //             array_push($slim_query, $field_slim);
+            //         }
+            //         array_push($ajax_names, $key_name);
+            //         array_push($visible_names, 'Calificación actual');
 
-                    $key_name = "custom_grade_date";
-                    $field = "COALESCE( ( SELECT DATE(FROM_UNIXTIME(gg.timemodified)) FROM {grade_grades} AS gg
-                    WHERE user.id = gg.userid AND gg.itemid = {$grade_item}), '-') as {$key_name}";
-                    $field_slim = $field;
-                    array_push($select_sql, $field);
-                    if($key_name == $searched){
-                        array_push($slim_query, $field_slim);
-                    }
-                    array_push($ajax_names, $key_name);
-                    array_push($visible_names, 'Fecha de calificación');
+            //         $key_name = "custom_grade_date";
+            //         $field = "COALESCE( ( SELECT DATE(FROM_UNIXTIME(gg.timemodified)) FROM {grade_grades} AS gg
+            //         WHERE user.id = gg.userid AND gg.itemid = {$grade_item}), '-') as {$key_name}";
+            //         $field_slim = $field;
+            //         array_push($select_sql, $field);
+            //         if($key_name == $searched){
+            //             array_push($slim_query, $field_slim);
+            //         }
+            //         array_push($ajax_names, $key_name);
+            //         array_push($visible_names, 'Fecha de calificación');
 
-                    // grade/report/grader/index.php?id=6 // Agregar libro de calificaciones // https://durango.aprendiendo.org.mx/grade/report/user/index.php?userid=8&id=6
+            //         // grade/report/grader/index.php?id=6 // Agregar libro de calificaciones // https://durango.aprendiendo.org.mx/grade/report/user/index.php?userid=8&id=6
                     
-                }else{
-                    _log('No existe item_grade para el curso: ', $courseid);
-                }
+            //     }else{
+            //         _log('No existe item_grade para el curso: ', $courseid);
+            //     }
 
-                $key_name = "link_libro_calificaciones";
-                $field = "{$prefix}id as {$key_name}";
-                array_push($select_sql, $field);
-                array_push($ajax_names, $key_name);
-                array_push($visible_names, 'Libro de calificaciones');
-            }
+            //     $key_name = "link_libro_calificaciones";
+            //     $field = "{$prefix}id as {$key_name}";
+            //     array_push($select_sql, $field);
+            //     array_push($ajax_names, $key_name);
+            //     array_push($visible_names, 'Libro de calificaciones');
+            // }
 
             break;    
         case local_hoteles_city_dashboard_all_users_pagination:
@@ -1141,7 +1179,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
                     id = parts[0];
                     suspended = parts[1];
                     texto = (suspended == '1') ? 'Quitar suspensión' : 'Suspender';
-                    clase = (suspended == '1') ? 'btn Success' : 'btn Danger';
+                    clase = (suspended == '1') ? 'btn btn-success' : 'btn btn-danger';
                     return '<a target=\"_blank\" class=\"' + clase + '\" href=\"administrar_usuarios.php?suspenduser=1&id=' + id + '\">' + texto + '</a>'; }  
                 }, ";
             break;
@@ -1422,37 +1460,40 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     $queryParams = array();
 
     // _log($params);
+    $join_sql = '';
     switch($type){
         case local_hoteles_city_dashboard_course_users_pagination:
-            list($enrol_sql_query, $enrol_params) = local_hoteles_city_dashboard_get_enrolled_userids($courseid, $desde = '', $hasta = '', $params);
-            $enrol_sql_query = " user.id IN " . $enrol_sql_query;
+            $courses = get_config('local_hoteles_city_dashboard', 'dashboard_courses');
+            list($join, $enrol_params) = local_hoteles_city_dashboard_get_enrolled_userids($courses, $desde = '', $hasta = '', $params, $apply_distinct = false);
+            $join_sql = " JOIN {$join} AS temporal ON temporal.userid = user.id ";
+            $where_sql_query = " 1 ";
             $queryParams = array_merge($queryParams, $enrol_params);
         break;
 
         case local_hoteles_city_dashboard_all_users_pagination:
-            $enrol_sql_query = " user.id > 1 AND user.deleted = 0";
+            $where_sql_query = " user.id > 1 AND user.deleted = 0";
         break;
 
         case local_hoteles_city_dashboard_suspended_users_pagination:
-            $enrol_sql_query = ' user.id > 1 AND user.suspended = 1 AND user.deleted = 0';
+            $where_sql_query = ' user.id > 1 AND user.suspended = 1 AND user.deleted = 0';
         break;
 
         case local_hoteles_city_dashboard_actived_users_pagination:
             $marcafield = local_hoteles_city_dashboard_get_marcafield(true);
             $marcaValue = local_hoteles_city_dashboard_oficina_central_value;
-            $enrol_sql_query = " user.id > 1 AND user.suspended = 0 AND user.deleted = 0
+            $where_sql_query = " user.id > 1 AND user.suspended = 0 AND user.deleted = 0
             userid.id NOT IN (SELECT distinct userid FROM {user_info_data} WHERE fieldid = {$marcafield} AND data = '{$marcaValue}')";
         break;
 
         case local_hoteles_city_dashboard_oficina_central_pagination:
             $marcafield = local_hoteles_city_dashboard_get_marcafield(true);
             $marcaValue = local_hoteles_city_dashboard_oficina_central_value;
-            $enrol_sql_query = " user.id > 1 AND user.deleted = 0 AND user.id IN 
+            $where_sql_query = " user.id > 1 AND user.deleted = 0 AND user.id IN 
              (SELECT distinct userid FROM {user_info_data} WHERE fieldid = {$marcafield} AND data = '{$marcaValue}')";
         break;
 
         default:
-            $enrol_sql_query = ' user.id > 1 ';
+            $where_sql_query = ' user.id > 1 ';
         break;
     }
     if(empty($params)){
@@ -1468,7 +1509,7 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     $searchValue = $params['search']['value']; // Search value
 
     ## Search 
-    $searchQuery = " WHERE " . $enrol_sql_query;
+    $searchQuery = " WHERE " . $where_sql_query;
     $searched = '';
     if(!empty($searchValue) && strpos($columnName, 'link') !== false){
         $searched = $columnName;
@@ -1480,7 +1521,7 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     /* Versión con consulta de solamente nombre y email */
     // if($searchValue != ''){
     //     $searchValue = "%{$searchValue}%";
-    //     $searchQuery = " WHERE email like ? or concat(firstname, ' ', lastname) like ? AND " . $enrol_sql_query;
+    //     $searchQuery = " WHERE email like ? or concat(firstname, ' ', lastname) like ? AND " . $where_sql_query;
     //     array_push($queryParams, $searchValue);
     //     array_push($queryParams, $searchValue);
     // }
@@ -1494,28 +1535,28 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     }
     
     ## Total number of records without filtering
-    $query = 'SELECT COUNT(*) FROM {user} AS user WHERE ' . $enrol_sql_query;
+    $query = 'SELECT COUNT(*) FROM {user} AS user WHERE ' . $where_sql_query;
     $totalRecords = $DB->count_records_sql($query);//($table, $conditions_array);
     // _log('Elementos totales', $totalRecords);    
     if($searchValue != ''){
         if($columnName == 'name'){ // Campo por defecto name
         // if(strpos('user.name',$columnName) !== false){
             $searchValue = "%{$searchValue}%";
-            $searchQuery = " WHERE " . $enrol_sql_query . " AND CONCAT(firstname, ' ', lastname) like ? ";
+            $searchQuery = " WHERE " . $where_sql_query . " AND CONCAT(firstname, ' ', lastname) like ? ";
             // array_push($queryParams, $searchValue);
         }elseif(strpos($columnName, 'custom_') !== false){ // Campo que requiere having
         // }elseif(strpos('user.',$columnName) !== false){
             $searchValue = "%{$searchValue}%";
-            $searchQuery = " WHERE $enrol_sql_query HAVING {$columnName} like ?  " ;
+            $searchQuery = " WHERE $where_sql_query HAVING {$columnName} like ?  " ;
         }else{ // Campo estándar de la tabla user
             $searchValue = "%{$searchValue}%";
-            $searchQuery = " WHERE {$columnName} like ? AND " . $enrol_sql_query;
+            $searchQuery = " WHERE {$columnName} like ? AND " . $where_sql_query;
         }
         $searched = $columnName;
     }
 
     ## Total number of record with filtering
-    $query = "SELECT count(*) FROM (SELECT {$select_slim} FROM {user} AS user {$searchQuery}) AS t1";
+    $query = "SELECT count(*) FROM (SELECT {$select_slim} FROM {user} AS user {$join_sql} {$searchQuery}) AS t1";
     $queryParamsFilter = array($searchValue);
     
     $totalRecordwithFilter = $DB->count_records_sql($query, $queryParamsFilter);
@@ -1524,7 +1565,8 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     ## Consulta de los elementos
     $queryParams = array();
     array_push($queryParams, $searchValue);
-    $query = "select {$select_sql} from {user} AS user {$searchQuery} order by {$columnName} {$columnSortOrder} {$limit}";
+    $query = "select {$select_sql} from {user} AS user {$join_sql} {$searchQuery} order by {$columnName} {$columnSortOrder} {$limit}";
+    // _sql($query, $queryParams);
     // _log($query);
     // _log($queryParams);
     $records = $DB->get_records_sql($query, $queryParams);
