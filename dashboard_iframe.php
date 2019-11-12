@@ -74,7 +74,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     
     <?php echo local_hoteles_city_dashboard_print_theme_variables(); ?>
 </head>
-<body style="background-color: #ecedf1; max-width: 100%; min-height: 400px;">
+<body style="background-color: #ecedf1;">
 
 <!-- onload="loaderGeneral()" -->
 
@@ -84,41 +84,8 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
         <h3 style="text-align: center;">Reportes</h3>
     </div>
 
-    <!-- Filtro -->
-    <div class="row" style="margin-bottom: 10px; max-width: 100%;">
-        <div class="col-sm-6" style="padding-left: 20px;">
-            <div class="btn-group">            
-                <button type="button" class="btn Primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Marca
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>            
-                    <a class="dropdown-item" href="#">Separated link</a>
-                </div>
-            </div>
-        </div> 
-
-        <div class="col-sm-6" style="text-align: end;">    
-            <div class="btn-group dropleft">
-                <button type="button" class="btn Primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Generar Reporte
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Avances de todos los cursos disponibles en Moodle</a>
-                    <a class="dropdown-item" href="#">Estatus de consulta de cursos</a>
-                    <a class="dropdown-item" href="#">Aprobaciones de cursos, calificaciones obtenidas por curso por persona</a>            
-                    <a class="dropdown-item" href="#">Avances de capacitación en Oficina Central, por direcciones (centro de costos)</a>
-                    <a class="dropdown-item" href="#">Avance de capacitación por curso en Hoteles: por región, por hotel, por persona y por puesto</a>
-                    <a class="dropdown-item" href="#">Avance de capacitación por curso en Oficina Central y por direcciones</a>
-                    <a class="dropdown-item" href="#">Personal activo en City Campus</a>                   
-                    <a class="dropdown-item" href="#">Avance de capacitaciones por curso de Directores Regionales de Operaciones y Subdirectores Regionales de Venta</a>
-                    <a class="dropdown-item" href="#">Avance de capacitación por módulo en los cursos que aplica</a>
-                </div>
-            </div>
-        </div>      
-    </div>  
+    
+     
 
     <!-- Inicia row para cards informativas -->
     <div class="row" id="cards informativas">
@@ -222,7 +189,55 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     <!-- <script src="js/jquery.loadingModal.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
-    <?php local_hoteles_city_dashboard_print_institutions_in_js(); ?>
+    
+    
+    <script>
+        var muestraComparativas = false;
+        var mostrarEnlaces = true;
+        var isCourseLoading = false;
+        var isFilterLoading = false;
+        var trabajoPendiente = false;
+        var currentTab = 1;
+        var indicator;
+        var item;
+        var tituloPestana = "";
+        var tabsCursos = [false, false, false];
+        function cambiarpestana(id){
+            if(id != currentTab){
+                hidePage("ldm_tab_" + id);
+                currentTab = id;
+                tituloPestana = pestanas[id];
+                setTimeout(function() {
+                    //obtenerInformacion();
+                }, 500);
+            }
+        }
+        pestanas = [
+            '',
+            'Programas de entrenamiento',
+            'Lanzamientos y campañas',
+            'Cruce de indicadores'
+        ]
+        document.addEventListener("DOMContentLoaded", function() {
+                $('.course-selector').change(function(){obtenerInformacion()});
+                tituloPestana = pestanas[1];
+                // tituloPestana = $('#tab-selector').children('option:selected').html();
+                // $('#tab-selector').change(function(){ tituloPestana = $(this).children('option:selected').html(); obtenerInformacion(); });
+                //obtenerInformacion();
+                //obtenerFiltros();
+        });
+        var dateBegining;
+        var dateEnding;
+        function quitarFiltros(){
+            peticionFiltros({
+                request_type: 'user_catalogues'
+            });
+            //obtenerInformacion();
+        }
+        
+        
+        
+    </script>   
     
     <script src="classes.js"></script>
     <script>
