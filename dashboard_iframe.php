@@ -72,7 +72,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     <link href="estilos_city.css" rel="stylesheet">
     <!-- <script src="hoteles_city_scripts.js"></script> -->    
     
-    <?php echo local_hoteles_city_dashboard_print_theme_variables(); ?>
+    <?php local_hoteles_city_dashboard_print_institutions_in_js(); ?>
 </head>
 <body style="background-color: #ecedf1; max-width: 100%; max-height: 100%;">
 

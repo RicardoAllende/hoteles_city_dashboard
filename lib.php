@@ -1146,16 +1146,35 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
 
             break;
         case local_hoteles_city_dashboard_suspended_users_pagination:
+            $key_name = 'link_edit_user';
+            $field = "{$prefix}id as {$key_name}";
+            $field_slim = "'e' as {$key_name}";
+            array_push($select_sql, $field);
+            array_push($ajax_names, $key_name);
+            array_push($visible_names, 'Editar usuario');
+
+            $key_name = "link_suspend_user";
+            $field = "{$prefix}id, concat({$prefix}id, '||', {$prefix}suspended)  as {$key_name}";
+            $field_slim = "'s' as {$key_name}";
+            array_push($select_sql, $field);
+            array_push($ajax_names, $key_name);
+            array_push($visible_names, 'Quitar suspensión usuario');
+        break;
+
+        case local_hoteles_city_dashboard_actived_users_pagination:
+            $key_name = 'link_edit_user';
+            $field = "{$prefix}id as {$key_name}";
+            $field_slim = "'e' as {$key_name}";
+            array_push($select_sql, $field);
+            array_push($ajax_names, $key_name);
+            array_push($visible_names, 'Editar usuario');
+
             $key_name = "link_suspend_user";
             $field = "{$prefix}id, concat({$prefix}id, '||', {$prefix}suspended)  as {$key_name}";
             $field_slim = "'s' as {$key_name}";
             array_push($select_sql, $field);
             array_push($ajax_names, $key_name);
             array_push($visible_names, 'Suspender usuario');
-        break;
-
-        case local_hoteles_city_dashboard_actived_users_pagination:
-
         break;
 
         case local_hoteles_city_dashboard_oficina_central_pagination:
@@ -1503,7 +1522,7 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
         case local_hoteles_city_dashboard_oficina_central_pagination:
             $marcafield = local_hoteles_city_dashboard_get_marcafield(true);
             $marcaValue = local_hoteles_city_dashboard_oficina_central_value;
-            $where_sql_query = " AND user.id > 1 AND user.deleted = 0 AND user.id IN 
+            $where_sql_query = " user.id > 1 AND user.deleted = 0 AND user.id IN 
              (SELECT distinct userid FROM {user_info_data} WHERE fieldid = {$marcafield} AND data = '{$marcaValue}')";
         break;
 
