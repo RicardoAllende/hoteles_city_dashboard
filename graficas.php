@@ -63,10 +63,10 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
 
 </head>
 
-<body style="background-color: #ecedf1;">
+<body style="background-color: #ecedf1; max-height: 100%;">
 
     
-    <div class="row" style=" max-width: 100%; min-height: 400px;">
+    <div class="row container" style=" max-width: 100%; min-height: 400px;">
         <form action="" name='local_hoteles_city_dashboard_filters' class='row col-sm-12' id='local_hoteles_city_dashboard_filters' >
             <?php
                 local_hoteles_city_dashboard_print_filters();
@@ -89,7 +89,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
     </div> -->
 
     <!-- Div para pintar las graficas de los cursos -->
-    <div id="curso_graficas" class="row" style="padding: 15px 25px;"></div>
+    <div id="curso_graficas" class="row" style="padding: 15px 25px; max-width: 100%;"></div>
 
     
     <!-- Bootstrap core JavaScript-->
