@@ -123,6 +123,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     informacion = JSON.parse(JSON.stringify(data));
                     informacion = informacion.data;
                     console.log('Imprimiendo la respuesta', informacion);
+                    cleanDiv();
                     for(var i = 0; i < informacion.length; i++){                        
                         info = informacion[i];
                         //console.log(info);
@@ -155,6 +156,10 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     console.log(error);
                     console.log(error2);
                 });
+        }
+
+        function cleanDiv(){
+            document.getElementById('curso_graficas').innerHTML='';
         }
     </script>
 

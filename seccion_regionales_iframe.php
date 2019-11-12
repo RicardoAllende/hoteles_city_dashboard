@@ -234,15 +234,19 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     var ctx = document.getElementById('myAreaChart2');
     var chart = new Chart(ctx, {
     // The type of chart we want to create
-    type: 'pie',
+    type: 'line',
 
     // The data for our dataset
     data: {
         labels: ['Variable1', 'Variable2', 'Variable3'],
         datasets: [{
-            label: 'A',            
+            label: 'Aprobados',            
             borderColor: 'rgb(255, 99, 132)',
             data: [15, 40, 5],
+        },{
+            label: 'No Aprobados',            
+            borderColor: 'rgb(255, 99, 132)',
+            data: [5, 10, 30],
         }]
     },
 

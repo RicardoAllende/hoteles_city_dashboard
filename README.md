@@ -30,10 +30,32 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 - El div para que se pinten las cards con gráfica tiene un id="contenedor_graficas" (col-sm-12).
 
-*reporte_tabla*
-- El div (col-sm-12) para que imprima la gráfica tiene un id="graph_data_table".
+*reporte_tabla.php*
+- El div (col-sm-6) para que imprima la gráfica tiene un id="graph_data_table".
 
-- El div (col-sm-12) para imprimir la tabla tiene un id id="table_informacion".
+- El div (col-sm-10) para imprimir la tabla tiene un id id="table_informacion".
+
+*graficas.php*
+- El div para imprimir las gráficas de los cursos tiene un id="curso_graficas".
+
+*classes.js*
+- Las funciones existentes son: regresaInfoByCurso, graph_data, printInfoCards.
+    + regresaInfoByCurso = Es el servicio que trae la información.
+    + graph_data = Se trata la información para crear los arreglos correspondientes de cada gráfica comparativa y la información total de inscritos, aprobados, no aprobados.
+    + printInfoCards = Se llama la información total de inscritos, aprobados, no aprobados para que se pinten en su respectivo div.
+
+- El nombre de la clase para pintar las card y gráficas es "GraphicsDashboard"
+    + Su constructor recibe (div_print_card, title, type_graph, data_graph, col_size_graph):
+        * div_print_card = Div padre
+        * title = Título de la gráfica        
+        * div_graph = Div donde se imprime la card con la gráfica
+        * type_graph = Tipo de gráfica
+        * data_graph = Datos de la gráfica
+        * col_size_graph = Tamaño de la col donde se imprime la card
+    + Sus métodos son: printCard, comparative_graph, individual_graph.
+        * printCard = Imprime la card.
+        * comparative_graph = Aquí se encuentran las estructuras de las gráficas comparativas (bar-agrupadas, line, horizontalBar, burbuja).
+        * individual_graph  = Aquí se encuentran las estructuras de las gráficas individuales (pie, bar).         
 
 *Otra información*
 - Clasificación de gráficas:
@@ -47,9 +69,3 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     - line
     - bar
     - burbuja
-
-
-
-
-
-
