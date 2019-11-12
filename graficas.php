@@ -65,21 +65,28 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
 
 <body style="background-color: #ecedf1;">
 
-    <form action="" name='local_hoteles_city_dashboard_filters' class='row' id='local_hoteles_city_dashboard_filters' >
-        <?php
-            local_hoteles_city_dashboard_print_filters();
-        ?>
-    </form>
-    <div class="row">
-        <div class="col-12 text-right" style="padding-right: 2%;">
-            <button class='btn btn-primary' onclick="obtenerGraficas()">Aplicar filtros</button>
+    
+    <div class="row" style=" max-width: 100%; min-height: 400px;">
+        <form action="" name='local_hoteles_city_dashboard_filters' class='row col-sm-12' id='local_hoteles_city_dashboard_filters' >
+            <?php
+                local_hoteles_city_dashboard_print_filters();
+            ?>
+        </form>
+        <div class="row col-sm-12">
+            <div class="col-12 text-right" style="padding-right: 2%;">
+                <button class='btn btn-primary' onclick="obtenerGraficas()">Aplicar filtros</button>
+            </div>
+        </div>
+    
+        <!-- Título -->
+        <div class="col-sm-12 text-center">
+            <h3 style="text-align: center;">Reportes</h3>
         </div>
     </div>
 
-    <!-- Título -->
-    <div>
-        <h3 style="text-align: center;">Reportes</h3>
-    </div>
+    <!-- <div>
+        <pre id="json"></pre>
+    </div> -->
 
     <!-- Div para pintar las graficas de los cursos -->
     <div id="curso_graficas" class="row" style="padding: 15px 25px;"></div>
@@ -119,6 +126,8 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                 dataType: "json"
             })
                 .done(function(data) {
+                    // document.getElementById("json").innerHTML = JSON.stringify(data, undefined, 2);
+                    // console.log(data);
                     //console.log(data);
                     informacion = JSON.parse(JSON.stringify(data));
                     informacion = informacion.data;
@@ -160,6 +169,9 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
 
         function cleanDiv(){
             document.getElementById('curso_graficas').innerHTML='';
+        }
+        function onchangeFilter(filterid){ // Se ejecuta esta función cuando el elemento ha cambiado
+            // console.log('El elemento ha cambiado');
         }
     </script>
 

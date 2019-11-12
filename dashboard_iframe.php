@@ -17,7 +17,7 @@
 /**
  * Plugin strings are defined here.
  *
- * @package     local_hoteles_city_dashboard
+ * @package     local_dominosdashboard
  * @category    dashboard
  * @copyright   2019 Subitus <contacto@subitus.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,17 +25,17 @@
 
 require_once(__DIR__ . '/../../config.php');
 $context_system = context_system::instance();
-require_once(__DIR__ . '/lib.php');
-local_hoteles_city_dashboard_user_has_access();
 require_login();
+require_once(__DIR__ . '/lib.php');
 
-$PAGE->set_url($CFG->wwwroot . "/local/hoteles_city_dashboard/dashboard.php");
+global $DB;
+$PAGE->set_url($CFG->wwwroot . "/local/dominosdashboard/inner.php");
 $PAGE->set_context($context_system);
 $PAGE->set_pagelayout('admin');
-$PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
+$PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
 
-echo $OUTPUT->header();
 
+//$tabOptions = local_dominosdashboard_get_course_tabs();
 
 ?>
 <!DOCTYPE html>
@@ -74,7 +74,7 @@ echo $OUTPUT->header();
     
     <?php echo local_hoteles_city_dashboard_print_theme_variables(); ?>
 </head>
-<body style="background-color: #ecedf1;">
+<body style="background-color: #ecedf1; max-width: 100%; min-height: 400px;">
 
 <!-- onload="loaderGeneral()" -->
 
@@ -84,8 +84,41 @@ echo $OUTPUT->header();
         <h3 style="text-align: center;">Reportes</h3>
     </div>
 
-    
-     
+    <!-- Filtro -->
+    <div class="row" style="margin-bottom: 10px; max-width: 100%;">
+        <div class="col-sm-6" style="padding-left: 20px;">
+            <div class="btn-group">            
+                <button type="button" class="btn Primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Marca
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <a class="dropdown-item" href="#">Something else here</a>            
+                    <a class="dropdown-item" href="#">Separated link</a>
+                </div>
+            </div>
+        </div> 
+
+        <div class="col-sm-6" style="text-align: end;">    
+            <div class="btn-group dropleft">
+                <button type="button" class="btn Primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Generar Reporte
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">Avances de todos los cursos disponibles en Moodle</a>
+                    <a class="dropdown-item" href="#">Estatus de consulta de cursos</a>
+                    <a class="dropdown-item" href="#">Aprobaciones de cursos, calificaciones obtenidas por curso por persona</a>            
+                    <a class="dropdown-item" href="#">Avances de capacitación en Oficina Central, por direcciones (centro de costos)</a>
+                    <a class="dropdown-item" href="#">Avance de capacitación por curso en Hoteles: por región, por hotel, por persona y por puesto</a>
+                    <a class="dropdown-item" href="#">Avance de capacitación por curso en Oficina Central y por direcciones</a>
+                    <a class="dropdown-item" href="#">Personal activo en City Campus</a>                   
+                    <a class="dropdown-item" href="#">Avance de capacitaciones por curso de Directores Regionales de Operaciones y Subdirectores Regionales de Venta</a>
+                    <a class="dropdown-item" href="#">Avance de capacitación por módulo en los cursos que aplica</a>
+                </div>
+            </div>
+        </div>      
+    </div>  
 
     <!-- Inicia row para cards informativas -->
     <div class="row" id="cards informativas">
@@ -97,7 +130,7 @@ echo $OUTPUT->header();
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                 <div class="txt_primary text-uppercase mb-1">Número de hoteles</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_numero_hoteles">900</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_numero_hoteles">40,000</div>
                 </div>
                 <div class="col-auto">                
                 <i class="fas fa-building fa-2x text-gray-300"></i>
@@ -225,38 +258,36 @@ echo $OUTPUT->header();
                 // $('#tab-selector').change(function(){ tituloPestana = $(this).children('option:selected').html(); obtenerInformacion(); });
                 //obtenerInformacion();
                 //obtenerFiltros();
-<iframe src="dashboard_iframe.php" id="page_iframe" frameborder="0" style="width: 100%; overflow: hidden;"></iframe>
-<!-- <div class="btnimprimir">
-    <button class="btn btn-primary" onclick="imprimir();">Imprimir</button>       
-</div> -->
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById('region-main').style.width = "100%";
-        require(['jquery'], function ($) {
-            setInterval(function() { iResize('page_iframe'); }, 100);
         });
-    });
-    function iResize(frame_id) {
-        element = document.getElementById(frame_id);
-        if(element != null){
-            if(element.contentWindow != null){
-                if(element.contentWindow.document != null){
-                    if(element.contentWindow.document.body != null){
-                        if(element.contentWindow.document.body.offsetHeight != null){
-                            size = (element.contentWindow.document.body.offsetHeight + 30 ) + 'px';
-                            document.getElementById(frame_id).style.height = size;
-                        }
-                    }
-                }
-            }
+        var dateBegining;
+        var dateEnding;
+        function quitarFiltros(){
+            peticionFiltros({
+                request_type: 'user_catalogues'
+            });
+            //obtenerInformacion();
         }
-    }
+        
+        
+        
+    </script>   
+    
+    <script src="classes.js"></script>
+    <script>
+        regresaInfoByCurso(); 
+    </script>
+    
+    
 
-    // function imprimir() {
-    //     window.print();
-    // }
 
-</script>
-<?php
+<!-- Modal -->
 
-echo $OUTPUT->footer();
+    <div class="modal fade" id="modal_loader">
+        <div class="modal-dialog-centered" role="document">
+            <h1 class="txt_modal">Cargando</h1>            
+        </div>
+    </div>
+
+
+</body>
+</html>
