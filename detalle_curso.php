@@ -27,17 +27,24 @@ require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_reportes);
 $PAGE->set_context(context_system::instance());
-$courseid = optional_param('courseid', 9, PARAM_INT);
-$course = $DB->get_record('course', array('id' => $courseid), 'id, fullname', MUST_EXIST);
-$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/detalle_curso.php', array('courseid' => $courseid));
+// $courseid = optional_param('courseid', 9, PARAM_INT);
+// $course = $DB->get_record('course', array('id' => $courseid), 'id, fullname', MUST_EXIST);
+$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/detalle_curso.php');
 $PAGE->set_pagelayout('admin');
-$PAGE->set_title('Detalle curso ' . $course->fullname);
+$PAGE->set_title('Detalle cursos');
 
 
 echo $OUTPUT->header();
-$report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_course_users_pagination, $courseid);
-echo local_hoteles_city_dashboard_print_theme_variables();
+$report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_course_users_pagination);
+$courses = local_hoteles_city_dashboard_get_courses_setting(true);
+$default_courses = implode(',', array_keys($courses));
+$description = ""; // No es usado en esta sección
+echo "<div class='container row'> <input type='hidden' name='request_type' value='course_users_pagination'>" .
+ local_hoteles_city_dashboard_print_multiselect('report_courses', "Cursos", $default_courses, $courses, true, $class = 'col-sm-12') . "</div>";
+
 ?>
+
+
 
 <table id='empTable' class='display dataTable table table-bordered'>    
     <thead>
@@ -71,18 +78,31 @@ echo local_hoteles_city_dashboard_print_theme_variables();
 <script src="datatables/buttons.html5.min.js"></script>
 <script src="datatables/buttons.print.min.js"></script>
 
+<link rel="stylesheet" href="choicesjs/styles/choices.min.css" />
+<script src="choicesjs/scripts/choices.min.js"></script>
+
 <!-- Table -->
 <script>
+    var _datatable;
+    var reportCourses;
     $(document).ready(function(){
-        $('#empTable').DataTable({
+        
+        $('select[multiple]').each(function(index, element){ // Generación de filtros con herramenta choices.js
+            var multipleCancelButton = new Choices( '#' + element.id, { removeItemButton: true, searchEnabled: true,
+                placeholder: true,
+            } );
+        });
+        reportCourses = "<?php echo $default_courses; ?>";
+
+        _datatable = $('#empTable').DataTable({
             'processing': true,
             'serverSide': true,
             'serverMethod': 'post',
             'ajax': {
                 'url':'services.php',
-                data: {
-                    request_type: 'course_users_pagination',
-                    courseid: <?php echo $courseid; ?>,
+                data: function(d){
+                    d['request_type'] = 'course_users_pagination';
+                    d['reportCourses'] = reportCourses;
                 }
             },
             lengthMenu: [[10, 15, 20, 100, -1], [10, 15, 20, 100, "Todos los registros"]],
@@ -154,6 +174,11 @@ echo local_hoteles_city_dashboard_print_theme_variables();
             // language: {
             // },
             // buttons: [ { extend: 'excel', action: newExportAction } ],
+        });
+        $('#report_courses').change(function(){ // Recargar página al seleccionar curso
+            reportCourses = $('#report_courses').val();
+            // console.log('Reload');
+            _datatable.ajax.reload();
         });
     });
 </script>

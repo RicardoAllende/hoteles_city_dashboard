@@ -35,7 +35,7 @@ DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central', 'Admin
 DEFINE('local_hoteles_city_dashboard_listado_todos_los_usuarios', 'Administración de todos los usuarios');
 DEFINE('local_hoteles_city_dashboard_cambio_usuarios', 'Cambio de usuarios');
 DEFINE('local_hoteles_city_dashboard_avance_todos_los_cursos', 'Avances de todos los cursos: por región, por hotel, por persona y por puesto');
-DEFINE('local_hoteles_city_dashboard_reportes', 'Estatus de consulta de cursos');
+DEFINE('local_hoteles_city_dashboard_reportes', 'Gráficas de cursos');
 DEFINE('local_hoteles_city_dashboard_ajustes', 'Ajustes dashboard administrativo Hoteles City');
 DEFINE('local_hoteles_city_dashboard_services', 'Web service');
 DEFINE('local_hoteles_city_dashboard_apply_filters', 'Aplicar filtros'); // Aplicar filtros para personas con acceso a toda la información
@@ -123,8 +123,13 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
 
             case local_hoteles_city_dashboard_reportes:
                 $node = $nav->add (
-                    $key,
+                    'Gráficas de cursos',
                     new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/estatus_curso.php' )
+                );
+                $node->showinflatnavigation = true;
+                $node = $nav->add (
+                    'Reporte de cursos',
+                    new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/detalle_curso.php' )
                 );
                 $node->showinflatnavigation = true;
                 break;
@@ -974,7 +979,7 @@ function local_hoteles_city_dashboard_get_pagination_name(int $type, string $add
             break;
         
         case local_hoteles_city_dashboard_oficina_central_pagination:
-            return "Usuarios eliminados " . $additional;
+            return "Usuarios de oficina central " . $additional;
             break;
         
         default:
@@ -1001,7 +1006,7 @@ function local_hoteles_city_dashboard_print_theme_variables(){
 }
 
 function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_information = '', $searched = '', $prefix = 'user.'){
-    $select_sql = array("concat({$prefix}firstname, ' ', {$prefix}lastname, '||',  {$prefix}id) as name, institution, department");
+    $select_sql = array("{$prefix}id, concat({$prefix}firstname, ' ', {$prefix}lastname, '||',  {$prefix}id) as name, institution, department");
     $ajax_names = array("name", 'institution', 'department');
     $visible_names = array('Nombre', 'Unidad operativa', 'Puesto');
     $slim_query = array("id");
@@ -1031,25 +1036,25 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
     }
     switch ($type) {
         case local_hoteles_city_dashboard_course_users_pagination:
-            $courses = get_config('local_hoteles_city_dashboard', 'dashboard_courses');
-                $key_name = 'coursename';
-                $field = "{$key_name}";
-                array_push($select_sql, $field);
-                array_push($ajax_names, $key_name);
-                if($key_name == $searched){
-                    array_push($slim_query, $field);
-                }
-                array_push($visible_names, 'Curso');
+            // $courses = local_hoteles_city_dashboard_get_courses_setting();
+            $key_name = 'coursename';
+            $field = "{$key_name}";
+            array_push($select_sql, $field);
+            array_push($ajax_names, $key_name);
+            if($key_name == $searched){
+                array_push($slim_query, $field);
+            }
+            array_push($visible_names, 'Curso');
 
-                $key_name = 'custom_completion';
-                $field = "IF( EXISTS( SELECT id FROM {course_completions} AS cc WHERE user.id = cc.userid 
-                AND cc.course = temporal.courseid AND cc.timecompleted IS NOT NULL), 'Completado', 'No completado') as {$key_name}";
-                array_push($select_sql, $field);
-                array_push($ajax_names, $key_name);
-                if($key_name == $searched){
-                    array_push($slim_query, $field);
-                }
-                array_push($visible_names, 'Estatus');
+            $key_name = 'custom_completion';
+            $field = "IF( EXISTS( SELECT id FROM {course_completions} AS cc WHERE user.id = cc.userid 
+            AND cc.course = temporal.courseid AND cc.timecompleted IS NOT NULL), 'Completado', 'No completado') as {$key_name}";
+            array_push($select_sql, $field);
+            array_push($ajax_names, $key_name);
+            if($key_name == $searched){
+                array_push($slim_query, $field);
+            }
+            array_push($visible_names, 'Estatus');
                 
                 // $key_name = 'custom_completion_date';
                 // $field = "COALESCE( ( SELECT DATE(FROM_UNIXTIME(cc.timecompleted)) FROM {course_completions} AS cc WHERE user.id = cc.userid 
@@ -1060,7 +1065,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
                 //     array_push($slim_query, $field);
                 // }
                 // array_push($visible_names, 'Fecha de completado');
-                
+
             // global $DB;
             // $courseid = intval($custom_information);
             // $name = $DB->get_field('course', 'fullname', array('id' => $courseid));
@@ -1189,6 +1194,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
                 // $ajax_code .= "{data: '{$an}', render: function ( data, type, row ) { return data; }  }, ";            
             break;
             case 'name':
+                $islink = false;
                 $ajax_code .= "{data: '{$an}', render: 
                     function ( data, type, row ) { 
                         parts = data.split('||');
@@ -1223,7 +1229,11 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
         $table_code .= "<th>{$vn}</th>";
     }
     $response = new stdClass();
-    $response->select_sql = $prefix . 'id, ' . $imploded_sql;
+    if($type == local_hoteles_city_dashboard_course_users_pagination){
+        $response->select_sql = "CONCAT({$prefix}id, courseid) AS _id, " . $imploded_sql;
+    }else{
+        $response->select_sql = $prefix . 'id, ' . $imploded_sql;
+    }
     $response->ajax_code = $ajax_code;
     $response->ajax_printed_rows = $ajax_printed_rows;
     $response->table_code = $table_code;
@@ -1459,11 +1469,16 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     $courseid = intval($courseid);
     $queryParams = array();
 
-    // _log($params);
     $join_sql = '';
     switch($type){
         case local_hoteles_city_dashboard_course_users_pagination:
-            $courses = get_config('local_hoteles_city_dashboard', 'dashboard_courses');
+            $courses = local_hoteles_city_dashboard_get_value_from_params($params, 'reportCourses');
+            if(is_array($courses)){
+                $courses = implode(',', $courses);
+            }
+            if(empty($courses)){
+                $courses = '-1';
+            }
             list($join, $enrol_params) = local_hoteles_city_dashboard_get_enrolled_userids($courses, $desde = '', $hasta = '', $params, $apply_distinct = false);
             $join_sql = " JOIN {$join} AS temporal ON temporal.userid = user.id ";
             $where_sql_query = " 1 ";
@@ -1776,6 +1791,17 @@ function local_hoteles_city_dashboard_get_courses(string $andWhereClause = "", a
     return $DB->get_records_sql_menu($query, $andWhereClauseParams);
 }
 
+function local_hoteles_city_dashboard_get_courses_setting(bool $returnWithNames = false){
+    $config = get_config('local_hoteles_city_dashboard', 'dashboard_courses');
+    if($returnWithNames){
+        if(empty($config)){ return array(); }
+        global $DB;
+        return $DB->get_records_sql_menu("SELECT id, fullname FROM {course} WHERE id IN ({$config})");
+    }else{
+        return $config;
+    }
+}
+
 $global_allowed_fields = null;
 /**
  * Devuelve los filtros configurados por el usuario y los filtros por defecto (institution y department)
@@ -2038,11 +2064,11 @@ function local_hoteles_city_dashboard_get_region_institution_relationships(){
     return $DB->get_records('dashboard_region_ins');
 }
 
-function local_hoteles_city_dashboard_print_multiselect(string $name, string $title = "", $description = "", string $default, array $menu){
+function local_hoteles_city_dashboard_print_multiselect(string $name, string $title = "", string $default, array $menu, $keysAsValue = false, $containerclass = 'col-sm-3'){
     $class = 'multiselect-setting';
     $element = "";
     $element .= "<select class=\"{$class} form-control hoteles_city_dashboard_input\" name=\"{$name}[]\" 
-     onchange='onchangeFilter(\"{$name}\")' default=\"{$default}\"  multiple=\"multiple\" id=\"{$name}\">";
+      default=\"{$default}\"  multiple=\"multiple\" id=\"{$name}\">";
     
     $element .= "<option value=''>Seleccione {$title}</option>";
     $original_default = $default;
@@ -2057,10 +2083,14 @@ function local_hoteles_city_dashboard_print_multiselect(string $name, string $ti
         if(in_array($key, $default)){
             $selected = "selected";
         }
-        $element .= "<option {$selected} value=\"{$value}\">{$value}</option>";
+        if($keysAsValue){
+            $element .= "<option {$selected} value=\"{$key}\">{$value}</option>";
+        }else{
+            $element .= "<option {$selected} value=\"{$value}\">{$value}</option>";
+        }
     }
     $element .= "</select>";
-    return "<div class=\"form-group col-sm-3\">
+    return "<div class=\"form-group {$containerclass}\">
                 <label class=\"form-label text-sm-right col-form-label\" for=\"{$name}\">{$title}</label>
                 <div class=\"\">
                     {$element}
@@ -2516,7 +2546,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(){
     }else{
         $response = array();
         
-        $courses = get_config('local_hoteles_city_dashboard', 'dashboard_courses');
+        $courses = local_hoteles_city_dashboard_get_courses_setting();
         
         $marcafield = local_hoteles_city_dashboard_get_marcafield(true);
         $marca_param = local_hoteles_city_dashboard_get_marcafield();
@@ -2666,11 +2696,11 @@ function local_hoteles_city_dashboard_print_filters(){
         $title = $allowed_filters->filter_names[$catalogue_name];
         $description = ""; // No es usado en esta sección
         $default = ""; // No es usado en esta sección
-        // if($catalogue_name == 'institution'){
-        //     $catalogue_items = local_hoteles_city_dashboard_get_institutions_for_dashboard_user();
-        //     $default = implode(',', $catalogue_items);
-        // }
-        echo local_hoteles_city_dashboard_print_multiselect($name, $title, $description, $default, $catalogue_items);
+        if($catalogue_name == 'institution'){
+            $catalogue_items = local_hoteles_city_dashboard_get_institutions();
+            $default = implode(',', $catalogue_items);
+        }
+        echo local_hoteles_city_dashboard_print_multiselect($name, $title, $description, $catalogue_items);
     }
     // echo "<button value='Submit'>Submit</button>";
     // echo "</form>";

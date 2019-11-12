@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Listado de usuarios seccionados a los que el usuario tenga acceso
+ * Listado de usuarios inscritos en un curso
  *
  * @package     local_hoteles_city_dashboard
  * @category    admin
@@ -25,16 +25,17 @@
 
 require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
+local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_reportes);
 $PAGE->set_context(context_system::instance());
-$type = optional_param('type', local_hoteles_city_dashboard_all_users_pagination, PARAM_INT);
-$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php?type=' . $type);
-
-$title = local_hoteles_city_dashboard_get_pagination_name($type);
-
-$PAGE->set_title($title);
+$courseid = optional_param('courseid', 9, PARAM_INT);
+$course = $DB->get_record('course', array('id' => $courseid), 'id, fullname', MUST_EXIST);
+$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/detalle_curso_iframe.php', array('courseid' => $courseid));
 $PAGE->set_pagelayout('admin');
+$PAGE->set_title('Detalle curso ' . $course->fullname);
+
+
 echo $OUTPUT->header();
-$report_info = local_hoteles_city_dashboard_get_report_columns($type);
+$report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_course_users_pagination, $courseid);
 echo local_hoteles_city_dashboard_print_theme_variables();
 ?>
 
@@ -81,7 +82,8 @@ echo local_hoteles_city_dashboard_print_theme_variables();
             'ajax': {
                 'url':'services.php',
                 data: {
-                    request_type: 'all_users_pagination',
+                    request_type: 'course_users_pagination',
+                    courseid: <?php echo $courseid; ?>,
                 }
             },
             lengthMenu: [[10, 15, 20, 100, -1], [10, 15, 20, 100, "Todos los registros"]],
