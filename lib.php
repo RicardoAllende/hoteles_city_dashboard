@@ -1496,14 +1496,14 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
         case local_hoteles_city_dashboard_actived_users_pagination:
             $marcafield = local_hoteles_city_dashboard_get_marcafield(true);
             $marcaValue = local_hoteles_city_dashboard_oficina_central_value;
-            $where_sql_query = " user.id > 1 AND user.suspended = 0 AND user.deleted = 0
-            userid.id NOT IN (SELECT distinct userid FROM {user_info_data} WHERE fieldid = {$marcafield} AND data = '{$marcaValue}')";
+            $where_sql_query = " user.id > 1 AND user.suspended = 0 AND user.deleted = 0 AND 
+            user.id NOT IN (SELECT distinct userid FROM {user_info_data} WHERE fieldid = {$marcafield} AND data = '{$marcaValue}')";
         break;
 
         case local_hoteles_city_dashboard_oficina_central_pagination:
             $marcafield = local_hoteles_city_dashboard_get_marcafield(true);
             $marcaValue = local_hoteles_city_dashboard_oficina_central_value;
-            $where_sql_query = " user.id > 1 AND user.deleted = 0 AND user.id IN 
+            $where_sql_query = " AND user.id > 1 AND user.deleted = 0 AND user.id IN 
              (SELECT distinct userid FROM {user_info_data} WHERE fieldid = {$marcafield} AND data = '{$marcaValue}')";
         break;
 

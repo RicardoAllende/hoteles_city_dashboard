@@ -93,16 +93,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
         case 'course_users_pagination':
             die(local_hoteles_city_dashboard_get_paginated_users($_POST, local_hoteles_city_dashboard_course_users_pagination));
         break;
-        case 'all_users_pagination':
+        case 'users_2':
             die(local_hoteles_city_dashboard_get_paginated_users($_POST, local_hoteles_city_dashboard_all_users_pagination));
         break;
-        case 'suspended_users_pagination':
+        case 'users_3':
             die(local_hoteles_city_dashboard_get_paginated_users($_POST, local_hoteles_city_dashboard_suspended_users_pagination));
         break;
-        case 'actived_users_pagination':
+        case 'users_4':
             die(local_hoteles_city_dashboard_get_paginated_users($_POST, local_hoteles_city_dashboard_actived_users_pagination));
         break;
-        case 'oficina_central_pagination':
+        case 'users_5':
             die(local_hoteles_city_dashboard_get_paginated_users($_POST, local_hoteles_city_dashboard_oficina_central_pagination));
         break;
         case 'establecer_gerente_hotel':	
