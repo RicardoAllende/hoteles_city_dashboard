@@ -224,54 +224,6 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
 
     <?php local_hoteles_city_dashboard_print_institutions_in_js(); ?>
     
-    <script>
-        var muestraComparativas = false;
-        var mostrarEnlaces = true;
-        var isCourseLoading = false;
-        var isFilterLoading = false;
-        var trabajoPendiente = false;
-        var currentTab = 1;
-        var indicator;
-        var item;
-        var tituloPestana = "";
-        var tabsCursos = [false, false, false];
-        function cambiarpestana(id){
-            if(id != currentTab){
-                hidePage("ldm_tab_" + id);
-                currentTab = id;
-                tituloPestana = pestanas[id];
-                setTimeout(function() {
-                    //obtenerInformacion();
-                }, 500);
-            }
-        }
-        pestanas = [
-            '',
-            'Programas de entrenamiento',
-            'Lanzamientos y campañas',
-            'Cruce de indicadores'
-        ]
-        document.addEventListener("DOMContentLoaded", function() {
-                $('.course-selector').change(function(){obtenerInformacion()});
-                tituloPestana = pestanas[1];
-                // tituloPestana = $('#tab-selector').children('option:selected').html();
-                // $('#tab-selector').change(function(){ tituloPestana = $(this).children('option:selected').html(); obtenerInformacion(); });
-                //obtenerInformacion();
-                //obtenerFiltros();
-        });
-        var dateBegining;
-        var dateEnding;
-        function quitarFiltros(){
-            peticionFiltros({
-                request_type: 'user_catalogues'
-            });
-            //obtenerInformacion();
-        }
-        
-        
-        
-    </script>   
-    
     <script src="classes.js"></script>
     <script>
         regresaInfoByCurso(); 

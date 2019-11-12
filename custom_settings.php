@@ -80,7 +80,7 @@ class filter_settings extends moodleform {
         $mform->addElement('static', 'description', '', $description);
         
 
-        $institutions = local_hoteles_city_dashboard_get_institutions();
+        $institutions = local_hoteles_city_dashboard_get_all_institutions();
         $name = 'direcciones_oficina_central';
         $title = get_string('direcciones_oficina_central', $pluginname);
         $description = get_string('direcciones_oficina_central' . '_desc', $pluginname);

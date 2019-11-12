@@ -41,7 +41,7 @@ echo $OUTPUT->header();
 // $gerentes_generales
 // Institution -> hotel
 // Department -> puesto
-$institutions = local_hoteles_city_dashboard_get_institutions();
+$institutions = local_hoteles_city_dashboard_get_all_institutions();
 $hasInstitutions = count($institutions) > 0;
 // $regions = $catalogues['departments'];
 $regions = local_hoteles_city_dashboard_get_regions();

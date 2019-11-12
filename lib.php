@@ -453,7 +453,8 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     }
 
     // if(in_array('institution', $allowed_fields)){
-        $institutions = local_hoteles_city_dashboard_get_institutions_for_dashboard_user();
+        // $institutions = local_hoteles_city_dashboard_get_institutions_for_dashboard_user();
+        $institutions = local_hoteles_city_dashboard_get_regional_institutions();
         _log($institutions);
         $required = $strrequired;
         if(empty($institutions)){
@@ -2194,8 +2195,9 @@ function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
         if(empty($institution)){
             return array();
         }
-        $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE dri.regionid = (SELECT regionid 
-        FROM {dashboard_region_ins} WHERE institution = '{$institution}' LIMIT 1) AND institution != ''";
+        $query = "SELECT DISTINCT institution FROM {user} WHERE id = {$userid} AND institution != ''";
+        // $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE dri.regionid = (SELECT regionid 
+        // FROM {dashboard_region_ins} WHERE institution = '{$institution}' LIMIT 1) AND institution != ''";
         $institutions = $DB->get_fieldset_sql($query);
         $temporal_institutions = local_hoteles_city_dashboard_get_temporal_institutions($email);
         $institutions = array_unique(array_merge($institutions, $temporal_institutions));
@@ -2206,10 +2208,22 @@ function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
         regionid IN (SELECT id FROM {dashboard_region} WHERE userid = {$userid})";
         return $DB->get_fieldset_sql($query);
     }
-    if(is_siteadmin()){
-        return $DB->get_fieldset_sql($queryAllInstitutions);
-    }
     return $default;
+}
+
+function local_hoteles_city_dashboard_get_regional_institutions(){
+    global $USER, $DB;
+    $institution = $USER->institution;
+    $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE dri.regionid = (SELECT regionid 
+        FROM {dashboard_region_ins} WHERE institution = '{$institution}' LIMIT 1) AND institution != ''";
+    _sql($query);
+    return $DB->get_fieldset_sql($query);
+}
+
+function local_hoteles_city_dashboard_get_all_institutions(){
+    global $DB;
+    $queryAllInstitutions = "SELECT DISTINCT institution FROM {user} WHERE deleted = 0 AND id > 1 AND institution != ''";
+    return $DB->get_fieldset_sql($queryAllInstitutions);
 }
 
 /**
@@ -2599,12 +2613,18 @@ function local_hoteles_city_dashboard_get_dashboard_windows(){
 function local_hoteles_city_dashboard_print_filters(){
     $catalogues = local_hoteles_city_dashboard_get_catalogues();
     $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
+    // $canPrinAllFilters = local_hoteles_city_dashboard_has_permission(local_hoteles_city_dashboard_apply_filters);
+    // $filtersWithoutPermissions = array('institution', 'department');
     // echo "<form name='$identifier' class='row' id='$identifier'>";
     foreach($catalogues as $catalogue_name => $catalogue_items){
         $name = $catalogue_name;
         $title = $allowed_filters->filter_names[$catalogue_name];
         $description = ""; // No es usado en esta sección
         $default = ""; // No es usado en esta sección
+        // if($catalogue_name == 'institution'){
+        //     $catalogue_items = local_hoteles_city_dashboard_get_institutions_for_dashboard_user();
+        //     $default = implode(',', $catalogue_items);
+        // }
         echo local_hoteles_city_dashboard_print_multiselect($name, $title, $description, $default, $catalogue_items);
     }
     // echo "<button value='Submit'>Submit</button>";
@@ -2660,9 +2680,9 @@ function local_hoteles_city_dashboard_has_permission($permission){
  * @return array
  */
 function local_hoteles_city_dashboard_get_restricted_params(array $params){
-    if(local_hoteles_city_dashboard_has_permission(local_hoteles_city_dashboard_apply_filters)){
-        return $params;
-    }else{
+    // if(local_hoteles_city_dashboard_has_permission(local_hoteles_city_dashboard_apply_filters)){
+    //     return $params;
+    // }else{
         $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
         if(local_hoteles_city_dashboard_is_director_regional() || local_hoteles_city_dashboard_is_gerente_general()){
             $institutions = local_hoteles_city_dashboard_get_institutions();
@@ -2689,17 +2709,17 @@ function local_hoteles_city_dashboard_get_restricted_params(array $params){
                     case 'department':
 
                     default:
-                        if(isset($params[$filter])){
-                            unset($params[$filter]);
-                        }
+                        // if(isset($params[$filter])){
+                        //     unset($params[$filter]);
+                        // }
                         break;
                 }
             }
             if(!isset($params['institution'])){
                 $params['institution'] = $institutions;
             }
-            return $params;
         }
-    }
-    return array();
+        return $params;
+    // }
+    // return array();
 }
