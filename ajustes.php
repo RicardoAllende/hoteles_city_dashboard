@@ -142,12 +142,12 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                                 echo "<td class='{$class}'><input type='radio' {$checked} onclick='relateRegionInstitution(\"{$region->id}\", \"{$institution}\")' name='{$ins}'></td>";
                             }
                             // $select_inner = "";
-                            $default = "";
-                            $relationshipid = -1;
-                            if($relationship){
-                                $default = $relationship->userid;
-                                $relationshipid = $relationship->id ;
-                            }
+                            // $default = "";
+                            // $relationshipid = -1;
+                            // if($relationship){
+                            //     $default = $relationship->userid;
+                            //     $relationshipid = $relationship->id ;
+                            // }
                             // echo "<td><select class='form-control' id='manager_{$ins}' onchange=\"establecer_gerente_general('{$institution}', '#manager_{$ins}')\">";
                             // echo "<option>Seleccionar</option>";
                             // foreach($gerentes_generales as $id => $gg){
