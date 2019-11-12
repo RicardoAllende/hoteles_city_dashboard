@@ -34,8 +34,8 @@ DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios', 'Administración de us
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central', 'Administración de usuarios de Oficina Central');
 DEFINE('local_hoteles_city_dashboard_listado_todos_los_usuarios', 'Administración de todos los usuarios');
 DEFINE('local_hoteles_city_dashboard_cambio_usuarios', 'Cambio de usuarios');
-DEFINE('local_hoteles_city_dashboard_avance_todos_los_cursos', 'Dashboard reporte de cursos');
-DEFINE('local_hoteles_city_dashboard_reportes', 'Avances de todos los cursos: por región, por hotel, por persona y por puesto');
+DEFINE('local_hoteles_city_dashboard_avance_todos_los_cursos', 'Avances de todos los cursos: por región, por hotel, por persona y por puesto');
+DEFINE('local_hoteles_city_dashboard_reportes', 'Estatus de consulta de cursos');
 DEFINE('local_hoteles_city_dashboard_ajustes', 'Ajustes dashboard administrativo Hoteles City');
 DEFINE('local_hoteles_city_dashboard_services', 'Web service');
 DEFINE('local_hoteles_city_dashboard_apply_filters', 'Aplicar filtros'); // Aplicar filtros para personas con acceso a toda la información
@@ -2126,12 +2126,12 @@ function local_hoteles_city_dashboard_get_user_permissions(){
     }
     $email = $USER->email;
     $roles = array();
-    $all_permissions = local_hoteles_city_dashboard_get_role_permissions();
-    $count_all_permissions = count($all_permissions);
+    $permission_list = local_hoteles_city_dashboard_get_role_permissions();
+    $count_all_permissions = count($permission_list);
     $user_permissions = array();
     if(is_siteadmin()){
         // $roles[local_hoteles_city_dashboard_administrador] = $permissions[local_hoteles_city_dashboard_administrador];
-        $user_permissions = array_merge($user_permissions, $all_permissions[local_hoteles_city_dashboard_administrador]);
+        $user_permissions = array_merge($user_permissions, $permission_list[local_hoteles_city_dashboard_administrador]);
         $user_permissions = array_unique($user_permissions);
         if(count($user_permissions) == $count_all_permissions) return $user_permissions;
     }
@@ -2141,18 +2141,17 @@ function local_hoteles_city_dashboard_get_user_permissions(){
         if(!empty($config)){
             $config = explode(' ', $config);
             if(in_array($email, $config)){
-                $user_permissions = array_merge($user_permissions, $all_permissions[$key]);
+                $user_permissions = array_merge($user_permissions, $permission_list[$key]);
                 $user_permissions = array_unique($user_permissions);
                 if(count($user_permissions) == $count_all_permissions) return $user_permissions;
-                // $roles[$key] = $all_permissions[$key];
+                // $roles[$key] = $permission_list[$key];
             }
         }
     }
     if(local_hoteles_city_dashboard_is_gerente_general()){
-        $user_permissions = array_merge($user_permissions, $all_permissions[local_hoteles_city_dashboard_gerente_hotel]);
+        $user_permissions = array_merge($user_permissions, $permission_list[local_hoteles_city_dashboard_gerente_hotel]);
         $user_permissions = array_unique($user_permissions);
         if(count($user_permissions) == $count_all_permissions) return $user_permissions;
-        // $roles[local_hoteles_city_dashboard_gerente_hotel] = $all_permissions[local_hoteles_city_dashboard_gerente_hotel];
     }
     $global_user_permissions = $user_permissions;
     return $user_permissions;

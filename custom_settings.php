@@ -52,6 +52,9 @@ class filter_settings extends moodleform {
         $default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields(true);
         $all_default_profile_fields = local_hoteles_city_dashboard_get_default_profile_fields();
         $custom_fields = local_hoteles_city_dashboard_get_custom_profile_fields();
+        $default_profile_fields[''] = 'Presione para seleccionar';
+        $all_default_profile_fields[''] = 'Presione para seleccionar';
+        $custom_fields[''] = 'Presione para seleccionar';
         // echo local_hoteles_city_dashboard_print_theme_variables();
         // $configs = get_config('local_hoteles_city_dashboard');
         // $configs = (array) $configs;
@@ -62,7 +65,7 @@ class filter_settings extends moodleform {
         foreach (local_hoteles_city_dashboard_special_custom_fields as $key => $value) {
             $name = $key;
             $title = $value;
-            $description = "Seleccione el campo personalizado que tiene el campo " . strtolower($value); // get_string($name . '_desc', $pluginname);
+            $description = "Seleccione el campo personalizado correspondiente a " . strtolower($value); // get_string($name . '_desc', $pluginname);
             $default = !empty($configs[$name]) ? $configs[$name] : "";
             $select = $mform->addElement('select', $name, $title, $custom_fields);
             $mform->setDefault($name, $default);
@@ -70,6 +73,7 @@ class filter_settings extends moodleform {
         }
 
         $courses = local_hoteles_city_dashboard_get_courses();
+        $courses[''] = 'Presione para seleccionar';
         $name = 'dashboard_courses';
         $title = get_string('dashboard_courses', $pluginname);
         $description = get_string('dashboard_courses' . '_desc', $pluginname);
@@ -79,8 +83,8 @@ class filter_settings extends moodleform {
         $mform->getElement($name)->setSelected(explode(',', $default));
         $mform->addElement('static', 'description', '', $description);
         
-
         $institutions = local_hoteles_city_dashboard_get_all_institutions();
+        $institutions[''] = 'Presione para seleccionar';
         $name = 'direcciones_oficina_central';
         $title = get_string('direcciones_oficina_central', $pluginname);
         $description = get_string('direcciones_oficina_central' . '_desc', $pluginname);
@@ -91,6 +95,7 @@ class filter_settings extends moodleform {
         $mform->addElement('static', 'description', '', $description);
 
         $puestos = local_hoteles_city_dashboard_get_departments();
+        $puestos[''] = 'Presione para seleccionar';
         $name = 'puestos_en_dashboard';
         $title = get_string('puestos_en_dashboard', $pluginname);
         $description = get_string('puestos_en_dashboard' . '_desc', $pluginname);
@@ -100,29 +105,7 @@ class filter_settings extends moodleform {
         $mform->getElement($name)->setSelected(explode(',', $default));
         $mform->addElement('static', 'description', '', $description);
 
-        $mform->addElement('header', 'reportfields_header', get_string('reportfields_header', $pluginname));
-        $mform->setExpanded('reportfields_header', false);
-
-        $name = 'reportdefaultfields';
-        $title = get_string('reportdefaultfields', $pluginname);
-        $description = get_string('reportdefaultfields' . '_desc', $pluginname);
-        $default = !empty($configs[$name]) ? $configs[$name] : "";
-        $select = $mform->addElement('select', $name, $title, $all_default_profile_fields, 'class = " multiselect-setting " size="10" ');
-        $select->setMultiple(true);
-        $mform->getElement($name)->setSelected(explode(',', $default));
-        $mform->addElement('static', 'description', '', $description);
-
-        $name = 'reportcustomfields';
-        $title = get_string('reportcustomfields', $pluginname);
-        $description = get_string('reportcustomfields' . '_desc', $pluginname);
-        $default = !empty($configs[$name]) ? $configs[$name] : "";
-        $select = $mform->addElement('select', $name, $title, $custom_fields, 'class = " multiselect-setting " size="10" ');
-        $select->setMultiple(true);
-        $mform->getElement($name)->setSelected(explode(',', $default));
-        $mform->addElement('static', 'description', '', $description);
-
-
-
+        
         $mform->addElement('header', 'signinfields', get_string('signinfields', $pluginname));
         $mform->setExpanded('signinfields', false);
 
@@ -144,6 +127,28 @@ class filter_settings extends moodleform {
         $mform->getElement($name)->setSelected(explode(',', $default));
         $mform->addElement('static', 'description', '', $description);
 
+
+
+        $mform->addElement('header', 'reportfields_header', get_string('reportfields_header', $pluginname));
+        $mform->setExpanded('reportfields_header', false);
+
+        $name = 'reportdefaultfields';
+        $title = get_string('reportdefaultfields', $pluginname);
+        $description = get_string('reportdefaultfields' . '_desc', $pluginname);
+        $default = !empty($configs[$name]) ? $configs[$name] : "";
+        $select = $mform->addElement('select', $name, $title, $all_default_profile_fields, 'class = " multiselect-setting " size="10" ');
+        $select->setMultiple(true);
+        $mform->getElement($name)->setSelected(explode(',', $default));
+        $mform->addElement('static', 'description', '', $description);
+
+        $name = 'reportcustomfields';
+        $title = get_string('reportcustomfields', $pluginname);
+        $description = get_string('reportcustomfields' . '_desc', $pluginname);
+        $default = !empty($configs[$name]) ? $configs[$name] : "";
+        $select = $mform->addElement('select', $name, $title, $custom_fields, 'class = " multiselect-setting " size="10" ');
+        $select->setMultiple(true);
+        $mform->getElement($name)->setSelected(explode(',', $default));
+        $mform->addElement('static', 'description', '', $description);
 
 
         $mform->addElement('header', 'filterfields', get_string('filterfields', $pluginname));

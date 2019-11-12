@@ -29,29 +29,29 @@ $string['pluginname'] = 'Dashboard administrativo Hoteles City';
 
 $string['tab_userform'] = 'Formulario de usuario';
 $string['userformcustomfields'] = 'Campos personalizados en formulario de usuario';
-$string['userformcustomfields_desc'] = 'Seleccione los campos personalizados a mostrar en el formulario de usuario. Presione ctrl para seleccionar varios elementos';
+$string['userformcustomfields_desc'] = 'Seleccione los campos personalizados a mostrar en el formulario de usuario.'; // Presione ctrl para seleccionar varios elementos';
 $string['userformdefaultfields'] = 'Campos formulario de usuario';
-$string['userformdefaultfields_desc'] = 'Seleccione los campos a mostrar en el formulario de usuario. Presione ctrl para seleccionar varios elementos';
+$string['userformdefaultfields_desc'] = 'Seleccione los campos a mostrar en el formulario de usuario.'; // Presione ctrl para seleccionar varios elementos';
 $string['userformimage'] = '¿Incluir foto en formulario?';
 $string['userformimage_desc'] = 'Seleccione esta opción para permitir editar imágenes en el formulario del dashboard administrativo Hoteles City';
 
 $string['tab_profile'] = 'Campos del reporte';
 $string['reportcustomfields'] = 'Campos personalizados en reporte';
-$string['reportcustomfields_desc'] = 'Seleccione los campos personalizados a mostrar en el reporte. Presione ctrl para seleccionar varios elementos';
+$string['reportcustomfields_desc'] = 'Seleccione los campos personalizados a mostrar en el reporte.'; // Presione ctrl para seleccionar varios elementos';
 $string['reportdefaultfields'] = 'Campos tabla usuarios en reportes';
-$string['reportdefaultfields_desc'] = 'Seleccione los campos de la tabla {user} de moodle para mostrar en el reporte. Presione ctrl para seleccionar varios elementos';
+$string['reportdefaultfields_desc'] = 'Seleccione los campos de la tabla {user} de moodle para mostrar en el reporte.'; // Presione ctrl para seleccionar varios elementos';
 
 $string['tab_roles'] = 'Permisos de roles';
 $string['reportcustomfields'] = 'Campos personalizados en reporte';
-$string['reportcustomfields_desc'] = 'Seleccione los campos personalizados a mostrar en el reporte. Presione ctrl para seleccionar varios elementos';
+$string['reportcustomfields_desc'] = 'Seleccione los campos personalizados a mostrar en el reporte.'; // Presione ctrl para seleccionar varios elementos';
 $string['reportdefaultfields'] = 'Campos tabla usuarios en reportes';
-$string['reportdefaultfields_desc'] = 'Seleccione los campos de la tabla {user} de moodle para mostrar en el reporte. Presione ctrl para seleccionar varios elementos';
+$string['reportdefaultfields_desc'] = 'Seleccione los campos de la tabla {user} de moodle para mostrar en el reporte.'; // Presione ctrl para seleccionar varios elementos';
 
 $string['tab_filters'] = 'Permisos de roles';
 $string['filtercustomfields'] = 'Campos personalizados usados como filtros';
-$string['filtercustomfields_desc'] = 'Seleccione los campos personalizados que servirán como filtros. Presione ctrl para seleccionar varios elementos';
+$string['filtercustomfields_desc'] = 'Seleccione los campos personalizados que servirán como filtros.'; // Presione ctrl para seleccionar varios elementos';
 $string['filterdefaultfields'] = 'Campos tabla usuarios como filtros';
-$string['filterdefaultfields_desc'] = 'Seleccione los campos de la tabla {user} de moodle para mostrar en el reporte. Presione ctrl para seleccionar varios elementos';
+$string['filterdefaultfields_desc'] = 'Seleccione los campos de la tabla {user} de moodle para mostrar en el reporte.'; // Presione ctrl para seleccionar varios elementos';
 
 $string['marcafield'] = 'Campo de marca';
 $string['marcafield_desc'] = 'Seleccione el campo personalizado que tiene la marca';
@@ -64,10 +64,10 @@ $string['filterfields'] = 'Campos que sirven como filtros';
 $string['permissions_header'] = 'Permisos';
  
 $string['direcciones_oficina_central'] = 'Direcciones oficina central';
-$string['direcciones_oficina_central_desc'] = 'Seleccione las direcciones que pertenecen a Oficina Central. Presione ctrl para seleccionar varios elementos';
+$string['direcciones_oficina_central_desc'] = 'Seleccione las direcciones que pertenecen a Oficina Central.'; // Presione ctrl para seleccionar varios elementos';
 
 $string['puestos_en_dashboard'] = 'Puestos para comparar';
-$string['puestos_en_dashboard_desc'] = 'Seleccione los puestos que se compararán en la página inicial del dashboard. Presione ctrl para seleccionar varios elementos';
+$string['puestos_en_dashboard_desc'] = 'Seleccione los puestos que se compararán en la página inicial del dashboard.'; // Presione ctrl para seleccionar varios elementos';
 
-$string['dashboard_courses'] = 'Cursos';
-$string['dashboard_courses_desc'] = 'Seleccione los cursos que se incluirán en los reportes. Presione ctrl para seleccionar varios elementos';
+$string['dashboard_courses'] = 'Cursos incluídos en los reportes';
+$string['dashboard_courses_desc'] = 'Seleccione los cursos que se incluirán en los reportes.'; // Presione ctrl para seleccionar varios elementos';
