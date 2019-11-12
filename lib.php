@@ -34,7 +34,8 @@ DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios', 'Administración de us
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central', 'Administración de usuarios de Oficina Central');
 DEFINE('local_hoteles_city_dashboard_listado_todos_los_usuarios', 'Administración de todos los usuarios');
 DEFINE('local_hoteles_city_dashboard_cambio_usuarios', 'Cambio de usuarios');
-DEFINE('local_hoteles_city_dashboard_reportes', 'Dashboard reporte de cursos');
+DEFINE('local_hoteles_city_dashboard_avance_todos_los_cursos', 'Dashboard reporte de cursos');
+DEFINE('local_hoteles_city_dashboard_reportes', 'Avances de todos los cursos: por región, por hotel, por persona y por puesto');
 DEFINE('local_hoteles_city_dashboard_ajustes', 'Ajustes dashboard administrativo Hoteles City');
 DEFINE('local_hoteles_city_dashboard_services', 'Web service');
 DEFINE('local_hoteles_city_dashboard_apply_filters', 'Aplicar filtros'); // Aplicar filtros para personas con acceso a toda la información
@@ -123,6 +124,13 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
             case local_hoteles_city_dashboard_reportes:
                 $node = $nav->add (
                     $key,
+                    new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/dashboard.php?type=detalle_curso' )
+                );
+                $node->showinflatnavigation = true;
+                break;
+            case local_hoteles_city_dashboard_avance_todos_los_cursos:
+                $node = $nav->add (
+                    $key,
                     new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/dashboard.php' )
                 );
                 $node->showinflatnavigation = true;
@@ -140,6 +148,7 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
 
 function local_hoteles_city_dashboard_get_role_permissions(){
     $all_permissions = [
+        local_hoteles_city_dashboard_avance_todos_los_cursos,
         local_hoteles_city_dashboard_reportes,
         local_hoteles_city_dashboard_alta_baja_usuarios,
         local_hoteles_city_dashboard_cambio_usuarios,

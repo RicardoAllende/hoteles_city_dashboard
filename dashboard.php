@@ -26,7 +26,19 @@
 require_once(__DIR__ . '/../../config.php');
 $context_system = context_system::instance();
 require_once(__DIR__ . '/lib.php');
-local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_reportes);
+$page = optional_param('type', '', PARAM_TEXT);
+$url = '';
+switch($page){
+    case '':
+        local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_avance_todos_los_cursos);
+        $url = 'dashboard_iframe.php';
+    break;
+    case 'detalle_curso':
+        local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_reportes);
+        $url = 'graficas.php';
+    break;
+}
+_print($url);
 require_login();
 
 $PAGE->set_url($CFG->wwwroot . "/local/hoteles_city_dashboard/dashboard.php");
@@ -38,7 +50,7 @@ echo $OUTPUT->header();
 
 
 ?>
-<iframe src="dashboard_iframe.php" id="page_iframe" frameborder="0" style="width: 100%; overflow: hidden;"></iframe>
+<iframe src="<?php echo $url; ?>" id="page_iframe" frameborder="0" style="width: 100%; overflow: hidden;"></iframe>
 <!-- <div class="btnimprimir">
     <button class="btn btn-primary" onclick="imprimir();">Imprimir</button>       
 </div> -->
@@ -56,7 +68,7 @@ echo $OUTPUT->header();
                 if(element.contentWindow.document != null){
                     if(element.contentWindow.document.body != null){
                         if(element.contentWindow.document.body.offsetHeight != null){
-                            size = (element.contentWindow.document.body.offsetHeight + 30 ) + 'px';
+                            size = (element.contentWindow.document.body.offsetHeight ) + 'px';
                             document.getElementById(frame_id).style.height = size;
                         }
                     }

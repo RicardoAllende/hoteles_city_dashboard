@@ -74,13 +74,13 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     
     <?php echo local_hoteles_city_dashboard_print_theme_variables(); ?>
 </head>
-<body style="background-color: #ecedf1;">
+<body style="background-color: #ecedf1;" style="max-width: 100%; max-height: 100%;">
 
 <!-- onload="loaderGeneral()" -->
 
 
     <!-- Título -->
-    <div>
+    <div style="max-width: 100%;">
         <h3 style="text-align: center;">Reportes</h3>
     </div>
 
@@ -88,7 +88,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
      
 
     <!-- Inicia row para cards informativas -->
-    <div class="row" id="cards informativas">
+    <div class="row" id="cards informativas" style="max-width: 100%;">
 
         <!-- Card Número de hoteles-->
         <div class="col-sm-3 mb-4">
