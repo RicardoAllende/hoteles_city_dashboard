@@ -653,8 +653,13 @@ class GraphicsDashboard {
         switch (this.type_graph) {
             case 'pie':
                 var d_graph = Array();
-                d_graph.push(this.data_graph.approved_users);
-                d_graph.push(this.data_graph.not_approved_users);
+                d_graph.push(this.data_graph.percentage);
+                var percentage_not_approved = 100 - this.data_graph.percentage;
+                // console.log('INFO') 
+                // console.log(percentage_not_approved)               
+                // d_graph.push(this.data_graph.approved_users);
+                // d_graph.push(this.data_graph.not_approved_users);
+                d_graph.push(percentage_not_approved);               
                 if (this.data_graph.enrolled_users > 0) {
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
@@ -679,13 +684,13 @@ class GraphicsDashboard {
 
             case 'bar':
                 var d_graph = Array();
-                // d_graph.push(this.data_graph.percentage);
-                // var percentage_not_approved = 100 - this.data_graph.percentage;
+                d_graph.push(this.data_graph.percentage);
+                var percentage_not_approved = 100 - this.data_graph.percentage;
                 // console.log('INFO') 
                 // console.log(percentage_not_approved)               
-                d_graph.push(this.data_graph.approved_users);
-                d_graph.push(this.data_graph.not_approved_users);
-                //d_graph.push(percentage_not_approved);                
+                // d_graph.push(this.data_graph.approved_users);
+                // d_graph.push(this.data_graph.not_approved_users);
+                d_graph.push(percentage_not_approved);                
                 d_graph.push('0');                                
                 if (this.data_graph.enrolled_users > 0) {
                     var ctx = document.getElementById(this.div_graph);
