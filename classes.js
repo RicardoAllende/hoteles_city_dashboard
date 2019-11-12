@@ -3,57 +3,57 @@ function regresaInfoByCurso() {
     //showModal();
     //informacion = $('#filter_form').serializeArray();
     informacion = [];
-            // informacion.push({name: 'request_type', value: 'course_list'});
-            informacion.push({name: 'request_type', value: 'dashboard'});
-            //informacion.push({name: 'type', value: currentTab});
-            //dateBegining = Date.now();
-            // $('#local_dominosdashboard_content').html('Cargando la información');
-            $.ajax({
-                type: "POST",
-                url: "services.php",
-                data: informacion,
-                dataType: "json"
-            })
-            .done(function(data) {
-                console.log('Aqui entra done');
-                isCourseLoading = false;
-                //console.log('Data obtenida ' + data);
-                respuesta = JSON.parse(JSON.stringify(data));
-                respuesta = respuesta.data;
-                console.log('Imprimiendo la respuesta', respuesta);
-                
-                
-                
-                
-                                               
-                for (var i = 0; i < respuesta.length; i++) {
-                    resp = respuesta[i];                
-                    var curso = new GraphicsDashboard('contenedor_graficas',resp.name,resp.chart,resp,6);                                        
-                     
-                    curso.printCard();
-                    if(resp.chart == 'bar-agrupadas'){                        
-                        curso.comparative_graph();
-                    }
-                    if(resp.chart == 'line'){
-                        curso.comparative_graph();
-                    }
-                    if(resp.chart == 'horizontalBar'){
-                        curso.comparative_graph();
-                    }
-                    if (resp.chart == 'burbuja') {
-                        curso.comparative_graph();
-                    }
-                    if (resp.chart == 'pie') {
-                        curso.individual_graph();
-                    }
-                    if (resp.chart == 'bar') {
-                        curso.individual_graph();
-                    }
+    // informacion.push({name: 'request_type', value: 'course_list'});
+    informacion.push({ name: 'request_type', value: 'dashboard' });
+    //informacion.push({name: 'type', value: currentTab});
+    //dateBegining = Date.now();
+    // $('#local_dominosdashboard_content').html('Cargando la información');
+    $.ajax({
+        type: "POST",
+        url: "services.php",
+        data: informacion,
+        dataType: "json"
+    })
+        .done(function (data) {
+            console.log('Aqui entra done');
+            isCourseLoading = false;
+            //console.log('Data obtenida ' + data);
+            respuesta = JSON.parse(JSON.stringify(data));
+            respuesta = respuesta.data;
+            console.log('Imprimiendo la respuesta', respuesta);
 
-                                         
-                
-                }                
-                printInfoCards();                
+
+
+
+
+            for (var i = 0; i < respuesta.length; i++) {
+                resp = respuesta[i];
+                var curso = new GraphicsDashboard('contenedor_graficas', resp.name, resp.chart, resp, 6);
+
+                curso.printCard();
+                if (resp.chart == 'bar-agrupadas') {
+                    curso.comparative_graph();
+                }
+                if (resp.chart == 'line') {
+                    curso.comparative_graph();
+                }
+                if (resp.chart == 'horizontalBar') {
+                    curso.comparative_graph();
+                }
+                if (resp.chart == 'burbuja') {
+                    curso.comparative_graph();
+                }
+                if (resp.chart == 'pie') {
+                    curso.individual_graph();
+                }
+                if (resp.chart == 'bar') {
+                    curso.individual_graph();
+                }
+
+
+
+            }
+            printInfoCards();
 
         })
         .fail(function (error, error2) {
@@ -88,93 +88,94 @@ var total_inscritos = 0;
 var total_no_aprobados = 0;
 var total_aprobados = 0;
 var porcentaje_aprobados = 0;
-function graph_data(respuesta){    
+function graph_data(respuesta) {
     //console.log('INICIA INFORMACION DE LA GRAFICA');   
     //console.log(respuesta);    
-        data_labels = [];        
-        resp= respuesta;
-        arr_datasets_aprobados = [];
-        arr_datasets_no_aprobados = [];
-        arr_datasets_inscritos = [];
-        if(resp.chart == 'bar-agrupadas'){        
-        datasets_aprobados = {label: 'Aprobados', backgroundColor: '#1cc88a', stack: 'Stack 0', data: arr_datasets_aprobados} 
-        datasets_no_aprobados = {label: 'No Aprobados', backgroundColor: '#e74a3b', stack: 'Stack 0', data: arr_datasets_no_aprobados}
-        datasets_inscritos = {label: 'Inscritos', backgroundColor: '#858796', stack: 'Stack 1', data: arr_datasets_inscritos}
-        }
-        if(resp.chart == 'line'){        
-            datasets_aprobados = {label: 'Aprobados', borderColor: "#1cc88a", backgroundColor: 'transparent', data: arr_datasets_aprobados} 
-            datasets_no_aprobados = {label: 'No Aprobados', borderColor: "#e74a3b", backgroundColor: 'transparent', data: arr_datasets_no_aprobados}
-            datasets_inscritos = {label: 'Inscritos', backgroundColor: '#858796', data: arr_datasets_inscritos}
-            }
-        if(resp.chart == 'horizontalBar'){
-            datasets_aprobados = {label: 'Aprobados', backgroundColor: '#1cc88a', data: arr_datasets_aprobados} 
-            datasets_no_aprobados = {label: 'No Aprobados', backgroundColor: '#e74a3b', data: arr_datasets_no_aprobados}
-            datasets_inscritos = {label: 'Inscritos', backgroundColor: '#858796', data: arr_datasets_inscritos}
-        }
-        dataset = []; 
-          
-                 
-        for(j=0; j<resp.elements.length; j++){            
-            data_labels.push(resp.elements[j].name);            
-            arr_datasets_aprobados.push(resp.elements[j].approved_users);
-            arr_datasets_no_aprobados.push(resp.elements[j].not_approved_users);
-            arr_datasets_inscritos.push(resp.elements[j].enrolled_users);             
-            suma_inscritos = suma_inscritos + resp.elements[j].enrolled_users; 
-            suma_no_aprobados = suma_no_aprobados + resp.elements[j].not_approved_users;
-            suma_aprobados = suma_aprobados + resp.elements[j].approved_users;                               
-                              
-        }
-        
-        arr_total_inscritos.push(suma_inscritos);
-        arr_total_no_aprobados.push(suma_no_aprobados);
-        arr_total_aprobados.push(suma_aprobados);
-        //console.log(total)
-        // console.log('suma_inscritos.length');
-        // console.log(total.length)
-        
-        for(z=0; z<arr_total_inscritos.length; z++){
-            total_inscritos = total_inscritos + arr_total_inscritos[z];
-            total_no_aprobados = total_no_aprobados + arr_total_no_aprobados[z];
-            total_aprobados = total_aprobados + arr_total_aprobados[z];
-        }
-        porcentaje_aprobados = (total_aprobados * 100) / total_inscritos;
-        // console.log('TOTAL');
-        // console.log(porcentaje_aprobados.toFixed(2))
-        
-        
-        
-        if(resp.chart == 'bar-agrupadas'){
+    data_labels = [];
+    resp = respuesta;
+    arr_datasets_aprobados = [];
+    arr_datasets_no_aprobados = [];
+    arr_datasets_inscritos = [];
+    if (resp.chart == 'bar-agrupadas') {
+        datasets_aprobados = { label: 'Aprobados', backgroundColor: '#1cc88a', stack: 'Stack 0', data: arr_datasets_aprobados }
+        datasets_no_aprobados = { label: 'No Aprobados', backgroundColor: '#e74a3b', stack: 'Stack 0', data: arr_datasets_no_aprobados }
+        datasets_inscritos = { label: 'Inscritos', backgroundColor: '#858796', stack: 'Stack 1', data: arr_datasets_inscritos }
+    }
+    if (resp.chart == 'line') {
+        datasets_aprobados = { label: 'Aprobados', borderColor: "#1cc88a", backgroundColor: 'transparent', data: arr_datasets_aprobados }
+        datasets_no_aprobados = { label: 'No Aprobados', borderColor: "#e74a3b", backgroundColor: 'transparent', data: arr_datasets_no_aprobados }
+        datasets_inscritos = { label: 'Inscritos', backgroundColor: '#858796', backgroundColor: 'transparent', data: arr_datasets_inscritos }
+    }
+    if (resp.chart == 'horizontalBar') {
+        //datasets_aprobados = { label: 'Aprobados', backgroundColor: '#1cc88a', data: arr_datasets_aprobados }
+        datasets_aprobados = { label: 'Aprobados', backgroundColor: ["#1f377a", "#adadad","#003f93","#ffd700","#4d4d4d","#57699b","#83152b","#666666","#80adac","#c7c724","#5f4c66","#87788c"], data: arr_datasets_aprobados }
+        datasets_no_aprobados = { label: 'No Aprobados', backgroundColor: '#e74a3b', data: arr_datasets_no_aprobados }
+        datasets_inscritos = { label: 'Inscritos', backgroundColor: '#858796', data: arr_datasets_inscritos }
+    }
+    dataset = [];
+
+
+    for (j = 0; j < resp.elements.length; j++) {
+        data_labels.push(resp.elements[j].name);
+        arr_datasets_aprobados.push(resp.elements[j].approved_users);
+        arr_datasets_no_aprobados.push(resp.elements[j].not_approved_users);
+        arr_datasets_inscritos.push(resp.elements[j].enrolled_users);
+        suma_inscritos = suma_inscritos + resp.elements[j].enrolled_users;
+        suma_no_aprobados = suma_no_aprobados + resp.elements[j].not_approved_users;
+        suma_aprobados = suma_aprobados + resp.elements[j].approved_users;
+
+    }
+
+    arr_total_inscritos.push(suma_inscritos);
+    arr_total_no_aprobados.push(suma_no_aprobados);
+    arr_total_aprobados.push(suma_aprobados);
+    //console.log(total)
+    // console.log('suma_inscritos.length');
+    // console.log(total.length)
+
+    for (z = 0; z < arr_total_inscritos.length; z++) {
+        total_inscritos = total_inscritos + arr_total_inscritos[z];
+        total_no_aprobados = total_no_aprobados + arr_total_no_aprobados[z];
+        total_aprobados = total_aprobados + arr_total_aprobados[z];
+    }
+    porcentaje_aprobados = (total_aprobados * 100) / total_inscritos;
+    // console.log('TOTAL');
+    // console.log(porcentaje_aprobados.toFixed(2))
+
+
+
+    if (resp.chart == 'bar-agrupadas') {
         dataset.push(datasets_aprobados);
         dataset.push(datasets_no_aprobados);
         dataset.push(datasets_inscritos);
-        d_graph = {labels : data_labels,datasets : dataset};
-        }
-        if(resp.chart == 'line'){
-            dataset.push(datasets_aprobados);
-            dataset.push(datasets_no_aprobados);            
-            d_graph = {labels : data_labels,datasets : dataset};
-        }
-        if(resp.chart == 'horizontalBar'){
-            dataset.push(datasets_aprobados);            
-            d_graph = {labels : data_labels,datasets : dataset};
-        }
-        // console.log('data_graph.d_graph');
-        // console.log(d_graph);
-        // console.log('LABELS');
-        // console.log(data_labels);
-        // console.log('APROBADOS');
-        // console.log(arr_datasets_aprobados);
-        // console.log('NO APROBADOS');
-        // console.log(arr_datasets_no_aprobados);
-        // console.log('DATASET');
-        // console.log(dataset);        
+        d_graph = { labels: data_labels, datasets: dataset };
+    }
+    if (resp.chart == 'line') {
+        dataset.push(datasets_aprobados);
+        dataset.push(datasets_no_aprobados);
+        d_graph = { labels: data_labels, datasets: dataset };
+    }
+    if (resp.chart == 'horizontalBar') {
+        dataset.push(datasets_aprobados);
+        d_graph = { labels: data_labels, datasets: dataset };
+    }
+    // console.log('data_graph.d_graph');
+    // console.log(d_graph);
+    // console.log('LABELS');
+    // console.log(data_labels);
+    // console.log('APROBADOS');
+    // console.log(arr_datasets_aprobados);
+    // console.log('NO APROBADOS');
+    // console.log(arr_datasets_no_aprobados);
+    // console.log('DATASET');
+    // console.log(dataset);        
 
-        return d_graph;
-    
+    return d_graph;
+
 }
 
 //Funcion para imprimir datos en las 4 cards (hoteles, inscritos, aprobados, no aprobados)
-function printInfoCards(){
+function printInfoCards() {
     $('#card_cantidad_usarios').html(total_inscritos);
     $('#card_no_aprobados').html(total_no_aprobados);
     $('#card_aprobados').html(porcentaje_aprobados.toFixed(2)+"%");
@@ -197,9 +198,9 @@ class GraphicsDashboard {
 
 
 
-    printCard() {      
-        
-            $("#" + this.div_print_card).append(`
+    printCard() {
+
+        $("#" + this.div_print_card).append(`
                 <div class="col-sm-${this.col_size_graph}">
                 <div class="card shadow mb-4">
                     <!-- Card Header - Dropdown -->
@@ -227,38 +228,38 @@ class GraphicsDashboard {
                 </div>
         </div>        
         `);
-    //     }
-    //     else {
-    //         $("#" + this.div_print_card).append(`
-    //         <div class="col-sm-${this.col_size_graph}">
-    //         <div class="card shadow mb-4">
-    //             <!-- Card Header - Dropdown -->
-    //             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-    //                 <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">${this.title}</a></h6>
-    //                 <div class="dropdown no-arrow">
-    //                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    //                     <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-    //                     </a>
-    //                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-    //                         <div class="dropdown-header">Dropdown Header:</div>
-    //                         <a class="dropdown-item" href="#">Action</a>
-    //                         <a class="dropdown-item" href="#">Another action</a>
-    //                         <div class="dropdown-divider"></div>
-    //                         <a class="dropdown-item" href="#">Something else here</a>
-    //                     </div>
-    //                 </div>
-    //             </div>
-    //             <!-- Card Body -->
-    //             <div class="card-body">
-    //                 <div class="">                                         
-    //                     <h3 id="${this.div_graph}" class="txt_sin_usuarios"></h3>                  
-    //                 </div>
-    //             </div>    
-    //         </div>
-    // </div>        
-    // `);
-    //     }
-        
+        //     }
+        //     else {
+        //         $("#" + this.div_print_card).append(`
+        //         <div class="col-sm-${this.col_size_graph}">
+        //         <div class="card shadow mb-4">
+        //             <!-- Card Header - Dropdown -->
+        //             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        //                 <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">${this.title}</a></h6>
+        //                 <div class="dropdown no-arrow">
+        //                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        //                     <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+        //                     </a>
+        //                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+        //                         <div class="dropdown-header">Dropdown Header:</div>
+        //                         <a class="dropdown-item" href="#">Action</a>
+        //                         <a class="dropdown-item" href="#">Another action</a>
+        //                         <div class="dropdown-divider"></div>
+        //                         <a class="dropdown-item" href="#">Something else here</a>
+        //                     </div>
+        //                 </div>
+        //             </div>
+        //             <!-- Card Body -->
+        //             <div class="card-body">
+        //                 <div class="">                                         
+        //                     <h3 id="${this.div_graph}" class="txt_sin_usuarios"></h3>                  
+        //                 </div>
+        //             </div>    
+        //         </div>
+        // </div>        
+        // `);
+        //     }
+
 
     }
 
@@ -284,13 +285,13 @@ class GraphicsDashboard {
     //                             label: 'Aprobados',
     //                             backgroundColor: '#1cc88a',
     //                             //data: d_graph[0],
-                                   //stack: 'Stack 0',
+    //stack: 'Stack 0',
     //                             data: [1, 2, 3]
     //                         }, {
     //                             label: 'No Aprobados',
     //                             backgroundColor: '#e74a3b',
     //                             //data: d_graph[1],
-                                   //stack: 'Stack 0', 
+    //stack: 'Stack 0', 
     //                             data: [5, 4, 3]
     //                         }]
     //                     },
@@ -512,71 +513,71 @@ class GraphicsDashboard {
 
     // }
 
-    
+
 
     comparative_graph() {
         // console.log("comparative_graph")
-       
+
         switch (this.type_graph) {
             case 'bar-agrupadas':
-                            
+
                 var data_agrupadas = graph_data(this.data_graph);
-                
-                
-                    var ctx = document.getElementById(this.div_graph);
-                    console.log('DIV')
-                    console.log(this.div_graph)
-                    var chart = new Chart(ctx, {
-                        // The type of chart we want to create
-                        type: 'bar',
 
-                        // The data for our dataset
-                        data: data_agrupadas,
 
-                        // Configuration options go here
-                        options: {
+                var ctx = document.getElementById(this.div_graph);
+                // console.log('DIV')
+                // console.log(this.div_graph)
+                var chart = new Chart(ctx, {
+                    // The type of chart we want to create
+                    type: 'bar',
 
-                        }
-                    });
-                
+                    // The data for our dataset
+                    data: data_agrupadas,
+
+                    // Configuration options go here
+                    options: {
+
+                    }
+                });
+
                 break;
 
             case 'line': //Tendencia
-                var data_agrupadas = graph_data(this.data_graph);                
-                    var ctx = document.getElementById(this.div_graph);
-                    var chart = new Chart(ctx, {
-                        // The type of chart we want to create
-                        type: 'line',
+                var data_agrupadas = graph_data(this.data_graph);
+                var ctx = document.getElementById(this.div_graph);
+                var chart = new Chart(ctx, {
+                    // The type of chart we want to create
+                    type: 'line',
 
-                        // The data for our dataset
-                        data: data_agrupadas,
+                    // The data for our dataset
+                    data: data_agrupadas,
 
-                        // Configuration options go here
-                        options: {
+                    // Configuration options go here
+                    options: {
 
-                        }
-                    });                
+                    }
+                });
 
                 break;
 
             case 'horizontalBar':
                 var data_agrupadas = graph_data(this.data_graph);
-                
-                    var ctx = document.getElementById(this.div_graph);
-                    var chart = new Chart(ctx, {
-                        // The type of chart we want to create
-                        type: 'horizontalBar',
 
-                        // The data for our dataset
-                        data: data_agrupadas,
+                var ctx = document.getElementById(this.div_graph);
+                var chart = new Chart(ctx, {
+                    // The type of chart we want to create
+                    type: 'horizontalBar',
 
-                        // Configuration options go here
-                        
-                    });                
+                    // The data for our dataset
+                    data: data_agrupadas,
+
+                    // Configuration options go here
+
+                });
 
                 break;
 
-            case 'burbuja':                
+            case 'burbuja':
                 if (this.data_graph.enrolled_users > 0) {
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
@@ -660,9 +661,8 @@ class GraphicsDashboard {
                         type: 'pie',
                         data: {
                             labels: ["Aprobado", "No Aprobados"],
-                            datasets: [{
-                                label: "Population (millions)",
-                                backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
+                            datasets: [{                                
+                                backgroundColor: ["#1cc88a", "#e74a3b"],
                                 data: d_graph
                             }]
                         },
@@ -679,8 +679,14 @@ class GraphicsDashboard {
 
             case 'bar':
                 var d_graph = Array();
+                // d_graph.push(this.data_graph.percentage);
+                // var percentage_not_approved = 100 - this.data_graph.percentage;
+                // console.log('INFO') 
+                // console.log(percentage_not_approved)               
                 d_graph.push(this.data_graph.approved_users);
                 d_graph.push(this.data_graph.not_approved_users);
+                //d_graph.push(percentage_not_approved);                
+                d_graph.push('0');                                
                 if (this.data_graph.enrolled_users > 0) {
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
@@ -689,7 +695,7 @@ class GraphicsDashboard {
                         data: {
                             labels: ["Aprobados", "No aprobados"],
                             datasets: [{
-                                backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
+                                backgroundColor: ["#1cc88a", "#e74a3b"],
                                 data: d_graph
                             }]
                         },
@@ -705,14 +711,14 @@ class GraphicsDashboard {
 
                 break;
 
-            
+
 
             default:
                 break;
         }
 
     }
-} 
+}
 
 
 

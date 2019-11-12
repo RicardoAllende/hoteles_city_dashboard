@@ -39,6 +39,8 @@ echo local_hoteles_city_dashboard_print_theme_variables();
 ?>
 <link href="style_tabla.css" rel="stylesheet">
 
+
+
 <table id='empTable' class='display dataTable table table-bordered'>    
     <thead>
         <tr>
