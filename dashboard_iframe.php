@@ -74,7 +74,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     
     <?php echo local_hoteles_city_dashboard_print_theme_variables(); ?>
 </head>
-<body style="background-color: #ecedf1;" style="max-width: 100%; max-height: 100%;">
+<body style="background-color: #ecedf1; max-width: 100%; max-height: 100%;">
 
 <!-- onload="loaderGeneral()" -->
 
@@ -88,7 +88,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
      
 
     <!-- Inicia row para cards informativas -->
-    <div class="row" id="cards informativas" style="max-width: 100%;">
+    <div class="row container" id="cards informativas" style="max-width: 100%;">
 
         <!-- Card Número de hoteles-->
         <div class="col-sm-3 mb-4">
@@ -172,7 +172,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     
     
     <!-- Div para pintar las graficas en dashboard -->
-    <div id="contenedor_graficas" class="row" style="padding: 15px 25px;"></div>
+    <div id="contenedor_graficas" class="row" style="padding: 15px 25px; max-width: 100%;"></div>
     
     
      
