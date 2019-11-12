@@ -26,8 +26,8 @@
 require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 $PAGE->set_context(context_system::instance());
-$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php');
 $type = optional_param('type', local_hoteles_city_dashboard_all_users_pagination, PARAM_INT);
+$PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php?type=' . $type);
 
 $title = local_hoteles_city_dashboard_get_pagination_name($type);
 

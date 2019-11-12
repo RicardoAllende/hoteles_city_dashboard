@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 $roles = null;
 $permissions = null;
 
-DEFINE('local_hoteles_city_dashboard_return_random_data', false);
+DEFINE('local_hoteles_city_dashboard_return_random_data', true);
 
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios', 'Administración de usuarios de hoteles');
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central', 'Administración de usuarios de Oficina Central');
@@ -124,7 +124,7 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
             case local_hoteles_city_dashboard_reportes:
                 $node = $nav->add (
                     $key,
-                    new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/dashboard.php?type=detalle_curso' )
+                    new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/estatus_curso.php' )
                 );
                 $node->showinflatnavigation = true;
                 break;
@@ -812,7 +812,7 @@ function local_hoteles_city_dashboard_get_count_users($userids){ // Editado
     $whereids = local_hoteles_city_dashboard_get_whereids_clauses($userids, '_us_.id');
     $query = "SELECT count(*) FROM {user} as _us_ WHERE 1 = 1 {$whereids}";
     $response = $DB->count_records_sql($query, $userids->params);
-    _sql($query, $userids->params, 'Inscritos ' . $response);
+    // _sql($query, $userids->params, 'Inscritos ' . $response);
     return $response;
 }
 
@@ -1256,7 +1256,7 @@ function local_hoteles_city_dashboard_get_approved_users($course, stdClass $user
 
     global $DB;
     if($result = $DB->get_record_sql($query, $userids->params)){
-        _sql($query, $userids->params, 'Consulta local_hoteles_city_dashboard_get_approved_users resultado ' . $result->completions);
+        // _sql($query, $userids->params, 'Consulta local_hoteles_city_dashboard_get_approved_users resultado ' . $result->completions);
         $response = $result->completions;
     }else{
         _log('No se ejecutó la consulta correctamente');
@@ -1364,7 +1364,6 @@ function local_hoteles_city_dashboard_count_users_many_courses(string $courses, 
     $whereids = local_hoteles_city_dashboard_get_whereids_clauses($userids, '__user__.id');
     $query .= " {$whereids}";
 
-    // _sql($query, $query_parameters, 'local_hoteles_city_dashboard_count_users_many_courses');
     return $DB->count_records_sql($query, $query_parameters);
 }
 
@@ -1496,7 +1495,6 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     
     ## Total number of records without filtering
     $query = 'SELECT COUNT(*) FROM {user} AS user WHERE ' . $enrol_sql_query;
-    // _sql('Sin filtro ', $query, $queryParams);
     $totalRecords = $DB->count_records_sql($query);//($table, $conditions_array);
     // _log('Elementos totales', $totalRecords);    
     if($searchValue != ''){
@@ -1522,7 +1520,6 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     
     $totalRecordwithFilter = $DB->count_records_sql($query, $queryParamsFilter);
     // _log('Elementos filtrados', $totalRecordwithFilter);
-    // _sql('Filtrados ', $query, $queryParamsFilter);
     
     ## Consulta de los elementos
     $queryParams = array();
@@ -1530,7 +1527,6 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     $query = "select {$select_sql} from {user} AS user {$searchQuery} order by {$columnName} {$columnSortOrder} {$limit}";
     // _log($query);
     // _log($queryParams);
-    // _sql('Consulta de elementos ', $query, $queryParams);
     $records = $DB->get_records_sql($query, $queryParams);
 
     ## Response
@@ -2224,7 +2220,6 @@ function local_hoteles_city_dashboard_get_regional_institutions(){
     $institution = $USER->institution;
     $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE dri.regionid = (SELECT regionid 
         FROM {dashboard_region_ins} WHERE institution = '{$institution}' LIMIT 1) AND institution != ''";
-    _sql($query);
     return $DB->get_fieldset_sql($query);
 }
 
