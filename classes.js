@@ -94,22 +94,24 @@ function graph_data(respuesta) {
     data_labels = [];
     resp = respuesta;
     arr_datasets_aprobados = [];
+    arr_datasets_aprobados_percentage = [];
     arr_datasets_no_aprobados = [];
+    arr_datasets_no_aprobados_percentage = [];       
     arr_datasets_inscritos = [];
     if (resp.chart == 'bar-agrupadas') {
-        datasets_aprobados = { label: 'Aprobados', backgroundColor: '#1cc88a', stack: 'Stack 0', data: arr_datasets_aprobados }
-        datasets_no_aprobados = { label: 'No Aprobados', backgroundColor: '#e74a3b', stack: 'Stack 0', data: arr_datasets_no_aprobados }
-        datasets_inscritos = { label: 'Inscritos', backgroundColor: '#858796', stack: 'Stack 1', data: arr_datasets_inscritos }
+        datasets_aprobados = { label: 'Aprobados', backgroundColor: '#1cc88a', stack: 'Stack 0', data: arr_datasets_aprobados_percentage }
+        datasets_no_aprobados = { label: 'No Aprobados', backgroundColor: '#e74a3b', stack: 'Stack 0', data: arr_datasets_no_aprobados_percentage }
+        datasets_inscritos = { label: 'Inscritos', backgroundColor: '#858796', stack: 'Stack 1', data: arr_datasets_inscritos }        
     }
     if (resp.chart == 'line') {
-        datasets_aprobados = { label: 'Aprobados', borderColor: "#1cc88a", backgroundColor: 'transparent', data: arr_datasets_aprobados }
-        datasets_no_aprobados = { label: 'No Aprobados', borderColor: "#e74a3b", backgroundColor: 'transparent', data: arr_datasets_no_aprobados }
+        datasets_aprobados = { label: 'Aprobados', borderColor: "#1cc88a", backgroundColor: 'transparent', data: arr_datasets_aprobados_percentage }
+        datasets_no_aprobados = { label: 'No Aprobados', borderColor: "#e74a3b", backgroundColor: 'transparent', data: arr_datasets_no_aprobados_percentage }
         datasets_inscritos = { label: 'Inscritos', backgroundColor: '#858796', backgroundColor: 'transparent', data: arr_datasets_inscritos }
     }
     if (resp.chart == 'horizontalBar') {
         //datasets_aprobados = { label: 'Aprobados', backgroundColor: '#1cc88a', data: arr_datasets_aprobados }
-        datasets_aprobados = { label: 'Aprobados', backgroundColor: ["#1f377a", "#adadad","#003f93","#ffd700","#4d4d4d","#57699b","#83152b","#666666","#80adac","#c7c724","#5f4c66","#87788c"], data: arr_datasets_aprobados }
-        datasets_no_aprobados = { label: 'No Aprobados', backgroundColor: '#e74a3b', data: arr_datasets_no_aprobados }
+        datasets_aprobados = { label: 'Aprobados', backgroundColor: ["#1f377a", "#adadad","#003f93","#ffd700","#4d4d4d","#57699b","#83152b","#666666","#80adac","#c7c724","#5f4c66","#87788c"], data: arr_datasets_aprobados_percentage }
+        datasets_no_aprobados = { label: 'No Aprobados', backgroundColor: '#e74a3b', data: arr_datasets_no_aprobados_percentage }
         datasets_inscritos = { label: 'Inscritos', backgroundColor: '#858796', data: arr_datasets_inscritos }
     }
     dataset = [];
@@ -117,21 +119,25 @@ function graph_data(respuesta) {
 
     for (j = 0; j < resp.elements.length; j++) {
         data_labels.push(resp.elements[j].name);
-        arr_datasets_aprobados.push(resp.elements[j].approved_users);
-        arr_datasets_no_aprobados.push(resp.elements[j].not_approved_users);
-        arr_datasets_inscritos.push(resp.elements[j].enrolled_users);
+        //arr_datasets_aprobados.push(resp.elements[j].approved_users);
+        arr_datasets_aprobados_percentage.push(resp.elements[j].percentage);
+        //arr_datasets_no_aprobados.push(resp.elements[j].not_approved_users);
+        arr_datasets_no_aprobados_percentage.push(100 - resp.elements[j].percentage);
+        //arr_datasets_inscritos.push(resp.elements[j].enrolled_users);
         suma_inscritos = suma_inscritos + resp.elements[j].enrolled_users;
         suma_no_aprobados = suma_no_aprobados + resp.elements[j].not_approved_users;
         suma_aprobados = suma_aprobados + resp.elements[j].approved_users;
-
+        arr_datasets_inscritos.push('100');
     }
+    // console.log('NO')
+    // console.log(arr_datasets_no_aprobados_percentage.toFixed(2))
+    
+    
 
     arr_total_inscritos.push(suma_inscritos);
     arr_total_no_aprobados.push(suma_no_aprobados);
     arr_total_aprobados.push(suma_aprobados);
-    //console.log(total)
-    // console.log('suma_inscritos.length');
-    // console.log(total.length)
+    
 
     for (z = 0; z < arr_total_inscritos.length; z++) {
         total_inscritos = total_inscritos + arr_total_inscritos[z];
