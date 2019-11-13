@@ -97,7 +97,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                 <div class="txt_primary text-uppercase mb-1">Número de hoteles</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_numero_hoteles">40,000</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_numero_hoteles"></div>
                 </div>
                 <div class="col-auto">                
                 <i class="fas fa-building fa-2x text-gray-300"></i>
