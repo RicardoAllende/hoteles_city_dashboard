@@ -36,7 +36,15 @@ $tiempo_inicial = microtime(true); //true es para que sea calculado en segundos
 
 // $sql = "SELECT institution FROM {dashboard_region_ins} WHERE users LIKE ? ";
 // _print($DB->get_fieldset_sql($sql, array('3')));
-_print(_print(local_hoteles_city_dashboard_get_role_permissions()));
+
+global $DB;
+$caches = $DB->get_records('dashboard_cache');
+foreach ($caches as $cache) {
+    _print($cache->query);
+    _log(json_decode($cache->query));
+}
+
+// _print(_print(local_hoteles_city_dashboard_get_role_permissions()));
 // local_hoteles_city_dashboard_print_institutions_in_js();
 
 
@@ -72,22 +80,7 @@ $params = array('institution' => 'Institución 1', 'department' => ['Primer depa
 //     _print(count($users), "$limitfrom, $limite");
 //     echo "<br>";
 // }
-
-
-// _print(local_hoteles_city_dashboard_get_userids_with_params('8,9,10', $params));
-// _print($USER->institution);
-// _log(local_hoteles_city_dashboard_get_course_information(9));
-// _log($USER);
-// $cadena = optional_param('string', 'Alguna cadena con espacios', PARAM_TEXT);
-// _print ($cadena);
-// _print (local_dominosdashboard_create_slug($cadena));
-
-// dd($DB->get_field('course', 'fullname', array('id' => -1)));
-// foreach (local_hoteles_city_dashboard_get_courses() as $key => $course) {
-//     _print($course->fullname, local_hoteles_city_dashboard_get_course_information($course->id));
-// }
-// _print(local_hoteles_city_dashboard_get_report_columns());
-    
+ 
 $tiempo_final = microtime(true);
 $tiempo = $tiempo_final - $tiempo_inicial; //este resultado estará en segundos
 
