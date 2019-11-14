@@ -894,7 +894,15 @@ function local_hoteles_city_dashboard_get_course_information(int $courseid, arra
         return false;
     }
     // $response = new stdClass();
-    $response = local_hoteles_city_dashboard_get_info_from_cache($courseid, $params);
+    if(local_hoteles_city_dashboard_return_random_data){
+        $response = new stdClass();
+        $response->enrolled_users = random_int(100, 2000);
+        $response->approved_users = random_int(0, $response->enrolled_users);
+        $response->not_approved_users = $response->enrolled_users - $response->approved_users;
+        $response->percentage = local_hoteles_city_dashboard_percentage_of($response->approved_users, $response->enrolled_users);
+    }else{
+        $response = local_hoteles_city_dashboard_get_info_from_cache($courseid, $params);
+    }
     $response->key = 'course' . $courseid;
     $response->id = $courseid;
     $response->groups = [
@@ -913,8 +921,8 @@ function local_hoteles_city_dashboard_get_course_information(int $courseid, arra
     // ];
     $response->title = $course->fullname;
     $response->status = 'ok';
-    $fecha_inicial = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_inicial');
-    $fecha_final = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_final');
+    // $fecha_inicial = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_inicial');
+    // $fecha_final = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_final');
 
     // if($get_activities){
     //     $response->activities = local_hoteles_city_dashboard_get_activities_completion($courseid, $userids, $fecha_inicial, $fecha_final); //
