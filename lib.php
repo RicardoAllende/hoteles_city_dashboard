@@ -1218,7 +1218,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
             $field_slim = "'s' as {$key_name}";
             array_push($select_sql, $field);
             array_push($ajax_names, $key_name);
-            array_push($visible_names, 'Quitar suspensión usuario');
+            array_push($visible_names, 'Cambiar usuario');
         break;
 
         case local_hoteles_city_dashboard_actived_users_pagination:
@@ -2948,7 +2948,6 @@ function local_hoteles_city_dashboard_make_courses_cache(){
         $cache_records = $DB->get_records_sql('SELECT * FROM {dashboard_cache} order by id', array(), $limitfrom, $limite );
         foreach($cache_records as $cache_record){
             $count++;
-            _log($count);
             local_hoteles_city_dashboard_make_course_cache($cache_record->courses, local_hoteles_city_dashboard_get_filters_from_query_string($cache_record->query), false);
         }
     }
