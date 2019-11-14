@@ -37,6 +37,8 @@ $tiempo_inicial = microtime(true); //true es para que sea calculado en segundos
 // $sql = "SELECT institution FROM {dashboard_region_ins} WHERE users LIKE ? ";
 // _print($DB->get_fieldset_sql($sql, array('3')));
 
+dd(local_hoteles_city_dashboard_make_courses_cache());
+
 global $DB;
 $caches = $DB->get_records('dashboard_cache');
 foreach ($caches as $cache) {
