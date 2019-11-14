@@ -211,7 +211,7 @@ class GraphicsDashboard {
                 <div class="card shadow mb-4">
                     <!-- Card Header - Dropdown -->
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">${this.title}</a></h6>
+                        <h6 class="m-0 font-weight-bold text-primary"><a href="#">${this.title}</a></h6>
                         <div class="dropdown no-arrow">
                             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -697,7 +697,8 @@ class GraphicsDashboard {
                 // d_graph.push(this.data_graph.approved_users);
                 // d_graph.push(this.data_graph.not_approved_users);
                 d_graph.push(percentage_not_approved);                
-                d_graph.push('0');                                
+                d_graph.push('0'); 
+                d_graph.push('100');                                               
                 if (this.data_graph.enrolled_users > 0) {
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
