@@ -2795,7 +2795,7 @@ function local_hoteles_city_dashboard_print_filters(){
 function local_hoteles_city_dashboard_get_gerentes_temporales_institution(string $institution, $returnAsArray = true){
     global $DB;
     $field = $DB->get_field('dashboard_region_ins', 'users', compact('institution'));
-    if(!empty($field)){
+    if(empty($field)){
         return $returnAsArray ? array() : '';
     }
     return $returnAsArray ? explode(' ', $field) : $field;
