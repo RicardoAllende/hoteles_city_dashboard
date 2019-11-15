@@ -7,7 +7,7 @@ function regresaInfoByCurso() {
     informacion.push({ name: 'request_type', value: 'dashboard' });
     //informacion.push({name: 'type', value: currentTab});
     //dateBegining = Date.now();
-    // $('#local_dominosdashboard_content').html('Cargando la información');
+    // $('#local_hoteles_city_dashboard_content').html('Cargando la información');
     $.ajax({
         type: "POST",
         url: "services.php",
