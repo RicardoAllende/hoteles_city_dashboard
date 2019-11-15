@@ -88,6 +88,7 @@ var total_inscritos = 0;
 var total_no_aprobados = 0;
 var total_aprobados = 0;
 var porcentaje_aprobados = 0;
+var porcentaje_noaprobados = 0;
 function graph_data(respuesta) {
     //console.log('INICIA INFORMACION DE LA GRAFICA');   
     //console.log(respuesta);    
@@ -99,19 +100,19 @@ function graph_data(respuesta) {
     arr_datasets_no_aprobados_percentage = [];       
     arr_datasets_inscritos = [];
     if (resp.chart == 'bar-agrupadas') {
-        datasets_aprobados = { label: 'Aprobados', backgroundColor: '#1cc88a', stack: 'Stack 0', data: arr_datasets_aprobados_percentage }
-        datasets_no_aprobados = { label: 'No Aprobados', backgroundColor: '#e74a3b', stack: 'Stack 0', data: arr_datasets_no_aprobados_percentage }
+        datasets_aprobados = { label: 'Completado', backgroundColor: '#1cc88a', stack: 'Stack 0', data: arr_datasets_aprobados_percentage }
+        datasets_no_aprobados = { label: 'No Completado', backgroundColor: '#e74a3b', stack: 'Stack 0', data: arr_datasets_no_aprobados_percentage }
         datasets_inscritos = { label: 'Inscritos', backgroundColor: '#858796', stack: 'Stack 1', data: arr_datasets_inscritos }        
     }
     if (resp.chart == 'line') {
-        datasets_aprobados = { label: 'Aprobados', borderColor: "#1cc88a", backgroundColor: 'transparent', data: arr_datasets_aprobados_percentage }
-        datasets_no_aprobados = { label: 'No Aprobados', borderColor: "#e74a3b", backgroundColor: 'transparent', data: arr_datasets_no_aprobados_percentage }
+        datasets_aprobados = { label: 'Completado', borderColor: "#1cc88a", backgroundColor: 'transparent', data: arr_datasets_aprobados_percentage }
+        datasets_no_aprobados = { label: 'No Completado', borderColor: "#e74a3b", backgroundColor: 'transparent', data: arr_datasets_no_aprobados_percentage }
         datasets_inscritos = { label: 'Inscritos', backgroundColor: '#858796', backgroundColor: 'transparent', data: arr_datasets_inscritos }
     }
     if (resp.chart == 'horizontalBar') {
         //datasets_aprobados = { label: 'Aprobados', backgroundColor: '#1cc88a', data: arr_datasets_aprobados }
-        datasets_aprobados = { label: 'Aprobados', backgroundColor: ["#1f377a", "#adadad","#003f93","#ffd700","#4d4d4d","#57699b","#83152b","#666666","#80adac","#c7c724","#5f4c66","#87788c"], data: arr_datasets_aprobados_percentage }
-        datasets_no_aprobados = { label: 'No Aprobados', backgroundColor: '#e74a3b', data: arr_datasets_no_aprobados_percentage }
+        datasets_aprobados = { label: 'Completado', backgroundColor: ["#1f377a", "#adadad","#003f93","#ffd700","#4d4d4d","#57699b","#83152b","#666666","#80adac","#c7c724","#5f4c66","#87788c"], data: arr_datasets_aprobados_percentage }
+        datasets_no_aprobados = { label: 'No Completado', backgroundColor: '#e74a3b', data: arr_datasets_no_aprobados_percentage }
         datasets_inscritos = { label: 'Inscritos', backgroundColor: '#858796', data: arr_datasets_inscritos }
     }
     dataset = [];
@@ -145,6 +146,7 @@ function graph_data(respuesta) {
         total_aprobados = total_aprobados + arr_total_aprobados[z];
     }
     porcentaje_aprobados = (total_aprobados * 100) / total_inscritos;
+    porcentaje_noaprobados = (total_no_aprobados * 100) / total_inscritos;
     // console.log('TOTAL');
     // console.log(porcentaje_aprobados.toFixed(2))
 
@@ -153,7 +155,7 @@ function graph_data(respuesta) {
     if (resp.chart == 'bar-agrupadas') {
         dataset.push(datasets_aprobados);
         dataset.push(datasets_no_aprobados);
-        dataset.push(datasets_inscritos);
+        //dataset.push(datasets_inscritos);
         d_graph = { labels: data_labels, datasets: dataset };
     }
     if (resp.chart == 'line') {
@@ -183,7 +185,8 @@ function graph_data(respuesta) {
 //Funcion para imprimir datos en las 4 cards (hoteles, inscritos, aprobados, no aprobados)
 function printInfoCards() {
     $('#card_cantidad_usarios').html(total_inscritos);
-    $('#card_no_aprobados').html(total_no_aprobados);
+    $('#card_no_aprobados').html(porcentaje_noaprobados.toFixed(2)+"%");
+    $('#progress_noaprobados').css("width", porcentaje_noaprobados.toFixed(2)+"%")
     $('#card_aprobados').html(porcentaje_aprobados.toFixed(2)+"%");
     $('#progress_aprobados').css("width", porcentaje_aprobados.toFixed(2)+"%");
     if(typeof __hoteles__ === 'object'){
@@ -671,7 +674,7 @@ class GraphicsDashboard {
                     var chart = new Chart(ctx, {
                         type: 'pie',
                         data: {
-                            labels: ["Aprobado", "No Aprobados"],
+                            labels: ["Completado", "No Completado"],
                             datasets: [{                                
                                 backgroundColor: ["#1cc88a", "#e74a3b"],
                                 data: d_graph
@@ -705,7 +708,7 @@ class GraphicsDashboard {
                         // The type of chart we want to create
                         type: 'bar',
                         data: {
-                            labels: ["Aprobados", "No aprobados"],
+                            labels: ["Completado", "No Completado"],
                             datasets: [{
                                 backgroundColor: ["#1cc88a", "#e74a3b"],
                                 data: d_graph

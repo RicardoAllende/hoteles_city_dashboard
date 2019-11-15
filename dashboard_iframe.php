@@ -157,7 +157,16 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                 <div class="txt_danger text-uppercase mb-1">No aprobados</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_no_aprobados"></div>
+                <div class="row no-gutters align-items-center">
+                    <div class="col-auto">
+                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_no_aprobados"></div>
+                    </div>
+                    <div class="col">
+                    <div class="progress progress-sm mr-2">
+                        <div class="progress-bar bg-success" role="progressbar" style="width:0%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" id="progress_noaprobados"></div>
+                    </div>
+                    </div>
+                </div>
                 </div>
                 <div class="col-auto">
                 <i class="fas fa-user-times fa-2x text-gray-300"></i>
@@ -165,8 +174,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             </div>
             </div>
         </div>
-        </div>
-    </div>
+        </div>   
     <!-- Termina row para cards informativas -->   
     
     
