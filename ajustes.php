@@ -263,10 +263,10 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                     <div class="form-group">
                         <label class="col-form-label">Unidad operativa: <span id="institution_name"></span></label>
                         <br>
-                        <label class="col-form-label">Unidad operativa: <span id="gerente_de_institucion"></span></label>
+                        <label class="col-form-label">Gerente: <span id="gerente_de_institucion"></span></label>
                     </div>
                     <div class="form-group">
-                        <label for="gerentes_temporales" class="col-form-label">Escriba el correo de los gerentes temporales separados por un espacio:</label>
+                        <label for="gerentes_temporales" class="col-form-label">Escriba el correo de los gerentes clúster separados por un espacio:</label>
                         <input type="text" class="form-control" id="gerentes_temporales" name="gerentes_temporales">
                         <br>
                     </div>
@@ -673,7 +673,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                 })
                 .done(function(data) {
                     if (data == 'ok') {
-                        Swal.fire('Gerentes temporales asignados correctamente');
+                        Swal.fire('Gerentes clúster asignados correctamente');
                     } else { // Se trata de un error
                         Swal.fire(data);
                         reloadPage();

@@ -84,8 +84,18 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
             die(local_hoteles_city_dashboard_get_region_insitutions($regionid, true));
         break;
         case 'test':
-            _log($_POST);
-            dd($_POST);
+            global $DB;
+            $query = local_hoteles_city_dashboard_create_cache_query_from_params($_POST);
+            $record = new stdClass();
+            $record->query = $query;
+            $record->enrolled_users = 100;
+            $record->approved_users = 66;
+            $record->percentage = 66;
+            $record->timecreated = time();
+            $DB->insert_record('dashboard_cache', $record);
+
+            dd(json_encode($request));
+            dd($request);
         break;
         case 'save_settings':
             die(local_hoteles_city_dashboard_save_custom_settings($_POST));
