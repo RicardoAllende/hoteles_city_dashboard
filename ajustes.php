@@ -651,7 +651,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                 })
                 .done(function(data) {
                     console.log('Información devuelta', data);
-                    $('#gerente_de_institucion').val(data);
+                    $('#gerentes_temporales').val(data);
                 })
                 .fail(function(error, error2) {
                     console.log('showInstitution Errores', error, error2);
