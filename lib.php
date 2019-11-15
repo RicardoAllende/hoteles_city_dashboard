@@ -2169,6 +2169,9 @@ function local_hoteles_city_dashboard_print_multiselect(string $name, string $ti
         $selected = "";
         if(in_array($key, $default)){
             $selected = "selected";
+            if($value == ''){
+                $selected = '';
+            }
         }
         if($keysAsValue){
             $element .= "<option {$selected} value=\"{$key}\">{$value}</option>";
