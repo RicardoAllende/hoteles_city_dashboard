@@ -2826,7 +2826,13 @@ function local_hoteles_city_dashboard_update_gerentes_temporales(array $params){
         }
         return 'ok';
     }else{
-        _log('No se encontró el registro local_hoteles_city_dashboard_update_gerentes_temporales');
+        $record = new stdClass();
+        $record->regionid = null;
+        $record->institution = $institution;
+        $record->users = $gerentes_temporales;
+        $record->active = 1;
+        $DB->insert_record('dashboard_region_ins', $record);
+        return 'ok';
     }
     return "Error, recargue la página e inténtelo más tarde";
 }
