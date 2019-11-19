@@ -71,3 +71,5 @@ $string['puestos_en_dashboard_desc'] = 'Seleccione los puestos que se comparará
 
 $string['dashboard_courses'] = 'Cursos incluídos en los reportes';
 $string['dashboard_courses_desc'] = 'Seleccione los cursos que se incluirán en los reportes.'; // Presione ctrl para seleccionar varios elementos';
+
+$string['crontask_name'] = 'Generación de caché de cursos';

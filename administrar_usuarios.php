@@ -170,8 +170,11 @@ $mform = new profileform_hoteles($current_url, array(
     'editoroptions' => $editoroptions,
     'filemanageroptions' => $filemanageroptions,
     'user' => $user));
+
+echo $OUTPUT->header();
+
 if($usernew = $mform->get_data()){
-    _log($usernew);
+    // _log($usernew);
     $usercreated = false;
 
     if (empty($usernew->auth)) {
@@ -343,12 +346,21 @@ if($usernew = $mform->get_data()){
 }
 // $streditmyprofile = get_string('editmyprofile');
 $PAGE->set_title('Administración de usuarios hoteles city');
-echo $OUTPUT->header();
 $userfullname = fullname($user, true);
+if($user->suspended){
+    $userfullname .= " (suspendido)";
+}
 echo $OUTPUT->heading($userfullname);
 $mform->display();
 if($creating_user){ // Rellenado de formulario
     echo "<script src='user.js'></script>";
+}
+if($user->suspended && $suspenduser != -1){ // Activando un usuario
+    echo "<script> element = document.getElementById('id_suspended'); 
+        if(typeof element != 'undefined'){
+            element.checked = !element.checked;
+        }
+    </script>";
 }
 ?>
 <?php

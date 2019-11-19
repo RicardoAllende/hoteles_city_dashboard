@@ -84,8 +84,18 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
             die(local_hoteles_city_dashboard_get_region_insitutions($regionid, true));
         break;
         case 'test':
-            _log($_POST);
-            dd($_POST);
+            global $DB;
+            $query = local_hoteles_city_dashboard_create_cache_query_from_params($_POST);
+            $record = new stdClass();
+            $record->query = $query;
+            $record->enrolled_users = 100;
+            $record->approved_users = 66;
+            $record->percentage = 66;
+            $record->timecreated = time();
+            $DB->insert_record('dashboard_cache', $record);
+
+            dd(json_encode($request));
+            dd($request);
         break;
         case 'save_settings':
             die(local_hoteles_city_dashboard_save_custom_settings($_POST));
@@ -93,16 +103,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
         case 'course_users_pagination':
             die(local_hoteles_city_dashboard_get_paginated_users($_POST, local_hoteles_city_dashboard_course_users_pagination));
         break;
-        case 'all_users_pagination':
+        case 'users_2':
             die(local_hoteles_city_dashboard_get_paginated_users($_POST, local_hoteles_city_dashboard_all_users_pagination));
         break;
-        case 'suspended_users_pagination':
+        case 'users_3':
             die(local_hoteles_city_dashboard_get_paginated_users($_POST, local_hoteles_city_dashboard_suspended_users_pagination));
         break;
-        case 'actived_users_pagination':
+        case 'users_4':
             die(local_hoteles_city_dashboard_get_paginated_users($_POST, local_hoteles_city_dashboard_actived_users_pagination));
         break;
-        case 'oficina_central_pagination':
+        case 'users_5':
             die(local_hoteles_city_dashboard_get_paginated_users($_POST, local_hoteles_city_dashboard_oficina_central_pagination));
         break;
         case 'establecer_gerente_hotel':	

@@ -17,7 +17,7 @@
 /**
  * Plugin strings are defined here.
  *
- * @package     local_dominosdashboard
+ * @package     local_hoteles_city_dashboard
  * @category    dashboard
  * @copyright   2019 Subitus <contacto@subitus.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,13 +29,13 @@ require_login();
 require_once(__DIR__ . '/lib.php');
 
 global $DB;
-$PAGE->set_url($CFG->wwwroot . "/local/dominosdashboard/inner.php");
+$PAGE->set_url($CFG->wwwroot . "/local/hoteles_city_dashboard/inner.php");
 $PAGE->set_context($context_system);
 $PAGE->set_pagelayout('admin');
-$PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
+$PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
 
 
-//$tabOptions = local_dominosdashboard_get_course_tabs();
+//$tabOptions = local_hoteles_city_dashboard_get_course_tabs();
 
 ?>
 <!DOCTYPE html>
@@ -72,7 +72,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
     <link href="estilos_city.css" rel="stylesheet">
     <!-- <script src="hoteles_city_scripts.js"></script> -->    
     
-    <?php echo local_hoteles_city_dashboard_print_theme_variables(); ?>
+    <?php local_hoteles_city_dashboard_print_institutions_in_js(); ?>
 </head>
 <body style="background-color: #ecedf1; max-width: 100%; max-height: 100%;">
 
@@ -97,7 +97,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                 <div class="txt_primary text-uppercase mb-1">Número de hoteles</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_numero_hoteles">40,000</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_numero_hoteles"></div>
                 </div>
                 <div class="col-auto">                
                 <i class="fas fa-building fa-2x text-gray-300"></i>
@@ -157,7 +157,16 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                 <div class="txt_danger text-uppercase mb-1">No aprobados</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_no_aprobados"></div>
+                <div class="row no-gutters align-items-center">
+                    <div class="col-auto">
+                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="card_no_aprobados"></div>
+                    </div>
+                    <div class="col">
+                    <div class="progress progress-sm mr-2">
+                        <div class="progress-bar bg-success" role="progressbar" style="width:0%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" id="progress_noaprobados"></div>
+                    </div>
+                    </div>
+                </div>
                 </div>
                 <div class="col-auto">
                 <i class="fas fa-user-times fa-2x text-gray-300"></i>
@@ -165,8 +174,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             </div>
             </div>
         </div>
-        </div>
-    </div>
+        </div>   
     <!-- Termina row para cards informativas -->   
     
     

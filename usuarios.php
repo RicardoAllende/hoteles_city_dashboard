@@ -36,6 +36,7 @@ $PAGE->set_pagelayout('admin');
 echo $OUTPUT->header();
 $report_info = local_hoteles_city_dashboard_get_report_columns($type);
 echo local_hoteles_city_dashboard_print_theme_variables();
+$request_type = "users_" . $type;
 ?>
 
 <table id='empTable' class='display dataTable table table-bordered'>    
@@ -72,15 +73,16 @@ echo local_hoteles_city_dashboard_print_theme_variables();
 
 <!-- Table -->
 <script>
+    var _datatable;
     $(document).ready(function(){
-        $('#empTable').DataTable({
+        _datatable = $('#empTable').DataTable({
             'processing': true,
             'serverSide': true,
             'serverMethod': 'post',
             'ajax': {
                 'url':'services.php',
                 data: {
-                    request_type: 'all_users_pagination',
+                    request_type: '<?php echo $request_type; ?>',
                 }
             },
             lengthMenu: [[10, 15, 20, 100, -1], [10, 15, 20, 100, "Todos los registros"]],

@@ -79,9 +79,9 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
         </div>
     
         <!-- Título -->
-        <div class="col-sm-12 text-center">
+        <!-- <div class="col-sm-12 text-center">
             <h3 style="text-align: center;">Reportes</h3>
-        </div>
+        </div> -->
     </div>
 
     <!-- <div>
