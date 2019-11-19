@@ -17,7 +17,7 @@
 /**
  * Plugin strings are defined here.
  *
- * @package     local_dominosdashboard
+ * @package     local_hoteles_city_dashboard
  * @category    dashboard
  * @copyright   2019 Subitus <contacto@subitus.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,13 +29,13 @@ require_login();
 require_once(__DIR__ . '/lib.php');
 
 global $DB;
-$PAGE->set_url($CFG->wwwroot . "/local/dominosdashboard/inner.php");
+$PAGE->set_url($CFG->wwwroot . "/local/hoteles_city_dashboard/inner.php");
 $PAGE->set_context($context_system);
 $PAGE->set_pagelayout('admin');
-$PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
+$PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
 
 
-//$tabOptions = local_dominosdashboard_get_course_tabs();
+//$tabOptions = local_hoteles_city_dashboard_get_course_tabs();
 
 ?>
 <!DOCTYPE html>
@@ -252,7 +252,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
             informacion.push({name: 'request_type', value: 'course_list'});
             informacion.push({name: 'type', value: currentTab});
             dateBegining = Date.now();
-            // $('#local_dominosdashboard_content').html('Cargando la información');
+            // $('#local_hoteles_city_dashboard_content').html('Cargando la información');
             $.ajax({
                 type: "POST",
                 url: "services.php",
@@ -266,7 +266,7 @@ $PAGE->set_title(get_string('pluginname', 'local_dominosdashboard'));
                 respuesta = respuesta.data;
                 console.log('Imprimiendo la respuesta', respuesta);
                 dateEnding = Date.now();
-                // $('#local_dominosdashboard_content').html('<pre>' + JSON.stringify(data, undefined, 2) + '</pre>');
+                // $('#local_hoteles_city_dashboard_content').html('<pre>' + JSON.stringify(data, undefined, 2) + '</pre>');
                 console.log(`Tiempo de respuesta de API al obtener json para listado de cursos ${dateEnding - dateBegining} ms`);
                 render_div = "#ldm_tab_" + currentTab;
                 var cosa = generarGraficasTodosLosCursos(render_div, respuesta, tituloPestana);
