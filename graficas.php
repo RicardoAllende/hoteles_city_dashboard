@@ -252,7 +252,67 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
         }
     </script>
 
-    
+    <style>
+        .choices__button:hover{
+            text-indent: -9999px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border: 0;
+            background-color: transparent;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+        }
+
+        .choices__button:active{
+            text-indent: -9999px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border: 0;
+            background-color: transparent;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+        }
+
+        .choices__button:visited{
+            text-indent: -9999px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border: 0;
+            background-color: transparent;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+        }
+
+        .choices__button:focus{
+            text-indent: -9999px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border: 0;
+            background-color: transparent;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+        }
+
+        .choices__button:focus-within{
+            text-indent: -9999px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border: 0;
+            background-color: transparent;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+        }
+    </style>
 
     <script src="classes.js"></script>
     <script>

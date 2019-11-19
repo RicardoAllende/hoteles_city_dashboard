@@ -72,7 +72,6 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
     <link href="estilos_city.css" rel="stylesheet">
     <!-- <script src="hoteles_city_scripts.js"></script> -->    
     
-    <?php local_hoteles_city_dashboard_print_institutions_in_js(); ?>
 </head>
 <body style="background-color: #ecedf1; max-width: 100%; max-height: 100%;">
 
@@ -163,7 +162,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     </div>
                     <div class="col">
                     <div class="progress progress-sm mr-2">
-                        <div class="progress-bar bg-success" role="progressbar" style="width:0%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" id="progress_noaprobados"></div>
+                        <div class="progress-bar bg-danger" role="progressbar" style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="progress_noaprobados"></div>
                     </div>
                     </div>
                 </div>

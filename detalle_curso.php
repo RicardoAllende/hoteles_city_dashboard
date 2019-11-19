@@ -27,7 +27,7 @@ require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_reportes);
 $PAGE->set_context(context_system::instance());
-// $courseid = optional_param('courseid', 9, PARAM_INT);
+$courseid = optional_param('courseid', -1, PARAM_INT);
 // $course = $DB->get_record('course', array('id' => $courseid), 'id, fullname', MUST_EXIST);
 $PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/detalle_curso.php');
 $PAGE->set_pagelayout('admin');
@@ -37,7 +37,11 @@ $PAGE->set_title('Detalle cursos');
 echo $OUTPUT->header();
 $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_course_users_pagination);
 $courses = local_hoteles_city_dashboard_get_courses_setting(true);
-$default_courses = implode(',', array_keys($courses));
+if($courseid != -1){
+    $default_courses = $courseid;
+}else{
+    $default_courses = implode(',', array_keys($courses));
+}
 $description = ""; // No es usado en esta sección
 echo "<div class='container row'> <input type='hidden' name='request_type' value='course_users_pagination'>" .
  local_hoteles_city_dashboard_print_multiselect('report_courses', "Cursos", $default_courses, $courses, true, $class = 'col-sm-12') . "</div>";
