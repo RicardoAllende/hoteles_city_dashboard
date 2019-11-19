@@ -72,11 +72,11 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                 local_hoteles_city_dashboard_print_filters();
             ?>
         </form>
-        <div class="row col-sm-12">
+        <!-- <div class="row col-sm-12"> -->
             <div class="col-12 text-right" style="padding-right: 2%;">
                 <button class='btn btn-primary' onclick="obtenerGraficas()">Aplicar filtros</button>
             </div>
-        </div>
+        <!-- </div> -->
     
         <!-- Título -->
         <!-- <div class="col-sm-12 text-center">
@@ -157,6 +157,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     informacion = informacion.data;
                     console.log('Imprimiendo la respuesta', informacion);
                     cleanDiv();
+                    comparative(informacion);
                     
                     for(var i = 0; i < informacion.length; i++){                        
                         info = informacion[i];
@@ -197,9 +198,53 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
         }
 
         //Informacion para la grafica comparativa
-        function comparative(){
-        arr_completado_percantage = [];
-        arr_nocompletado_percentage = [];
+        function comparative(informacion){
+            data_labels = [];
+            arr_completado_percantage = [];
+            arr_nocompletado_percentage = [];
+            datasets_completado = { label: 'Completado', borderColor: "#1cc88a", backgroundColor: 'transparent', data: arr_completado_percantage }
+            datasets_nocompletado = { label: 'No Completado', borderColor: "#e74a3b", backgroundColor: 'transparent', data: arr_nocompletado_percentage }
+            dataset = [];        
+            for(var i = 0; i < informacion.length; i++){
+                info = informacion[i];
+                data_labels.push(info.title);
+                // console.log('LABELS');
+                // console.log(data_labels)
+                arr_completado_percantage.push(info.percentage);
+                // console.log('% COMPLETADO');
+                // console.log(arr_completado_percantage)
+                arr_nocompletado_percentage.push(100 - info.percentage);
+                // console.log('% NO COMPLETADO');
+                // console.log(arr_nocompletado_percentage)
+            }
+            dataset.push(datasets_completado);
+            dataset.push(datasets_nocompletado);
+            d_graph = { labels: data_labels, datasets: dataset };
+
+            // console.log('INFO')
+            // console.log(d_graph)
+
+            //return d_graph;
+
+            var ctx = document.getElementById('grafica_comparativa');
+            var chart = new Chart(ctx, {
+                type: 'line',        
+                data: d_graph
+                                    // labels: ['Variable 1', 'Variable 2', 'Variable 3', 'Variable 4', 'Variable 5', 'Variable 6'],
+                                    // datasets: [{
+                                    //     label: 'A',
+                                    //     borderColor: "#3e95cd",
+                                    //     backgroundColor: 'transparent',
+                                    //     data: [15, 40, 30, 26, 12, 34, 0],
+                                    // }, {
+                                    //     label: 'B',
+                                    //     borderColor: "#8e5ea2",
+                                    //     backgroundColor: 'transparent',
+                                    //     data: [5, 45, 26, 31, 41, 10, 0],
+                                    // }]
+                  
+            });
+
         }
 
         function onchangeFilter(filterid){ // Se ejecuta esta función cuando el elemento ha cambiado
@@ -211,24 +256,24 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
 
     <script src="classes.js"></script>
     <script>
-    var ctx = document.getElementById('grafica_comparativa');
-    var chart = new Chart(ctx, {
-        type: 'line',        
-        data: {
-                            labels: ['Variable 1', 'Variable 2', 'Variable 3', 'Variable 4', 'Variable 5', 'Variable 6'],
-                            datasets: [{
-                                label: 'A',
-                                borderColor: "#3e95cd",
-                                backgroundColor: 'transparent',
-                                data: [15, 40, 30, 26, 12, 34, 0],
-                            }, {
-                                label: 'B',
-                                borderColor: "#8e5ea2",
-                                backgroundColor: 'transparent',
-                                data: [5, 45, 26, 31, 41, 10, 0],
-                            }]
-                        },    
-    });
+    // var ctx = document.getElementById('grafica_comparativa');
+    // var chart = new Chart(ctx, {
+    //     type: 'line',        
+    //     data: {
+    //                         labels: ['Variable 1', 'Variable 2', 'Variable 3', 'Variable 4', 'Variable 5', 'Variable 6'],
+    //                         datasets: [{
+    //                             label: 'A',
+    //                             borderColor: "#3e95cd",
+    //                             backgroundColor: 'transparent',
+    //                             data: [15, 40, 30, 26, 12, 34, 0],
+    //                         }, {
+    //                             label: 'B',
+    //                             borderColor: "#8e5ea2",
+    //                             backgroundColor: 'transparent',
+    //                             data: [5, 45, 26, 31, 41, 10, 0],
+    //                         }]
+    //                     },    
+    // });
     </script>
 </body>
 

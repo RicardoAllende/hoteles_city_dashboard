@@ -45,7 +45,6 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
 ?>
 
 
-
 <table id='empTable' class='display dataTable table table-bordered'>    
     <thead>
         <tr>

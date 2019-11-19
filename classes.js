@@ -130,8 +130,8 @@ function graph_data(respuesta) {
         suma_aprobados = suma_aprobados + resp.elements[j].approved_users;
         arr_datasets_inscritos.push('100');
     }
-    // console.log('NO')
-    // console.log(arr_datasets_no_aprobados_percentage.toFixed(2))
+    console.log('TOTAL')
+    console.log(suma_inscritos)
     
     
 
