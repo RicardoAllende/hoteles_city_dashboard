@@ -183,9 +183,9 @@ function local_hoteles_city_dashboard_get_role_permissions(){
 function local_hoteles_city_dashboard_get_dashboard_roles(){
     return array(
         local_hoteles_city_dashboard_gerente_ao         => "Gerente Aprendizaje Organizacional",
-        local_hoteles_city_dashboard_director_regional  => "Director regional",
+        // local_hoteles_city_dashboard_director_regional  => "Director regional", // Se obtiene según campo department de usuario
         local_hoteles_city_dashboard_personal_elearning => "Personal Elearning",
-        // local_hoteles_city_dashboard_gerente_hotel => "Gerente de hotel", // Se obtiene según campo institution de usuario
+        // local_hoteles_city_dashboard_gerente_hotel => "Gerente de hotel", // Se obtiene según campo department de usuario
         // local_hoteles_city_dashboard_administrador      => "Administrador del dashboard", // Se pretende que sea el administrador del sitio
     );
 }
@@ -471,18 +471,21 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
         $institutions = local_hoteles_city_dashboard_get_regional_institutions();
         _log($institutions);
         $required = $strrequired;
-        if(empty($institutions)){
-            $required = "Contacte al administrador para que le asigne unidades operativas";
-        }
         $mform->addElement('select', 'institution', 'Unidad operativa', $institutions);
+        if(!empty($institutions)){
+            $required = "Contacte al administrador para que le asigne unidades operativas";
+            $mform->addRule('institution', $required, 'required');
+        }
         // $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
-        $mform->addRule('institution', $required, 'required');
         $mform->setType('institution', core_user::get_property_type('institution'));
     // }
 
     // if(in_array('department', $allowed_fields)){
-        $mform->addElement('select', 'department', 'Puesto', local_hoteles_city_dashboard_get_departments());
-        $mform->addRule('department', $strrequired, 'required');
+        $departments = local_hoteles_city_dashboard_get_departments();
+        $mform->addElement('select', 'department', 'Puesto', $departments);
+        if(!empty($departments)){
+            $mform->addRule('department', $strrequired, 'required');
+        }
         $mform->setType('department', core_user::get_property_type('department'));
     // }
 
@@ -2426,7 +2429,13 @@ function local_hoteles_city_dashboard_is_director_regional(){
         $global_user_permissions = (array) $global_user_permissions;
         return in_array(local_hoteles_city_dashboard_director_regional, $global_user_permissions);
     }
-    return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_director_regional);
+    global $USER;
+    $position = strpos($USER->department, "Director Regional");
+    if($position !== false){
+        return true;
+    }
+    return false;
+    // return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_director_regional);
 }
 
 function local_hoteles_city_dashboard_is_personal_elearning(){
@@ -2445,7 +2454,7 @@ function local_hoteles_city_dashboard_is_gerente_general(){
         return in_array(local_hoteles_city_gerente_general_value, $global_user_permissions);
     }
     global $USER;
-    return $USER->institution == local_hoteles_city_gerente_general_value;
+    return $USER->department == local_hoteles_city_gerente_general_value;
 }
 
 function local_hoteles_city_dashboard_get_course_comparative(int $courseid, $selected_filter){
