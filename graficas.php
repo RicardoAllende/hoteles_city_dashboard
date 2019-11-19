@@ -88,6 +88,30 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
         <pre id="json"></pre>
     </div> -->
 
+    <!-- Div para pintar la grafica comparativa de los cursos -->
+    <div class="row" style="justify-content: center;">
+    <div class="col-8">
+                <div class="card shadow mb-4">
+                    <!-- Card Header - Dropdown -->
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary"><a href="#">Comparativa</a></h6>
+                        <div class="dropdown no-arrow">
+                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="card-body">
+                        <div class="">                  
+                            <canvas id="grafica_comparativa"></canvas>                  
+                        </div>
+                    </div>    
+                </div>
+    </div>
+    </div>
+
     <!-- Div para pintar las graficas de los cursos -->
     <div id="curso_graficas" class="row" style="padding: 15px 25px; max-width: 100%;"></div>
 
@@ -133,11 +157,12 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     informacion = informacion.data;
                     console.log('Imprimiendo la respuesta', informacion);
                     cleanDiv();
+                    
                     for(var i = 0; i < informacion.length; i++){                        
                         info = informacion[i];
                         //console.log(info);
-                        var course = new GraphicsDashboard('curso_graficas',info.title,info.chart,info,4);
-                        course.printCard();
+                        var course = new GraphicsDashboard('curso_graficas',info.title,info.chart,info,4,info.id);
+                        course.printCardCourse();
                         if(info.chart == 'bar-agrupadas'){                        
                             course.comparative_graph();
                         }
@@ -170,6 +195,13 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
         function cleanDiv(){
             document.getElementById('curso_graficas').innerHTML='';
         }
+
+        //Informacion para la grafica comparativa
+        function comparative(){
+        arr_completado_percantage = [];
+        arr_nocompletado_percentage = [];
+        }
+
         function onchangeFilter(filterid){ // Se ejecuta esta función cuando el elemento ha cambiado
             // console.log('El elemento ha cambiado');
         }
@@ -238,7 +270,26 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
     </style>
 
     <script src="classes.js"></script>
-
+    <script>
+    var ctx = document.getElementById('grafica_comparativa');
+    var chart = new Chart(ctx, {
+        type: 'line',        
+        data: {
+                            labels: ['Variable 1', 'Variable 2', 'Variable 3', 'Variable 4', 'Variable 5', 'Variable 6'],
+                            datasets: [{
+                                label: 'A',
+                                borderColor: "#3e95cd",
+                                backgroundColor: 'transparent',
+                                data: [15, 40, 30, 26, 12, 34, 0],
+                            }, {
+                                label: 'B',
+                                borderColor: "#8e5ea2",
+                                backgroundColor: 'transparent',
+                                data: [5, 45, 26, 31, 41, 10, 0],
+                            }]
+                        },    
+    });
+    </script>
 </body>
 
 </html>
