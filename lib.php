@@ -2984,11 +2984,17 @@ function local_hoteles_city_dashboard_make_courses_cache(){
 }
 
 function local_hoteles_city_dashboard_get_dashboard_cards_info(){
+    global $DB;
+    $courses = local_hoteles_city_dashboard_get_courses_setting();
+    $params = array();
     $response = new stdClass();
-    $response->institutions = array();
-    $response->num_institutions = 0;
-    $response->num_users = 0;
-    $response->approved_users = 60;
-    $response->not_approved_users = 40;
+    $response->institutions = array_values(local_hoteles_city_dashboard_get_institutions());
+    $response->num_institutions = count($response->institutions);
+    $response->num_users = $DB->count_records_sql('SELECT count(*) FROM {user} WHERE id > 1 AND deleted = 0 AND suspended = 0');
+    $courses_information = local_hoteles_city_dashboard_get_info_from_cache($courses, $params);
+    $approved_users = $courses_information->percentage;
+    $not_approved_users = 100 - $courses_information->percentage;
+    $response->approved_users = $approved_users;
+    $response->not_approved_users = $not_approved_users;
     return $response;
 }

@@ -195,12 +195,22 @@ function printInfoCards() {
         .done(function(data) {
             info_cards = JSON.parse(JSON.stringify(data));
             info_cards = info_cards.data;
+            approved_users = info_cards.approved_users;
+            not_approved_users = info_cards.not_approved_users;
+            approved_users = parseFloat(approved_users);
+            approved_users = approved_users.toFixed(2);
+            not_approved_users = parseFloat(not_approved_users);
+            not_approved_users = not_approved_users.toFixed(2);
+
             $('#card_cantidad_usarios').html(info_cards.num_users);
-            $('#card_no_aprobados').html(info_cards.not_approved_users.toFixed(2));
-            $('#progress_noaprobados').css("width", info_cards.not_approved_users.toFixed(2) + "%")
-            $('#card_aprobados').html(info_cards.approved_users.toFixed(2)+"%");
-            $('#progress_aprobados').css("width", info_cards.approved_users.toFixed(2)+"%");
-            $('#card_numero_hoteles').html(info_cards.approved_users.num_institutions);
+
+            $('#card_no_aprobados').html(not_approved_users + '%');
+            $('#progress_noaprobados').css("width", not_approved_users + "%")
+
+            $('#card_aprobados').html(approved_users + "%");
+            $('#progress_aprobados').css("width", approved_users + "%");
+
+            $('#card_numero_hoteles').html(info_cards.num_institutions);
         })
         .fail(function (error, error2) {
             console.log('Error en printInfoCards');
