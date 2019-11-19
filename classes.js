@@ -99,7 +99,7 @@ function graph_data(respuesta) {
     if (resp.chart == 'bar-agrupadas') {
         datasets_aprobados = { label: 'Aprobados', backgroundColor: '#1cc88a', stack: 'Stack 0', data: arr_datasets_aprobados }
         datasets_no_aprobados = { label: 'No Aprobados', backgroundColor: '#e74a3b', stack: 'Stack 0', data: arr_datasets_no_aprobados }
-        datasets_inscritos = { label: 'Inscritos', backgroundColor: '#858796', stack: 'Stack 1', data: arr_datasets_inscritos }
+        datasets_inscritos = { label: 'Inscritos', backgroundColor: '#858796', stack: 'Stack 1', data: arr_datasets_inscritos }               
     }
     if (resp.chart == 'line') {
         datasets_aprobados = { label: 'Aprobados', borderColor: "#1cc88a", backgroundColor: 'transparent', data: arr_datasets_aprobados }
@@ -128,7 +128,7 @@ function graph_data(respuesta) {
 
     arr_total_inscritos.push(suma_inscritos);
     arr_total_no_aprobados.push(suma_no_aprobados);
-    arr_total_aprobados.push(suma_aprobados);
+    arr_total_aprobados.push(suma_aprobados);    
     //console.log(total)
     // console.log('suma_inscritos.length');
     // console.log(total.length)
