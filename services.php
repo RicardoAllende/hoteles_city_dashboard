@@ -34,6 +34,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['request_type'])){
         case 'dashboard':
             die(local_hoteles_city_dashboard_format_response(local_hoteles_city_dashboard_get_dashboard_windows($params = $_POST)));
             break;
+        case 'dashboard_cards':
+            die(local_hoteles_city_dashboard_format_response(local_hoteles_city_dashboard_get_dashboard_cards_info($params = $_POST)));
+            break;
         case 'course_completion':
             if(!empty($_POST['courseid'])){
                 $courseid = $_POST['courseid'];

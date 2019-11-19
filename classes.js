@@ -184,14 +184,29 @@ function graph_data(respuesta) {
 
 //Funcion para imprimir datos en las 4 cards (hoteles, inscritos, aprobados, no aprobados)
 function printInfoCards() {
-    $('#card_cantidad_usarios').html(total_inscritos);
-    $('#card_no_aprobados').html(porcentaje_noaprobados.toFixed(2)+"%");
-    $('#progress_noaprobados').css("width", porcentaje_noaprobados.toFixed(2)+"%")
-    $('#card_aprobados').html(porcentaje_aprobados.toFixed(2)+"%");
-    $('#progress_aprobados').css("width", porcentaje_aprobados.toFixed(2)+"%");
-    if(typeof __hoteles__ === 'object'){
-        $('#card_numero_hoteles').html(__hoteles__.num_institutions);
-    }
+    peticion = [];
+    peticion.push({name: 'request_type', value: 'dashboard_cards'});
+    $.ajax({
+        type: "POST",
+        url: "services.php",
+        data: peticion,
+        dataType: "json"
+    })
+        .done(function(data) {
+            info_cards = JSON.parse(JSON.stringify(data));
+            info_cards = info_cards.data;
+            $('#card_cantidad_usarios').html(info_cards.num_users);
+            $('#card_no_aprobados').html(info_cards.not_approved_users.toFixed(2));
+            $('#progress_noaprobados').css("width", info_cards.not_approved_users.toFixed(2) + "%")
+            $('#card_aprobados').html(info_cards.approved_users.toFixed(2)+"%");
+            $('#progress_aprobados').css("width", info_cards.approved_users.toFixed(2)+"%");
+            $('#card_numero_hoteles').html(info_cards.approved_users.num_institutions);
+        })
+        .fail(function (error, error2) {
+            console.log('Error en printInfoCards');
+            console.log(error);
+            console.log(error2);
+        });
 }
 
 class GraphicsDashboard {

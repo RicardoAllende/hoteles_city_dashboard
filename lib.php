@@ -2982,3 +2982,13 @@ function local_hoteles_city_dashboard_make_courses_cache(){
     $functiontime = $finalprocesstime - $startprocesstime; //este resultado estará en segundos
     return "Se ejecutaron {$count} actualizaciones en {$functiontime} segundos";
 }
+
+function local_hoteles_city_dashboard_get_dashboard_cards_info(){
+    $response = new stdClass();
+    $response->institutions = array();
+    $response->num_institutions = 0;
+    $response->num_users = 0;
+    $response->approved_users = 60;
+    $response->not_approved_users = 40;
+    return $response;
+}

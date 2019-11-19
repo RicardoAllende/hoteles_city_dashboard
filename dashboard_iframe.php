@@ -163,7 +163,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     </div>
                     <div class="col">
                     <div class="progress progress-sm mr-2">
-                        <div class="progress-bar bg-success" role="progressbar" style="width:0%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" id="progress_noaprobados"></div>
+                        <div class="progress-bar bg-danger" role="progressbar" style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="progress_noaprobados"></div>
                     </div>
                     </div>
                 </div>
