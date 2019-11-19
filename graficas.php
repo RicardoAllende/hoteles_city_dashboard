@@ -60,6 +60,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
     <!-- <link rel="stylesheet" href="css/jquery.loadingModal.css"> -->
     <link href="estilos_city.css" rel="stylesheet">
     <!-- <script src="hoteles_city_scripts.js"></script> -->
+    
 
 </head>
 
@@ -86,30 +87,30 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
 
     <!-- <div>
         <pre id="json"></pre>
-    </div> -->
+    </div> -->    
 
     <!-- Div para pintar la grafica comparativa de los cursos -->
-    <div class="row" style="justify-content: center;">
-    <div class="col-8">
-                <div class="card shadow mb-4">
-                    <!-- Card Header - Dropdown -->
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary"><a href="#">Comparativa</a></h6>
-                        <div class="dropdown no-arrow">
-                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                            </a>
-                            
+    <div class="row" style="justify-content: center;" id="comparative">
+        <div class="col-8">
+                    <div class="card shadow mb-4">
+                        <!-- Card Header - Dropdown -->
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary"><a href="#">Comparativa</a></h6>
+                            <div class="dropdown no-arrow">
+                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                </a>
+                                
+                            </div>
                         </div>
+                        <!-- Card Body -->
+                        <div class="card-body">
+                            <div class="">                  
+                                <canvas id="grafica_comparativa"></canvas>                  
+                            </div>
+                        </div>    
                     </div>
-                    <!-- Card Body -->
-                    <div class="card-body">
-                        <div class="">                  
-                            <canvas id="grafica_comparativa"></canvas>                  
-                        </div>
-                    </div>    
-                </div>
-    </div>
+        </div>
     </div>
 
     <!-- Div para pintar las graficas de los cursos -->

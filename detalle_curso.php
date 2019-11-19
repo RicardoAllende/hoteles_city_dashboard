@@ -48,6 +48,29 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
 
 ?>
 
+<!-- Div para pintar la grafica del curso -->
+<div class="row" style="justify-content: center;">
+        <div class="col-4">
+                    <div class="card shadow mb-4">
+                        <!-- Card Header - Dropdown -->
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary"><a href="#">Comparativa</a></h6>
+                            <div class="dropdown no-arrow">
+                                <!-- <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                </a> -->
+                                
+                            </div>
+                        </div>
+                        <!-- Card Body -->
+                        <div class="card-body">
+                            <div class="">                  
+                                <canvas id="grafica"></canvas>                  
+                            </div>
+                        </div>    
+                    </div>
+        </div>
+    </div>
 
 <table id='empTable' class='display dataTable table table-bordered'>    
     <thead>
@@ -61,6 +84,34 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
         </tr>
     </tfoot>
 </table>
+
+<!-- <link href="css/sb-admin-2.min.css" rel="stylesheet"> -->
+<script src="vendor/chart.js/Chart.min.js"></script>
+<script>
+    var ctx = document.getElementById('grafica');
+    var chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: 'pie',
+
+    // The data for our dataset
+    data: {
+        labels: ['Completado', 'No Completado'],
+        datasets: [{
+            label: 'A',            
+            backgroundColor: ["#1cc88a", "#e74a3b"],
+            data: [60, 40],
+        }]
+    },
+
+    // Configuration options go here
+    options: {
+        
+    }
+    });
+    </script>
+
+
+
 
 <!-- Datatable CSS -->
 <link href='datatables/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
