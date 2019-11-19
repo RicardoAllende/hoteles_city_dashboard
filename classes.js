@@ -195,14 +195,16 @@ function printInfoCards() {
 }
 
 class GraphicsDashboard {
-    constructor(div_print_card, title, type_graph, data_graph, col_size_graph, enrolled_users) {
+    constructor(div_print_card, title, type_graph, data_graph, col_size_graph, enlace) {
         this.div_print_card = div_print_card, // Div padre
         this.title = title, //Título de la gráfica        
         this.div_graph = div_print_card + Date.now(); //Div donde se imprime la card con la gráfica
         this.type_graph = type_graph, // Tipo de gráfica
         this.data_graph = data_graph, //Datos de la gráfica
         this.col_size_graph = col_size_graph, //Tamaño de la col donde se imprime la card
-        this.enrolled_users = enrolled_users
+        //this.enrolled_users = enrolled_users
+        this.enlace = enlace
+        
     }
 
 
@@ -219,13 +221,66 @@ class GraphicsDashboard {
                             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-                                <div class="dropdown-header">Dropdown Header:</div>
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                            </div>
+                            
+                        </div>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="card-body">
+                        <div class="">                  
+                            <canvas id="${this.div_graph}"></canvas>                  
+                        </div>
+                    </div>    
+                </div>
+        </div>        
+        `);
+        //     }
+        //     else {
+        //         $("#" + this.div_print_card).append(`
+        //         <div class="col-sm-${this.col_size_graph}">
+        //         <div class="card shadow mb-4">
+        //             <!-- Card Header - Dropdown -->
+        //             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        //                 <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">${this.title}</a></h6>
+        //                 <div class="dropdown no-arrow">
+        //                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        //                     <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+        //                     </a>
+        //                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+        //                         <div class="dropdown-header">Dropdown Header:</div>
+        //                         <a class="dropdown-item" href="#">Action</a>
+        //                         <a class="dropdown-item" href="#">Another action</a>
+        //                         <div class="dropdown-divider"></div>
+        //                         <a class="dropdown-item" href="#">Something else here</a>
+        //                     </div>
+        //                 </div>
+        //             </div>
+        //             <!-- Card Body -->
+        //             <div class="card-body">
+        //                 <div class="">                                         
+        //                     <h3 id="${this.div_graph}" class="txt_sin_usuarios"></h3>                  
+        //                 </div>
+        //             </div>    
+        //         </div>
+        // </div>        
+        // `);
+        //     }
+
+
+    }
+
+    printCardCourse() {
+
+        $("#" + this.div_print_card).append(`
+                <div class="col-sm-${this.col_size_graph}">
+                <div class="card shadow mb-4">
+                    <!-- Card Header - Dropdown -->
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary"><a href="#" onclick="top.window.location.href='detalle_curso.php?courseid=${this.enlace}'">${this.title}</a></h6>
+                        <div class="dropdown no-arrow">
+                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                            </a>
+                            
                         </div>
                     </div>
                     <!-- Card Body -->
