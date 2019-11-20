@@ -11,18 +11,40 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <link href="estilos_city.css" rel="stylesheet">
 </head>
-<body>
+<body onload="modalLoader()">
     <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="boton">
         Launch demo modal
       </button>
+
+      <br>
+      <button type="button" class="btn btn-primary" onclick="myFunction()">
+            Boton
+          </button>
       
       <!-- Modal -->
       <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <h1 class="txt_modal">Cargando...</h1>
+            <!-- <h1 class="txt_modal">Cargando...</h1> -->
+            <div id="loader" style="margin-top: 100px;"></div>
         </div>
-      </div>
+      </div>  
+
+      <!-- <script src="classes.js"></script> -->
+      <!-- <script>
+          var myVar;
+          function myFunction(){
+            $('#exampleModal').modal('show');
+            myVar = setTimeout(showPage, 3000);
+          }
+          function showPage() {
+            $('#exampleModal').modal('hide');
+            document.getElementById("loader").style.display = "none";
+            }
+          //$('#exampleModal').modal('show')
+          
+          //$('#boton').hide();
+      </script> -->
     
 </body>
 </html>

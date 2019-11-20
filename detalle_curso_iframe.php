@@ -56,34 +56,45 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Dashboard</title>
 
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <!-- <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">    
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet"> -->
     <!-- Custom styles for this page -->
-    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-
-    
+    <!-- <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet"> -->    
 
     <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <!-- Core plugin JavaScript-->
-    <!-- <script src="vendor/jquery-easing/jquery.easing.min.js"></script> -->
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    
+    <!-- <script src="vendor/jquery/jquery.min.js"></script> -->    
+    <!-- <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script> -->    
 
     <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
+    <!-- <script src="js/sb-admin-2.min.js"></script> -->
 
+    <!-- <script src="vendor/chart.js/Chart.min.js"></script> -->
+
+    <!-- <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">     -->    
+    <!-- <link href="estilos_city.css" rel="stylesheet"> -->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <script src="vendor/chart.js/Chart.min.js"></script>
-
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">    
-    <!-- <link rel="stylesheet" href="css/jquery.loadingModal.css"> -->
     <link href="estilos_city.css" rel="stylesheet">
-    <!-- <script src="hoteles_city_scripts.js"></script> -->    
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <!-- Core plugin JavaScript-->    
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+       
     
 </head>
-<body style="background-color: #ecedf1; max-width: 100%;">
+<body style="background-color: #ecedf1; max-width: 100%;" onload="modalLoader()">
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <!-- <h1 class="txt_modal">Cargando...</h1> -->
+            <div id="loader" style="margin-top: 100px;"></div>
+        </div>
+</div> 
 
 <!-- Div para pintar la grafica del curso -->
 <div class="row" style="justify-content: center;">
@@ -122,8 +133,10 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
     </tfoot>
 </table>
 
-<link href="css/sb-admin-2.min.css" rel="stylesheet">
-<script src="vendor/chart.js/Chart.min.js"></script>
+<script src="classes.js"></script>
+
+<!-- <link href="css/sb-admin-2.min.css" rel="stylesheet">
+<script src="vendor/chart.js/Chart.min.js"></script> -->
 <script>
     var ctx = document.getElementById('grafica');
     var chart = new Chart(ctx, {
@@ -171,6 +184,8 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
 
 <link rel="stylesheet" href="choicesjs/styles/choices.min.css" />
 <script src="choicesjs/scripts/choices.min.js"></script>
+
+
 
 <!-- Table -->
 <script>

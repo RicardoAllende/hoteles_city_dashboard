@@ -66,18 +66,16 @@ function regresaInfoByCurso() {
 }
 
 // Modal
-function myFunction() {
-    myVar = setTimeout(showPage, 2000);
-    document.getElementById("comparative").style.display = "none";
-    document.getElementById("curso_graficas").style.display = "none";
-  }
-  
-  function showPage() {
-    document.getElementById("modal_loader").style.display = "none";
-    document.getElementById("comparative").style.display = "block";
-    document.getElementById("curso_graficas").style.display = "block";
-  }
-
+var myVar;
+          function modalLoader(){
+            $('#exampleModal').modal('show');
+            myVar = setTimeout(showPage, 3000);
+            document.getElementById("loader").style.display = "block";
+          }
+          function showPage() {
+            $('#exampleModal').modal('hide');
+            document.getElementById("loader").style.display = "none";
+            }
 
 var suma_inscritos = 0;
 var suma_no_aprobados = 0;
