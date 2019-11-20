@@ -64,7 +64,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
 
 </head>
 
-<body style="background-color: #ecedf1; max-height: 100%;" onload="modalLoader()">
+<body style="background-color: #ecedf1; max-height: 100%;">
 
 <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -145,6 +145,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
             obtenerGraficas();
         });
         function obtenerGraficas(){
+            modalLoader();
             // peticion = [];
             peticion = $('#local_hoteles_city_dashboard_filters').serializeArray();
             peticion.push({name: 'request_type', value: 'course_list'});
@@ -167,6 +168,8 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     console.log('Imprimiendo la respuesta', informacion);
                     cleanDiv();
                     comparative(informacion);
+                    showPage();                    
+                    
                     
                     for(var i = 0; i < informacion.length; i++){                        
                         info = informacion[i];
@@ -199,6 +202,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     console.log('Entra a fail');
                     console.log(error);
                     console.log(error2);
+                    showPage();
                 });
         }
 

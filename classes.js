@@ -1,7 +1,6 @@
 
 function regresaInfoByCurso() {
-    //showModal();
-    //informacion = $('#filter_form').serializeArray();
+    modalLoader();    
     informacion = [];
     // informacion.push({name: 'request_type', value: 'course_list'});
     informacion.push({ name: 'request_type', value: 'dashboard' });
@@ -21,7 +20,7 @@ function regresaInfoByCurso() {
             respuesta = JSON.parse(JSON.stringify(data));
             respuesta = respuesta.data;
             console.log('Imprimiendo la respuesta', respuesta);
-
+            showPage();
 
 
 
@@ -61,6 +60,7 @@ function regresaInfoByCurso() {
             console.log('Entra a fail');
             console.log(error);
             console.log(error2);
+            showPage();
         });
 
 }

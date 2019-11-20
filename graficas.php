@@ -64,7 +64,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
 
 </head>
 
-<body style="background-color: #ecedf1; max-height: 100%;" onload="modalLoader()">
+<body style="background-color: #ecedf1; max-height: 100%;">
 
 <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -74,9 +74,9 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
         </div>
     </div> 
 
+    
     <div class="row container" style=" max-width: 100%; min-height: 400px;">
         <form action="" name='local_hoteles_city_dashboard_filters' class='row col-sm-12' id='local_hoteles_city_dashboard_filters' >
-            <br><br>
             <?php
                 local_hoteles_city_dashboard_print_filters();
             ?>
@@ -98,7 +98,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
     </div> -->    
 
     <!-- Div para pintar la grafica comparativa de los cursos -->
-    <div class="row" style="justify-content: center; max-width: 100%;" id="comparative">
+    <div class="row" style="justify-content: center;" id="comparative">
         <div class="col-8">
                     <div class="card shadow mb-4">
                         <!-- Card Header - Dropdown -->
@@ -145,6 +145,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
             obtenerGraficas();
         });
         function obtenerGraficas(){
+            modalLoader();
             // peticion = [];
             peticion = $('#local_hoteles_city_dashboard_filters').serializeArray();
             peticion.push({name: 'request_type', value: 'course_list'});
@@ -167,6 +168,8 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     console.log('Imprimiendo la respuesta', informacion);
                     cleanDiv();
                     comparative(informacion);
+                    showPage();                    
+                    
                     
                     for(var i = 0; i < informacion.length; i++){                        
                         info = informacion[i];
@@ -199,6 +202,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     console.log('Entra a fail');
                     console.log(error);
                     console.log(error2);
+                    showPage();
                 });
         }
 

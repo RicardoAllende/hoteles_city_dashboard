@@ -234,6 +234,7 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
          Función que se ejecuta al elegir/quitar cursos
          */
         function mostrarGraficaDeCursos(){
+            //modalLoader();
             peticion = Array();
             peticion.push({name: 'request_type', value: 'course_completion'});
             peticion.push({name: 'courseid', value: reportCourses});
@@ -254,12 +255,14 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
                         if (informacion.chart == 'pie') {
                             report.individual_graph();
                         }
+                    //showPage();    
                        
                 })
                 .fail(function (error, error2) {
                     console.log('Error en printInfoCards');
                     console.log(error);
                     console.log(error2);
+                    //showPage();
                 });
         } 
         
