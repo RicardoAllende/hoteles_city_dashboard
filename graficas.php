@@ -74,9 +74,9 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
         </div>
     </div> 
 
-    
     <div class="row container" style=" max-width: 100%; min-height: 400px;">
         <form action="" name='local_hoteles_city_dashboard_filters' class='row col-sm-12' id='local_hoteles_city_dashboard_filters' >
+            <br><br>
             <?php
                 local_hoteles_city_dashboard_print_filters();
             ?>
@@ -98,7 +98,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
     </div> -->    
 
     <!-- Div para pintar la grafica comparativa de los cursos -->
-    <div class="row" style="justify-content: center;" id="comparative">
+    <div class="row" style="justify-content: center; max-width: 100%;" id="comparative">
         <div class="col-8">
                     <div class="card shadow mb-4">
                         <!-- Card Header - Dropdown -->

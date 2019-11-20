@@ -49,10 +49,14 @@ echo $OUTPUT->header();
     document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('region-main').style.width = "100%";
         require(['jquery'], function ($) {
-            setInterval(function() { iResize('page_iframe'); }, 100);
+            setInterval(function() { iResize('page_iframe'); }, 1000);
         });
     });
     function iResize(frame_id) {
+        // if(intervals > 60){
+        //     return;
+        // }
+        // intervals++;
         element = document.getElementById(frame_id);
         if(element != null){
             if(element.contentWindow != null){

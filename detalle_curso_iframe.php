@@ -209,6 +209,7 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
                 data: function(d){
                     d['request_type'] = 'course_users_pagination';
                     d['reportCourses'] = reportCourses;
+                    mostrarGraficaDeCursos();
                 }
             },
             lengthMenu: [[10, 15, 20, 100, -1], [10, 15, 20, 100, "Todos los registros"]],
@@ -280,8 +281,24 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
         /**
          Función que se ejecuta al elegir/quitar cursos
          */
-        function graficaDeCursos(){
-            
+        function mostrarGraficaDeCursos(){
+            peticion = Array();
+            peticion.push({name: 'request_type', value: 'course_completion'});
+            peticion.push({name: 'courseid', value: reportCourses});
+            $.ajax({
+                type: "POST",
+                url: "services.php",
+                data: peticion,
+                dataType: "json"
+            })
+                .done(function(data) {
+                    console.log('Gráfica detalle_curso_iframe.php', data);
+                })
+                .fail(function (error, error2) {
+                    console.log('Error en printInfoCards');
+                    console.log(error);
+                    console.log(error2);
+                });
         }
     });
 </script>

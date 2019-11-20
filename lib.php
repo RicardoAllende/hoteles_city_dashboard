@@ -887,10 +887,10 @@ function local_hoteles_city_dashboard_get_enrolled_userids($course, string $fech
 
 /**
  * Obtiene la información de un curso
- * @param int $courseid Id de un curso
+ * @param int|string $courseid Id de un curso o id de distintos cursos en formato: "1,2,3"
  * @param array $params arreglo con el nombre de un 
  */
-function local_hoteles_city_dashboard_get_course_information(int $courseid, array $params = array()){
+function local_hoteles_city_dashboard_get_course_information($courseid, array $params = array()){
     global $DB;
     if(empty($courseid)){
         print_error('Es necesario enviar al menos un curso');
@@ -926,7 +926,7 @@ function local_hoteles_city_dashboard_get_course_information(int $courseid, arra
             'name'  => 'Segundo grupo'
         ]
     ];
-    $response->chart = 'bar';// local_hoteles_city_dashboard_get_course_chart($courseid);
+    $response->chart = 'pie';// local_hoteles_city_dashboard_get_course_chart($courseid);
     // $response->comparative = [
     //     // ...
     // ];
