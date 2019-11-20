@@ -154,14 +154,14 @@ class filter_settings extends moodleform {
         $mform->addElement('header', 'filterfields', get_string('filterfields', $pluginname));
         $mform->setExpanded('filterfields', false);
 
-        $name = 'filterdefaultfields';
-        $title = get_string('filterdefaultfields', $pluginname);
-        $description = get_string('filterdefaultfields' . '_desc', $pluginname);
-        $default = !empty($configs[$name]) ? $configs[$name] : "";
-        $select = $mform->addElement('select', $name, $title, $all_default_profile_fields, 'class = " multiselect-setting " size="10" ');
-        $select->setMultiple(true);
-        $mform->getElement($name)->setSelected(explode(',', $default));
-        $mform->addElement('static', 'description', '', $description);
+        // $name = 'filterdefaultfields';
+        // $title = get_string('filterdefaultfields', $pluginname);
+        // $description = get_string('filterdefaultfields' . '_desc', $pluginname);
+        // $default = !empty($configs[$name]) ? $configs[$name] : "";
+        // $select = $mform->addElement('select', $name, $title, $all_default_profile_fields, 'class = " multiselect-setting " size="10" ');
+        // $select->setMultiple(true);
+        // $mform->getElement($name)->setSelected(explode(',', $default));
+        // $mform->addElement('static', 'description', '', $description);
 
         $name = 'filtercustomfields';
         $title = get_string('filtercustomfields', $pluginname);
@@ -233,6 +233,18 @@ class permission_settings extends moodleform {
             $mform->addElement('static', 'description', '', 'Escriba el correo de los usuarios que tendrán el perfil "' . strtolower($value) . '" separados por un espacio');
         }
         
+        $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales();
+        $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales();
+
+        $gerentes_generales = implode(', ', $gerentes_generales);
+        $directores_regionales = implode(', ', $directores_regionales);
+
+        $mform->addElement('static', 'description', '', '');
+        $mform->addElement('static', 'description', 'Gerentes generales', $gerentes_generales);
+
+        $mform->addElement('static', 'description', 'Directores regionales', $directores_regionales);
+        $mform->addElement('static', 'description', '', '');
+
     }
 
     /**

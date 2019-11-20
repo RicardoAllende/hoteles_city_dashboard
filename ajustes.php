@@ -439,14 +439,14 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                     // dataType: "json"
                 })
                 .done(function(data) {
-                    console.log('La información obtenida es: ', data);
+                    // console.log('La información obtenida es: ', data);
                     // return;
-                    if (data == 'ok') {
-                        Swal.fire('Región deshabilitada correctamente');
-                        // ocultarModal();
-                    } else { // Se trata de un error
-                        Swal.fire(data);
-                    }
+                    // if (data == 'ok') {
+                    //     Swal.fire('Región deshabilitada correctamente');
+                    //     // ocultarModal();
+                    // } else { // Se trata de un error
+                    // }
+                    Swal.fire(data);
                     reloadPage();
                 })
                 .fail(function(error, error2) {
@@ -516,18 +516,9 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                 if (result.value) {
                     informacion = Array();
                     name = $('#region_name').val();
-                    informacion.push({
-                        name: 'request_type',
-                        value: 'update_region'
-                    });
-                    informacion.push({
-                        name: 'id',
-                        value: regionid
-                    });
-                    informacion.push({
-                        name: 'delete',
-                        value: 1
-                    });
+                    informacion.push({name: 'request_type', value: 'update_region' });
+                    informacion.push({name: 'id', value: regionid });
+                    informacion.push({name: 'delete', value: 1 });
                     $.ajax({
                             type: "POST",
                             url: "services.php",
