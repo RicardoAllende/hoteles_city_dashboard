@@ -87,7 +87,7 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
 
 <!-- Div para pintar la grafica del curso -->
 <div class="row" style="justify-content: center;">
-        <div class="col-8">
+        <div class="col-6">
                     <div class="card shadow mb-4">
                         <!-- Card Header - Dropdown -->
                         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
