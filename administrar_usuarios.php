@@ -36,6 +36,7 @@ require_once($CFG->dirroot.'/user/lib.php');
 $id     = optional_param('id', -1, PARAM_INT);    // User id; -1 if creating new user.
 $page_params = "id=" . $id;
 $suspenduser = optional_param('suspenduser', -1, PARAM_INT);
+$shouldSuspend = $suspenduser != -1;
 $creating_user = false;
 if($id == -1){
     $creating_user = true;
@@ -172,7 +173,7 @@ $mform = new profileform_hoteles($current_url, array(
     'user' => $user));
 
 echo $OUTPUT->header();
-
+$specialScript = "";
 if($usernew = $mform->get_data()){
     // _log($usernew);
     $usercreated = false;
@@ -338,11 +339,24 @@ if($usernew = $mform->get_data()){
         }
         redirect($current_url);
     } else {
-        \core\session\manager::gc(); // Remove stale sessions.
-        redirect($current_url);
-        redirect("$CFG->wwwroot/$CFG->admin/user.php");
+        // \core\session\manager::gc(); // Remove stale sessions.
+        // redirect($current_url);
+        // redirect("$CFG->wwwroot/$CFG->admin/user.php");
     }
     // Never reached..
+}else{
+    if($shouldSuspend){
+        $specialScript = "
+        <script>
+            element = document.getElementById('id_suspended');
+            if(element !== null){
+                element.checked = !element.checked;
+                console.log('Suspendiendo usuarios');
+            }
+        </script>";
+    }else{
+
+    }
 }
 // $streditmyprofile = get_string('editmyprofile');
 $PAGE->set_title('Administración de usuarios hoteles city');
@@ -355,13 +369,10 @@ $mform->display();
 if($creating_user){ // Rellenado de formulario
     echo "<script src='user.js'></script>";
 }
-if($user->suspended && $suspenduser != -1){ // Activando un usuario
-    echo "<script> element = document.getElementById('id_suspended'); 
-        if(typeof element != 'undefined'){
-            element.checked = !element.checked;
-        }
-    </script>";
+if($user->suspended){ // Si el usuario está suspendido, se necesita el permiso para verlo
+    local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_cambio_usuarios, 'Usuario suspendido');
 }
+echo $specialScript;
 ?>
 <?php
 echo $OUTPUT->footer();
