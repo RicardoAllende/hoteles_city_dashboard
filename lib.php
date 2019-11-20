@@ -2155,6 +2155,9 @@ function local_hoteles_city_dashboard_update_region(array $params){
         //         $update = $DB->update_record('dashboard_region_ins', $record);
         //     }
         // }
+        if($change_status){
+            return $region->active ? "Región habilitada correctamente" : "Región deshabilitada correctamente";
+        }
         return "ok";
     }catch(Exception $e){
         _log('Error al relacionar región con institución', $e);
