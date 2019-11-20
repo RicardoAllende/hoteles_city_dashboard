@@ -52,6 +52,7 @@ echo $OUTPUT->header();
             setInterval(function() { iResize('page_iframe'); }, 1000);
         });
     });
+    var intervals = 0;
     function iResize(frame_id) {
         // if(intervals > 60){
         //     return;
