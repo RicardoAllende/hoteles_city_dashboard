@@ -13,7 +13,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
  * Listado de usuarios inscritos en un curso
  *
@@ -22,7 +21,6 @@
  * @copyright   2019 Subitus <contacto@subitus.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_reportes);
@@ -32,8 +30,6 @@ $courseid = optional_param('courseid', -1, PARAM_INT);
 $PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/detalle_curso_iframe.php');
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title('Detalle cursos');
-
-
 // echo $OUTPUT->header();
 $report_info = local_hoteles_city_dashboard_get_report_columns(local_hoteles_city_dashboard_course_users_pagination);
 $courses = local_hoteles_city_dashboard_get_courses_setting(true);
@@ -45,7 +41,6 @@ if($courseid != -1){
 $description = ""; // No es usado en esta sección
 echo "<div class='container row'> <input type='hidden' name='request_type' value='course_users_pagination'>" .
  local_hoteles_city_dashboard_print_multiselect('report_courses', "Cursos", $default_courses, $courses, true, $class = 'col-sm-12') . "</div>";
-
 ?>
 
 <!DOCTYPE html>
@@ -86,7 +81,7 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
        
     
 </head>
-<body style="background-color: #ecedf1; max-width: 100%;" onload="modalLoader()">
+<body style="background-color: #ecedf1; max-width: 100%;">
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -97,28 +92,9 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
 </div> 
 
 <!-- Div para pintar la grafica del curso -->
-<div class="row" style="justify-content: center;">
-        <div class="col-6">
-                    <div class="card shadow mb-4">
-                        <!-- Card Header - Dropdown -->
-                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-primary"><a href="#">Comparativa</a></h6>
-                            <div class="dropdown no-arrow">
-                                <!-- <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                </a> -->
-                                
-                            </div>
-                        </div>
-                        <!-- Card Body -->
-                        <div class="card-body">
-                            <div class="">                  
-                                <canvas id="grafica"></canvas>                  
-                            </div>
-                        </div>    
-                    </div>
-        </div>
-    </div>
+<div class="row">
+    <div class="col-12" id="grafica_reporte" style="margin-left: 500px;"></div>
+</div>
 
 <table id='empTable' class='display dataTable table table-bordered'>    
     <thead>
@@ -137,28 +113,7 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
 
 <!-- <link href="css/sb-admin-2.min.css" rel="stylesheet">
 <script src="vendor/chart.js/Chart.min.js"></script> -->
-<script>
-    var ctx = document.getElementById('grafica');
-    var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'pie',
 
-    // The data for our dataset
-    data: {
-        labels: ['Completado', 'No Completado'],
-        datasets: [{
-            label: 'A',            
-            backgroundColor: ["#1cc88a", "#e74a3b"],
-            data: [60, 40],
-        }]
-    },
-
-    // Configuration options go here
-    options: {
-        
-    }
-    });
-    </script>
 
 
 
@@ -199,7 +154,6 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
             } );
         });
         reportCourses = "<?php echo $default_courses; ?>";
-
         _datatable = $('#empTable').DataTable({
             'processing': true,
             'serverSide': true,
@@ -245,7 +199,6 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
             ],
             language: {
                 "url": "datatables/Spanish.json",
-
                 "emptyTable":     "No se encontró información",
                 // "infoFiltered":   "(filtered from _MAX_ total entries)",
                 "loadingRecords": "Cargando...",
@@ -277,7 +230,6 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
             // console.log('Reload');
             _datatable.ajax.reload();
         });
-
         /**
          Función que se ejecuta al elegir/quitar cursos
          */
@@ -292,14 +244,29 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
                 dataType: "json"
             })
                 .done(function(data) {
-                    console.log('Gráfica detalle_curso_iframe.php', data);
+                    informacion = JSON.parse(JSON.stringify(data));
+                    console.log('Gráfica detalle_curso_iframe.php', data);                    
+                    informacion = data.data;
+                    console.log(informacion) 
+                    cleanDiv();                    
+                    var report = new GraphicsDashboard('grafica_reporte','Comparativa',informacion.chart,informacion,6,informacion.id);
+                        report.printCardCourse();
+                        if (informacion.chart == 'pie') {
+                            report.individual_graph();
+                        }
+                       
                 })
                 .fail(function (error, error2) {
                     console.log('Error en printInfoCards');
                     console.log(error);
                     console.log(error2);
                 });
+        } 
+        
+        function cleanDiv(){
+            document.getElementById('grafica_reporte').innerHTML='';
         }
+
     });
 </script>
 
