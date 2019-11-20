@@ -252,7 +252,6 @@ function local_hoteles_city_dashboard_get_role_users($id){
 // Administrador del dashboard                     Administrador del sistema
 
 function local_hoteles_city_dashboard_save_custom_settings(array $params){
-    // _log($params);
     try {
         // $keys = array_keys($params);
         $excluded = array('mform_isexpanded', 'sesskey', '_qf__');
@@ -302,8 +301,10 @@ function local_hoteles_city_dashboard_get_courses_overview(array $params = array
     return $courses_in_order;
 }
 
-function local_hoteles_city_dashboard_user_has_access($section = '', bool $throwError = true){
-    $message = "Usted no tiene permiso para acceder a esta sección";
+function local_hoteles_city_dashboard_user_has_access($section = '', string $message = '', bool $throwError = true){
+    if(empty($message)){
+        $message = "Usted no tiene permiso para acceder a esta sección";
+    }
     if(empty($section)){
         print_error($message);
     }
@@ -472,7 +473,6 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     // if(in_array('institution', $allowed_fields)){
         // $institutions = local_hoteles_city_dashboard_get_institutions_for_dashboard_user();
         $institutions = local_hoteles_city_dashboard_get_regional_institutions();
-        _log($institutions);
         $required = $strrequired;
         $mform->addElement('select', 'institution', 'Unidad operativa', $institutions);
         if(!empty($institutions)){
@@ -749,7 +749,6 @@ function custom_profile_definition($mform, $userid = 0) {
                     $first = false;
                 }
                 if(!$any){
-                    // _log($formfield);
                     $mform->addElement('header', 'custom_fields', 'Campos de perfil personalizados');
                     $mform->setExpanded('custom_fields', true);
                     $any = true;
@@ -1141,13 +1140,11 @@ function local_hoteles_city_dashboard_get_report_fields_in_order(){
 }
 
 function local_hoteles_city_dashboard_set_new_order($key, string $action){
-    // _log($key, $action);
     if(!($action == 'up' || $action == 'down')){
         print_error("Acción '{$action}' no soportada");
     }
     $fields_in_order = local_hoteles_city_dashboard_get_report_fields_in_order();
     $keys_fields_in_order = array_keys($fields_in_order);
-    // _log($key, $keys_fields_in_order);
     if(is_number($key)){
         $position = array_search($key, $keys_fields_in_order);
     }else{
@@ -1163,7 +1160,6 @@ function local_hoteles_city_dashboard_set_new_order($key, string $action){
             break;
         }
         $new_config = implode(',', $new_config);
-        // _log($new_config);
         set_config('sort_report_fields', $new_config, 'local_hoteles_city_dashboard');
     }else{
         print_error('No se encuentra el filtro');
@@ -1172,7 +1168,6 @@ function local_hoteles_city_dashboard_set_new_order($key, string $action){
 }
 
 function local_hoteles_city_dashboard_array_down($array,$position) {
-    // _log($position, 'Antes', $array);
     if( count($array)-1 > $position ) {
 		$response = array_slice($array,0,$position,true);
 		$response[] = $array[$position+1];
@@ -1180,12 +1175,10 @@ function local_hoteles_city_dashboard_array_down($array,$position) {
 		$response += array_slice($array,$position+2,count($array),true);
 		// return($response);
     } else { $response = $array; }
-    // _log('Resultado', $response);
     return $response;
 }
 
 function local_hoteles_city_dashboard_array_up($array,$position) {
-    // _log($position, 'Antes', $array);
 	if( $position > 0 and $position < count($array) ) {
 		$response = array_slice($array,0,($position-1),true);
 		$response[] = $array[$position];
@@ -1193,7 +1186,6 @@ function local_hoteles_city_dashboard_array_up($array,$position) {
 		$response += array_slice($array,($position+1),count($array),true);
 		// return($response);
 	} else { $response = $array; }
-    // _log('Resultado', $response);
     return $response;
 }
 
@@ -1217,7 +1209,6 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, $custom_info
     // array_push($select_sql, 'fullname');
 
     $report_fields = local_hoteles_city_dashboard_get_report_fields_in_order();
-    _log($report_fields);
 
     if(empty($report_fields)){
         array_push($report_fields, 'name'); // Agregar name por si no se encuentra ningún campo
@@ -1853,8 +1844,6 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     array_push($queryParams, $searchValue);
     $query = "select {$select_sql} from {user} AS user {$join_sql} {$searchQuery} order by {$columnName} {$columnSortOrder} {$limit}";
     // _sql($query, $queryParams);
-    // _log($query);
-    // _log($queryParams);
     $records = $DB->get_records_sql($query, $queryParams);
 
     ## Response
@@ -1951,7 +1940,6 @@ function local_hoteles_city_dashboard_get_custom_report_fields(){
     if($config = get_config('local_hoteles_city_dashboard', 'reportcustomfields')){
         if(!empty($config)){
             $menu = local_hoteles_city_dashboard_get_custom_profile_fields($config);
-            _log('local_hoteles_city_dashboard_get_custom_profile_fields', $menu);
             $configs = explode(',', $config);
             $response = array();
             foreach($configs as $r){
@@ -1959,7 +1947,6 @@ function local_hoteles_city_dashboard_get_custom_report_fields(){
                     $response[$r] = $menu[$r];
                 }
             }
-            _log('respuesta local_hoteles_city_dashboard_get_custom_report_fields', $response);
             return $response;
         }
     }

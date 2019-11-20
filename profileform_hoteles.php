@@ -166,7 +166,15 @@ class profileform_hoteles extends moodleform {
         if ($userid == -1) {
             $btnstring = get_string('createuser');
         } else {
-            $btnstring = get_string('updatemyprofile');
+            if(isset($_GET['suspenduser'])){
+                if($user->suspended){ // Quitar suspensión
+                    $btnstring = "Quitar suspensión";
+                }else{ // Dejar suspensión
+                    $btnstring = "Suspender usuario";
+                }
+            }else{
+                $btnstring = "Actualizar";
+            }
         }
 
         $this->add_action_buttons(false, $btnstring);
