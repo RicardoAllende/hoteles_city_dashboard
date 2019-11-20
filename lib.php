@@ -410,16 +410,19 @@ function local_hoteles_city_dashboard_get_gerentes_ao(){
 }
 
 function local_hoteles_city_dashboard_get_directores_regionales(){
-    return local_hoteles_city_dashboard_get_role_users(local_hoteles_city_dashboard_director_regional);
+    global $DB;
+    $local_hoteles_city_dashboard_director_regional_value = local_hoteles_city_dashboard_director_regional_value;
+    return $DB->get_records_sql_menu("SELECT id, concat(firstname, ' ', lastname) as name
+     FROM {user} WHERE deleted = 0 AND suspended = 0 AND department = '{$local_hoteles_city_dashboard_director_regional_value}'");
 }
 
 function local_hoteles_city_dashboard_get_personal_elearning(){
     return local_hoteles_city_dashboard_get_role_users(local_hoteles_city_dashboard_personal_elearning);
 }
 
-function local_hoteles_city_dashboard_get_administradores(){
-    return local_hoteles_city_dashboard_get_role_users(local_hoteles_city_dashboard_administrador);
-}
+// function local_hoteles_city_dashboard_get_administradores(){
+//     return local_hoteles_city_dashboard_get_role_users(local_hoteles_city_dashboard_administrador);
+// }
 
 function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions, $user) {
     if(isset($_GET['suspenduser'])){
@@ -2433,6 +2436,8 @@ function local_hoteles_city_dashboard_is_gerente_ao(){
     return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_gerente_ao);
 }
 
+DEFINE('local_hoteles_city_dashboard_director_regional_value', "Director Regional");
+
 function local_hoteles_city_dashboard_is_director_regional(){
     global $global_user_permissions;
     if($global_user_permissions !== null){
@@ -2440,7 +2445,7 @@ function local_hoteles_city_dashboard_is_director_regional(){
         return in_array(local_hoteles_city_dashboard_director_regional, $global_user_permissions);
     }
     global $USER;
-    $position = strpos($USER->department, "Director Regional");
+    $position = strpos($USER->department, local_hoteles_city_dashboard_director_regional_value);
     if($position !== false){
         return true;
     }

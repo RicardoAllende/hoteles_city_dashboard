@@ -233,6 +233,18 @@ class permission_settings extends moodleform {
             $mform->addElement('static', 'description', '', 'Escriba el correo de los usuarios que tendrán el perfil "' . strtolower($value) . '" separados por un espacio');
         }
         
+        $gerentes_generales = local_hoteles_city_dashboard_get_gerentes_generales();
+        $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales();
+
+        $gerentes_generales = implode(', ', $gerentes_generales);
+        $directores_regionales = implode(', ', $directores_regionales);
+
+        $mform->addElement('static', 'description', '', '');
+        $mform->addElement('static', 'description', 'Gerentes generales', $gerentes_generales);
+
+        $mform->addElement('static', 'description', 'Directores regionales', $directores_regionales);
+        $mform->addElement('static', 'description', '', '');
+
     }
 
     /**
