@@ -205,16 +205,6 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
                     "next":       "Siguiente",
                     "previous":   "Anterior"
                 },
-                // "decimal":        "",
-                // "info":           "Showing _START_ to _END_ of _TOTAL_ entries",
-                // "infoEmpty":      "Showing 0 to 0 of 0 entries",
-                // "infoPostFix":    "",
-                // "thousands":      ",",
-                // "lengthMenu":     "Show _MENU_ entries",
-                // "aria": {
-                //     "sortAscending":  ": activate to sort column ascending",
-                //     "sortDescending": ": activate to sort column descending"
-                // }
                 buttons: {
                     pageLength: {
                         _: "Mostrando %d filas",
@@ -234,6 +224,13 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
             // console.log('Reload');
             _datatable.ajax.reload();
         });
+
+        /**
+         Función que se ejecuta al elegir/quitar cursos
+         */
+        function (){
+            
+        }
     });
 </script>
 <?php

@@ -892,9 +892,17 @@ function local_hoteles_city_dashboard_get_enrolled_userids($course, string $fech
  */
 function local_hoteles_city_dashboard_get_course_information(int $courseid, array $params = array()){
     global $DB;
-    $course = $DB->get_record('course', array('id' => $courseid));
-    if($course === false){
-        return false;
+    if(empty($courseid)){
+        print_error('Es necesario enviar al menos un curso');
+    }
+    $many_courses = strpos($courseid, ',') !== false;
+
+    $course = new stdClass();
+    if(!$many_courses){
+        $course = $DB->get_record('course', array('id' => $courseid));
+        if($course === false){
+            return false;
+        }
     }
     // $response = new stdClass();
     if(local_hoteles_city_dashboard_return_random_data){
@@ -922,7 +930,9 @@ function local_hoteles_city_dashboard_get_course_information(int $courseid, arra
     // $response->comparative = [
     //     // ...
     // ];
-    $response->title = $course->fullname;
+    if(!$many_courses){
+        $response->title = $course->fullname;
+    }
     $response->status = 'ok';
     // $fecha_inicial = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_inicial');
     // $fecha_final = local_hoteles_city_dashboard_get_value_from_params($params, 'fecha_final');
