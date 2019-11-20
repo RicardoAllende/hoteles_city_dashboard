@@ -50,7 +50,7 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
 
 <!-- Div para pintar la grafica del curso -->
 <div class="row" style="justify-content: center;">
-        <div class="col-4">
+        <div class="col-8">
                     <div class="card shadow mb-4">
                         <!-- Card Header - Dropdown -->
                         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -85,7 +85,7 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
     </tfoot>
 </table>
 
-<!-- <link href="css/sb-admin-2.min.css" rel="stylesheet"> -->
+<link href="css/sb-admin-2.min.css" rel="stylesheet">
 <script src="vendor/chart.js/Chart.min.js"></script>
 <script>
     var ctx = document.getElementById('grafica');
