@@ -744,6 +744,10 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
             background-position: center;
             cursor: pointer;
         }
+
+        .modal-content{
+            min-width: 600px;
+        }
     </style>
 <?php
 echo $OUTPUT->footer();
