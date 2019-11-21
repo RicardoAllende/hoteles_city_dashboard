@@ -14,18 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Plugin version and other meta-data are defined here.
- *
- * @package     local_hoteles_city_dashboard
- * @copyright   2019 Subitus <contacto@subitus.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'local_hoteles_city_dashboard';
-$plugin->release = '0.1.0';
-$plugin->version = 2019092300;
-$plugin->requires = 2017111300;
-$plugin->maturity = MATURITY_RC;
+require_once(__DIR__ . '/../lib.php');
+/**
+ * Event observer for mod_forum.
+ */
+class local_biossmann_theme_selector_observer {
+    public static function user_loggedin(\core\event\user_loggedin $event){
+        // $userid = $event->userid;
+        local_hoteles_city_dashboard_get_user_permissions();
+    }
+}

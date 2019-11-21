@@ -15,17 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Forum event handler definition.
  *
- * @package     local_hoteles_city_dashboard
- * @copyright   2019 Subitus <contacto@subitus.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package mod_forum
+ * @category event
+ * @copyright 2019 Subitus (contacto@subitus.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+// List of observers.
+$observers = array(
 
-$plugin->component = 'local_hoteles_city_dashboard';
-$plugin->release = '0.1.0';
-$plugin->version = 2019092300;
-$plugin->requires = 2017111300;
-$plugin->maturity = MATURITY_RC;
+    array(
+        'eventname'   => '\core\event\user_loggedin',
+        'callback'    => 'local_biossmann_theme_selector_observer::user_loggedin',
+        'internal'    => true,
+        'priority'    => 9999,
+    ),    
+);
