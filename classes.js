@@ -28,8 +28,14 @@ function regresaInfoByCurso() {
             for (var i = 0; i < respuesta.length; i++) {
                 resp = respuesta[i];
                 var curso = new GraphicsDashboard('contenedor_graficas', resp.name, resp.chart, resp, 6);
+                if(resp.enrolled_users > 0){
+                    //curso.printCardSinInfo();
+                    curso.printCard();
+                }else{
+                    curso.printCardSinInfo();
+                    //curso.printCard();
+                }    
 
-                curso.printCard();
                 if (resp.chart == 'bar-agrupadas') {
                     curso.comparative_graph();
                 }
@@ -351,257 +357,31 @@ class GraphicsDashboard {
 
     }
 
-    // infoGraph() {
-    //     console.log('INFO GRAPH')
-    //     switch (this.type_graph) {
-    //         case 'bar-agrupadas':
-    //             var d_graph = Array();
-    //             d_graph.push(this.data_graph.approved_users);
-    //             d_graph.push(this.data_graph.not_approved_users);
-    //             // console.log('INFO');                    
-    //             // console.log(d_graph[1]);                     
-    //             if (this.data_graph.enrolled_users > 0) {
-    //                 var ctx = document.getElementById(this.div_graph);
-    //                 var chart = new Chart(ctx, {
-    //                     // The type of chart we want to create
-    //                     type: 'bar',
-
-    //                     // The data for our dataset
-    //                     data: {
-    //                         labels: ['Centro', 'Suites', 'Plus', 'Express', 'Junior', 'OC'],
-    //                         datasets: [{
-    //                             label: 'Aprobados',
-    //                             backgroundColor: '#1cc88a',
-    //                             //data: d_graph[0],
-    //stack: 'Stack 0',
-    //                             data: [1, 2, 3]
-    //                         }, {
-    //                             label: 'No Aprobados',
-    //                             backgroundColor: '#e74a3b',
-    //                             //data: d_graph[1],
-    //stack: 'Stack 0', 
-    //                             data: [5, 4, 3]
-    //                         }]
-    //                     },
-
-    //                     // Configuration options go here
-    //                     options: {
-
-    //                     }
-    //                 });
-    //             }
-    //             else {
-    //                 var ctx = document.getElementById(this.div_graph)
-    //                 ctx.innerHTML = "No existen usuarios inscritos";
-    //             }
-    //             break;
-
-    //         case 'horizontalBar':
-    //             var d_graph = Array();
-    //             d_graph.push(this.data_graph.approved_users);
-    //             //d_graph.push(this.data_graph.not_approved_users);
-    //             console.log('HORIZONTAL');
-    //             console.log(d_graph);
-    //             if (this.data_graph.enrolled_users > 0) {
-    //                 var ctx = document.getElementById(this.div_graph);
-    //                 var chart = new Chart(ctx, {
-    //                     // The type of chart we want to create
-    //                     type: 'horizontalBar',
-
-    //                     // The data for our dataset
-    //                     data: {
-    //                         labels: ['EVD', 'JVD', 'GV'],
-    //                         datasets: [{
-    //                             label: 'A',
-    //                             //borderColor: 'rgb(255, 99, 132)',
-    //                             data: d_graph,
-    //                         }]
-    //                     },
-
-    //                     // Configuration options go here
-    //                     options: {
-    //                         legend: { display: false },
-    //                     }
-    //                 });
-    //             }
-    //             else {
-    //                 var ctx = document.getElementById(this.div_graph)
-    //                 ctx.innerHTML = "No existen usuarios inscritos";
-    //             }
-
-    //             break;
-
-    //         case 'pie':
-    //             var d_graph = Array();
-    //             d_graph.push(this.data_graph.approved_users);
-    //             d_graph.push(this.data_graph.not_approved_users);
-    //             if (this.data_graph.enrolled_users > 0) {
-    //                 var ctx = document.getElementById(this.div_graph);
-    //                 var chart = new Chart(ctx, {
-    //                     type: 'pie',
-    //                     data: {
-    //                         labels: ["Aprobado", "No Aprobados"],
-    //                         datasets: [{
-    //                             label: "Population (millions)",
-    //                             backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
-    //                             data: d_graph
-    //                         }]
-    //                     },
-    //                     options: {
-    //                     }
-    //                 });
-    //             }
-    //             else {
-    //                 var ctx = document.getElementById(this.div_graph)
-    //                 ctx.innerHTML = "No existen usuarios inscritos";
-    //             }
-
-
-    //             break;
-
-    //         case 'line': //Tendencia
-    //             if (this.data_graph.enrolled_users > 0) {
-    //                 var ctx = document.getElementById(this.div_graph);
-    //                 var chart = new Chart(ctx, {
-    //                     // The type of chart we want to create
-    //                     type: 'line',
-
-    //                     // The data for our dataset
-    //                     data: {
-    //                         labels: ['Variable 1', 'Variable 2', 'Variable 3', 'Variable 4', 'Variable 5', 'Variable 6'],
-    //                         datasets: [{
-    //                             label: 'A',
-    //                             borderColor: "#3e95cd",
-    //                             backgroundColor: 'transparent',
-    //                             data: [15, 40, 30, 26, 12, 34, 0],
-    //                         }, {
-    //                             label: 'B',
-    //                             borderColor: "#8e5ea2",
-    //                             backgroundColor: 'transparent',
-    //                             data: [5, 45, 26, 31, 41, 10, 0],
-    //                         }]
-    //                     },
-
-    //                     // Configuration options go here
-    //                     options: {
-
-    //                     }
-    //                 });
-    //             }
-    //             else {
-    //                 var ctx = document.getElementById(this.div_graph)
-    //                 ctx.innerHTML = "No existen usuarios inscritos";
-    //             }
-
-    //             break;
-
-    //         case 'bar':
-    //             var d_graph = Array();
-    //             d_graph.push(this.data_graph.approved_users);
-    //             d_graph.push(this.data_graph.not_approved_users);
-    //             if (this.data_graph.enrolled_users > 0) {
-    //                 var ctx = document.getElementById(this.div_graph);
-    //                 var chart = new Chart(ctx, {
-    //                     // The type of chart we want to create
-    //                     type: 'bar',
-    //                     data: {
-    //                         labels: ["Aprobados", "No aprobados"],
-    //                         datasets: [{
-    //                             backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
-    //                             data: d_graph
-    //                         }]
-    //                     },
-    //                     options: {
-    //                         legend: { display: false }
-    //                     }
-    //                 });
-    //             }
-    //             else {
-    //                 var ctx = document.getElementById(this.div_graph)
-    //                 ctx.innerHTML = "No existen usuarios inscritos";
-    //             }
-
-    //             break;
-
-    //         case 'burbuja':
-    //             console.log('DIV GRAF');
-    //             console.log(this.div_graph);
-    //             if (this.data_graph.enrolled_users > 0) {
-    //                 var ctx = document.getElementById(this.div_graph);
-    //                 var chart = new Chart(ctx, {
-    //                     type: 'bubble',
-    //                     data: {
-    //                         labels: "Africa",
-    //                         datasets: [
-    //                             {
-    //                                 label: ["Hotel 1"],
-    //                                 backgroundColor: "rgba(255,221,50,0.2)",
-    //                                 borderColor: "rgba(255,221,50,1)",
-    //                                 data: [{
-    //                                     x: 212,//inscritos
-    //                                     y: 207,//aprobados
-    //                                     r: 5 //no aprobados
-    //                                 }]
-    //                             }, {
-    //                                 label: ["Hotel 2"],
-    //                                 backgroundColor: "rgba(60,186,159,0.2)",
-    //                                 borderColor: "rgba(60,186,159,1)",
-    //                                 data: [{
-    //                                     x: 258,
-    //                                     y: 726,
-    //                                     r: 10
-    //                                 }]
-    //                             }, {
-    //                                 label: ["Hotel 3"],
-    //                                 backgroundColor: "rgba(0,0,0,0.2)",
-    //                                 borderColor: "#000",
-    //                                 data: [{
-    //                                     x: 397,
-    //                                     y: 994,
-    //                                     r: 15
-    //                                 }]
-    //                             }
-    //                         ]
-    //                     },
-    //                     options: {
-    //                         title: {
-    //                             display: true,
-    //                             text: 'Predicted world population (millions) in 2050'
-    //                         }, scales: {
-    //                             yAxes: [{
-    //                                 scaleLabel: {
-    //                                     display: true,
-    //                                     labelString: "Happiness"
-    //                                 }
-    //                             }],
-    //                             xAxes: [{
-    //                                 scaleLabel: {
-    //                                     display: true,
-    //                                     labelString: "GDP (PPP)"
-    //                                 }
-    //                             }]
-    //                         }
-    //                     }
-    //                 });
-    //             }
-    //             else {
-    //                 var ctx = document.getElementById(this.div_graph)
-    //                 ctx.innerHTML = "No existen usuarios inscritos";
-    //             }
-
-    //             break;
-
-
-
-
-
-    //         default:
-    //             break;
-    //     }
-
-    // }
-
-
+    printCardSinInfo(){
+        $("#" + this.div_print_card).append(`
+                <div class="col-sm-${this.col_size_graph}">
+                <div class="card shadow mb-4">
+                    <!-- Card Header - Dropdown -->
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary"><a href="#">${this.title}</a></h6>
+                        <div class="dropdown no-arrow">
+                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="card-body">
+                        <div class="">                                           
+                        <h3 id="${this.div_graph}" class="txt_sin_usuarios">No hay información</h3>                  
+                        </div>
+                    </div>    
+                </div>
+        </div>        
+        `);
+        
+    }
 
     comparative_graph() {
         // console.log("comparative_graph")
