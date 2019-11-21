@@ -28,12 +28,10 @@ function regresaInfoByCurso() {
             for (var i = 0; i < respuesta.length; i++) {
                 resp = respuesta[i];
                 var curso = new GraphicsDashboard('contenedor_graficas', resp.name, resp.chart, resp, 6);
-                if(resp.enrolled_users > 0){
-                    //curso.printCardSinInfo();
+                if(resp.enrolled_users > 0){                    
                     curso.printCard();
                 }else{
-                    curso.printCardSinInfo();
-                    //curso.printCard();
+                    curso.printCardSinInfo();                    
                 }    
 
                 if (resp.chart == 'bar-agrupadas') {
@@ -75,7 +73,7 @@ function regresaInfoByCurso() {
 var myVar;
           function modalLoader(){
             $('#exampleModal').modal('show');
-            myVar = setTimeout(showPage, 3000);
+            myVar = setTimeout(showPage, 1000);
             document.getElementById("loader").style.display = "block";
           }
           function showPage() {
