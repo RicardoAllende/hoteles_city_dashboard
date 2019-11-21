@@ -2860,7 +2860,7 @@ function local_hoteles_city_dashboard_get_dashboard_windows(){
         $regions = local_hoteles_city_dashboard_get_regions(array('active' => '1'));
         $item = new stdClass();
         $item->elements = array();
-        $item->name = "Avance global de capacitación"; // Por regiones
+        $item->name = "Avance por regiones"; // Por regiones
         $item->chart = 'bar-agrupadas';
         if(!empty($regions)){
             foreach($regions as $region){
