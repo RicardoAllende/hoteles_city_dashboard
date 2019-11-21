@@ -2450,7 +2450,7 @@ function local_hoteles_city_dashboard_slug(string $text){
  */
 function local_hoteles_city_dashboard_get_user_permissions(){
     global $SESSION;
-    if(!empty($SESSION->dashboard_permissions)){
+    if(isset($SESSION->dashboard_permissions)){
         return $SESSION->dashboard_permissions;
     }
     global $USER;
@@ -2466,6 +2466,7 @@ function local_hoteles_city_dashboard_get_user_permissions(){
         // $roles[local_hoteles_city_dashboard_administrador] = $permissions[local_hoteles_city_dashboard_administrador];
         $user_permissions = array_merge($user_permissions, $permission_list[local_hoteles_city_dashboard_administrador]);
         $user_permissions = array_unique($user_permissions);
+        $SESSION->dashboardCapability = in_array(local_hoteles_city_dashboard_reportes, $user_permissions);
         if(count($user_permissions) == $count_all_permissions) return $user_permissions;
     }
     foreach (local_hoteles_city_dashboard_get_dashboard_roles() as $key => $name) {
@@ -2476,6 +2477,7 @@ function local_hoteles_city_dashboard_get_user_permissions(){
             if(in_array($email, $config)){
                 $user_permissions = array_merge($user_permissions, $permission_list[$key]);
                 $user_permissions = array_unique($user_permissions);
+                $SESSION->dashboardCapability = in_array(local_hoteles_city_dashboard_reportes, $user_permissions);
                 if(count($user_permissions) == $count_all_permissions) return $user_permissions;
                 // $roles[$key] = $permission_list[$key];
             }
@@ -2484,9 +2486,11 @@ function local_hoteles_city_dashboard_get_user_permissions(){
     if(local_hoteles_city_dashboard_is_gerente_general()){
         $user_permissions = array_merge($user_permissions, $permission_list[local_hoteles_city_dashboard_gerente_hotel]);
         $user_permissions = array_unique($user_permissions);
+        $SESSION->dashboardCapability = in_array(local_hoteles_city_dashboard_reportes, $user_permissions);
         if(count($user_permissions) == $count_all_permissions) return $user_permissions;
     }
     $SESSION->dashboard_permissions = $user_permissions;
+    $SESSION->dashboardCapability = in_array(local_hoteles_city_dashboard_reportes, $user_permissions);
     return $user_permissions;
 }
 

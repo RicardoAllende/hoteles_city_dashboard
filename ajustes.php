@@ -367,7 +367,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                     console.log('La información obtenida es: ', data);
                     // return;
                     if (data == 'ok') {
-                        Swal.fire('Insertado con éxito');
+                        Swal.fire('Región creada correctamente');
                         // ocultarModal();
                     } else { // Se trata de un error
                         Swal.fire(data);
