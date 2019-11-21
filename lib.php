@@ -414,7 +414,7 @@ function local_hoteles_city_dashboard_get_directores_regionales(){
     global $DB;
     $local_hoteles_city_dashboard_director_regional_value = local_hoteles_city_dashboard_director_regional_value;
     return $DB->get_records_sql_menu("SELECT id, concat(firstname, ' ', lastname) as name
-     FROM {user} WHERE deleted = 0 AND suspended = 0 AND department = '{$local_hoteles_city_dashboard_director_regional_value}'");
+     FROM {user} WHERE deleted = 0 AND suspended = 0 AND department LIKE '{$local_hoteles_city_dashboard_director_regional_value}%'");
 }
 
 function local_hoteles_city_dashboard_get_personal_elearning(){
