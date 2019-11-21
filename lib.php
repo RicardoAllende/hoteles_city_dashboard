@@ -2444,15 +2444,14 @@ function local_hoteles_city_dashboard_slug(string $text){
     return $text;
 }
 
-$global_user_permissions = null;
 /**
- * Devuelve arreglo de permisos [permiso1, permiso2] a las que el usuario tiene acceso
+ * Devuelve arreglo de permisos [permiso1, permiso2] a las que el usuario tiene acceso, lo deja también almacenado en global $SESSION
  * @return array [permiso1, permiso2]
  */
 function local_hoteles_city_dashboard_get_user_permissions(){
-    global $global_user_permissions;
-    if($global_user_permissions !== null){
-        return $global_user_permissions;
+    global $SESSION;
+    if(!empty($SESSION->dashboard_permissions)){
+        return $SESSION->dashboard_permissions;
     }
     global $USER;
     if(empty($USER->email)){
@@ -2487,7 +2486,7 @@ function local_hoteles_city_dashboard_get_user_permissions(){
         $user_permissions = array_unique($user_permissions);
         if(count($user_permissions) == $count_all_permissions) return $user_permissions;
     }
-    $global_user_permissions = $user_permissions;
+    $SESSION->dashboard_permissions = $user_permissions;
     return $user_permissions;
 }
 
@@ -2588,9 +2587,9 @@ function local_hoteles_city_dashboard_get_temporal_institutions(string $user_ema
 }
 
 function local_hoteles_city_dashboard_is_gerente_ao(){
-    global $global_user_permissions;
-    if($global_user_permissions !== null){
-        $global_user_permissions = (array) $global_user_permissions;
+    global $SESSION;
+    if(!empty($SESSION->dashboard_permissions)){
+        $global_user_permissions = (array) $SESSION->dashboard_permissions;
         return in_array(local_hoteles_city_dashboard_gerente_ao, $global_user_permissions);
     }
     return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_gerente_ao);
@@ -2599,9 +2598,9 @@ function local_hoteles_city_dashboard_is_gerente_ao(){
 DEFINE('local_hoteles_city_dashboard_director_regional_value', "Director Regional");
 
 function local_hoteles_city_dashboard_is_director_regional(){
-    global $global_user_permissions;
-    if($global_user_permissions !== null){
-        $global_user_permissions = (array) $global_user_permissions;
+    global $SESSION;
+    if(!empty($SESSION->dashboard_permissions)){
+        $global_user_permissions = (array) $SESSION->dashboard_permissions;
         return in_array(local_hoteles_city_dashboard_director_regional, $global_user_permissions);
     }
     global $USER;
@@ -2614,18 +2613,18 @@ function local_hoteles_city_dashboard_is_director_regional(){
 }
 
 function local_hoteles_city_dashboard_is_personal_elearning(){
-    global $global_user_permissions;
-    if($global_user_permissions !== null){
-        $global_user_permissions = (array) $global_user_permissions;
+    global $SESSION;
+    if(!empty($SESSION->dashboard_permissions)){
+        $global_user_permissions = (array) $SESSION->dashboard_permissions;
         return in_array(local_hoteles_city_dashboard_personal_elearning, $global_user_permissions);
     }
     return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_personal_elearning);
 }
 
 function local_hoteles_city_dashboard_is_gerente_general(){
-    global $global_user_permissions;
-    if($global_user_permissions !== null){
-        $global_user_permissions = (array) $global_user_permissions;
+    global $SESSION;
+    if(!empty($SESSION->dashboard_permissions)){
+        $global_user_permissions = (array) $SESSION->dashboard_permissions;
         return in_array(local_hoteles_city_gerente_general_value, $global_user_permissions);
     }
     global $USER;
