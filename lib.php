@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 $roles = null;
 $permissions = null;
 
-DEFINE('local_hoteles_city_dashboard_return_random_data', true);
+DEFINE('local_hoteles_city_dashboard_return_random_data', false);
 
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios', 'Administración de usuarios de hoteles');
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central', 'Administración de usuarios de Oficina Central');

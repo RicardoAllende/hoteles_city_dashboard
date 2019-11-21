@@ -28,4 +28,4 @@ $plugin->component = 'local_hoteles_city_dashboard';
 $plugin->release = '0.1.0';
 $plugin->version = 2019092300;
 $plugin->requires = 2017111300;
-$plugin->maturity = MATURITY_ALPHA;
+$plugin->maturity = MATURITY_RC;
