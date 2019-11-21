@@ -986,7 +986,12 @@ function local_hoteles_city_dashboard_make_course_cache($course, array $params, 
     
     $course_information = new stdClass();
     $userids = local_hoteles_city_dashboard_get_userids_with_params($course, $params);
-    $course_information->enrolled_users = local_hoteles_city_dashboard_get_count_users($userids); //
+    $many_courses = strpos($course, ',') !== false;
+    if($many_courses){
+        $course_information->enrolled_users = local_hoteles_city_dashboard_count_users_many_courses($course, $params);
+    }else{
+        $course_information->enrolled_users = local_hoteles_city_dashboard_get_count_users($userids); //
+    }
     if($course_information->enrolled_users == 0){
         $course_information->approved_users = 0; // No puede haber usuarios aprobados si no hay inscritos
     }else{
@@ -2384,7 +2389,7 @@ function local_hoteles_city_dashboard_create_form_part($content, $title, $descri
  * @return string Unidades operativas correspondientes a la región
  */
 function local_hoteles_city_dashboard_get_region_insitutions($regionid, $returnAsString = false){
-    $default = "Sin unidades operativas";
+    $default = "";
     if(empty($regionid)) return $default;
     global $DB;
     $regions = $DB->get_records_sql_menu('SELECT id, institution FROM {dashboard_region_ins} WHERE regionid = ?', array($regionid));

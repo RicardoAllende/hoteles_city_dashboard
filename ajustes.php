@@ -408,11 +408,13 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                     data: informacion,
                 })
                 .done(function(data) {
-                    // console.log('show_region La información obtenida es: ', data);
-                    $('#region-description').html('Hoteles disponibles: ' + data);
+                    if(data == ''){
+                        data = "Sin unidades operativas";
+                    }
+                    $('#region-description').html('Unidades operativas: ' + data);
                 })
                 .fail(function(error, error2) {
-                    $('#region-description').html('Error al cargar hoteles disponibles, intente de nuevo');
+                    $('#region-description').html('Error al cargar Unidades operativas, intente de nuevo');
                     console.log('show_region Errores', error, error2);
                 });
 
