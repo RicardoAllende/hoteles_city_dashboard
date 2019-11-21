@@ -51,32 +51,41 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Dashboard</title>
 
-    <!-- <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">    
-    <link href="css/sb-admin-2.min.css" rel="stylesheet"> -->
-    <!-- Custom styles for this page -->
-    <!-- <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet"> -->    
-
-    <!-- Bootstrap core JavaScript-->
-    <!-- <script src="vendor/jquery/jquery.min.js"></script> -->    
-    <!-- <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script> -->    
-
-    <!-- Custom scripts for all pages-->
-    <!-- <script src="js/sb-admin-2.min.js"></script> -->
-
-    <!-- <script src="vendor/chart.js/Chart.min.js"></script> -->
-
-    <!-- <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">     -->    
-    <!-- <link href="estilos_city.css" rel="stylesheet"> -->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <script src="vendor/chart.js/Chart.min.js"></script>
     <link href="estilos_city.css" rel="stylesheet">
+
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+     -->
+        
+    
+    <!-- Custom styles for this page -->
+    <!-- <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet"> -->
+
+    
+
     <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <!-- Core plugin JavaScript-->    
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- <script src="vendor/jquery/jquery.min.js"></script> -->
+    <!-- Core plugin JavaScript-->
+    <!-- <script src="vendor/jquery-easing/jquery.easing.min.js"></script> -->
+    <!-- <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script> -->
+
+    
+
+    <!-- Custom scripts for all pages-->
+    <!-- <script src="js/sb-admin-2.min.js"></script> -->
+
+    
+
+    <!-- <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">     -->
+    <!-- <link rel="stylesheet" href="css/jquery.loadingModal.css"> -->
+    
+    <!-- <script src="hoteles_city_scripts.js"></script>     -->
 
        
     
@@ -109,7 +118,8 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
     </tfoot>
 </table>
 
-<script src="classes.js"></script>
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 <!-- <link href="css/sb-admin-2.min.css" rel="stylesheet">
 <script src="vendor/chart.js/Chart.min.js"></script> -->
@@ -124,8 +134,8 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
 <!-- <link href='//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'> -->
 <link href="datatables/buttons.dataTables.min.css" rel="stylesheet">
 
-<!-- jQuery Library -->
-<script src="vendor/jquery/jquery.min.js"></script>
+
+
 
 <!-- Datatable JS -->
 <script src="datatables/jquery.dataTables.min.js"></script>
@@ -234,7 +244,7 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
          Función que se ejecuta al elegir/quitar cursos
          */
         function mostrarGraficaDeCursos(){
-            //modalLoader();
+            modalLoader();
             peticion = Array();
             peticion.push({name: 'request_type', value: 'course_completion'});
             peticion.push({name: 'courseid', value: reportCourses});
@@ -255,14 +265,14 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
                         if (informacion.chart == 'pie') {
                             report.individual_graph();
                         }
-                    //showPage();    
+                    showPage();    
                        
                 })
                 .fail(function (error, error2) {
                     console.log('Error en printInfoCards');
                     console.log(error);
                     console.log(error2);
-                    //showPage();
+                    showPage();
                 });
         } 
         
@@ -272,6 +282,8 @@ echo "<div class='container row'> <input type='hidden' name='request_type' value
 
     });
 </script>
+
+<script src="classes.js"></script>
 
 </body>
 </html>
