@@ -297,7 +297,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
         $(document).ready(function() {
             setTimeout(function() {
                 $('#regions-tab').click();
-            }, 250);
+            }, 500);
             // $('.multiselect-setting').multiselect({
             //     templates: {
             //         li: '<li><a href="javascript:void(0);"><label class="pl-2"></label></a></li>'
