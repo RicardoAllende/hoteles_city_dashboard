@@ -33,7 +33,7 @@ DEFINE('local_hoteles_city_dashboard_return_random_data', false);
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios', 'Administración de usuarios de hoteles');
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central', 'Administración de usuarios de Oficina Central');
 DEFINE('local_hoteles_city_dashboard_listado_todos_los_usuarios', 'Administración de todos los usuarios');
-DEFINE('local_hoteles_city_dashboard_cambio_usuarios', 'Cambio de usuarios');
+DEFINE('local_hoteles_city_dashboard_cambio_usuarios', 'Cambio de usuarios (suspendidos)');
 DEFINE('local_hoteles_city_dashboard_avance_todos_los_cursos', 'Avances de todos los cursos: por región, por hotel, por persona y por puesto');
 DEFINE('local_hoteles_city_dashboard_reportes', 'Gráficas de cursos');
 DEFINE('local_hoteles_city_dashboard_ajustes', 'Ajustes dashboard administrativo Hoteles City');
