@@ -175,7 +175,12 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                         info = informacion[i];
                         //console.log(info);
                         var course = new GraphicsDashboard('curso_graficas',info.title,info.chart,info,4,info.id);
-                        course.printCardCourse();
+                        if(info.enrolled_users > 0){
+                            course.printCardCourse();
+                        }else{
+                            course.printCardSinInfo();
+                        }
+                        
                         if(info.chart == 'bar-agrupadas'){                        
                             course.comparative_graph();
                         }

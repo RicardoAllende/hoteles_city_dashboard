@@ -1,12 +1,8 @@
 
 function regresaInfoByCurso() {
     modalLoader();    
-    informacion = [];
-    // informacion.push({name: 'request_type', value: 'course_list'});
-    informacion.push({ name: 'request_type', value: 'dashboard' });
-    //informacion.push({name: 'type', value: currentTab});
-    //dateBegining = Date.now();
-    // $('#local_hoteles_city_dashboard_content').html('Cargando la información');
+    informacion = [];    
+    informacion.push({ name: 'request_type', value: 'dashboard' });    
     $.ajax({
         type: "POST",
         url: "services.php",
@@ -15,8 +11,7 @@ function regresaInfoByCurso() {
     })
         .done(function (data) {
             console.log('Aqui entra done');
-            isCourseLoading = false;
-            //console.log('Data obtenida ' + data);
+            isCourseLoading = false;            
             respuesta = JSON.parse(JSON.stringify(data));
             respuesta = respuesta.data;
             console.log('Imprimiendo la respuesta', respuesta);
@@ -93,8 +88,7 @@ var total_aprobados = 0;
 var porcentaje_aprobados = 0;
 var porcentaje_noaprobados = 0;
 function graph_data(respuesta) {
-    //console.log('INICIA INFORMACION DE LA GRAFICA');   
-    //console.log(respuesta);    
+        
     data_labels = [];
     resp = respuesta;
     arr_datasets_aprobados = [];
@@ -132,11 +126,7 @@ function graph_data(respuesta) {
         suma_no_aprobados = suma_no_aprobados + resp.elements[j].not_approved_users;
         suma_aprobados = suma_aprobados + resp.elements[j].approved_users;
         arr_datasets_inscritos.push('100');
-    }
-    console.log('TOTAL')
-    console.log(suma_inscritos)
-    
-    
+    }    
 
     arr_total_inscritos.push(suma_inscritos);
     arr_total_no_aprobados.push(suma_no_aprobados);
@@ -150,10 +140,6 @@ function graph_data(respuesta) {
     }
     porcentaje_aprobados = (total_aprobados * 100) / total_inscritos;
     porcentaje_noaprobados = (total_no_aprobados * 100) / total_inscritos;
-    // console.log('TOTAL');
-    // console.log(porcentaje_aprobados.toFixed(2))
-
-
 
     if (resp.chart == 'bar-agrupadas') {
         dataset.push(datasets_aprobados);
@@ -169,17 +155,7 @@ function graph_data(respuesta) {
     if (resp.chart == 'horizontalBar') {
         dataset.push(datasets_aprobados);
         d_graph = { labels: data_labels, datasets: dataset };
-    }
-    // console.log('data_graph.d_graph');
-    // console.log(d_graph);
-    // console.log('LABELS');
-    // console.log(data_labels);
-    // console.log('APROBADOS');
-    // console.log(arr_datasets_aprobados);
-    // console.log('NO APROBADOS');
-    // console.log(arr_datasets_no_aprobados);
-    // console.log('DATASET');
-    // console.log(dataset);        
+    }            
 
     return d_graph;
 
@@ -261,39 +237,6 @@ class GraphicsDashboard {
                 </div>
         </div>        
         `);
-        //     }
-        //     else {
-        //         $("#" + this.div_print_card).append(`
-        //         <div class="col-sm-${this.col_size_graph}">
-        //         <div class="card shadow mb-4">
-        //             <!-- Card Header - Dropdown -->
-        //             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        //                 <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">${this.title}</a></h6>
-        //                 <div class="dropdown no-arrow">
-        //                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        //                     <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-        //                     </a>
-        //                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-        //                         <div class="dropdown-header">Dropdown Header:</div>
-        //                         <a class="dropdown-item" href="#">Action</a>
-        //                         <a class="dropdown-item" href="#">Another action</a>
-        //                         <div class="dropdown-divider"></div>
-        //                         <a class="dropdown-item" href="#">Something else here</a>
-        //                     </div>
-        //                 </div>
-        //             </div>
-        //             <!-- Card Body -->
-        //             <div class="card-body">
-        //                 <div class="">                                         
-        //                     <h3 id="${this.div_graph}" class="txt_sin_usuarios"></h3>                  
-        //                 </div>
-        //             </div>    
-        //         </div>
-        // </div>        
-        // `);
-        //     }
-
-
     }
 
     printCardCourse() {
@@ -320,39 +263,6 @@ class GraphicsDashboard {
                 </div>
         </div>        
         `);
-        //     }
-        //     else {
-        //         $("#" + this.div_print_card).append(`
-        //         <div class="col-sm-${this.col_size_graph}">
-        //         <div class="card shadow mb-4">
-        //             <!-- Card Header - Dropdown -->
-        //             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        //                 <h6 class="m-0 font-weight-bold text-primary"><a href="seccion_regionales_iframe.php">${this.title}</a></h6>
-        //                 <div class="dropdown no-arrow">
-        //                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        //                     <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-        //                     </a>
-        //                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-        //                         <div class="dropdown-header">Dropdown Header:</div>
-        //                         <a class="dropdown-item" href="#">Action</a>
-        //                         <a class="dropdown-item" href="#">Another action</a>
-        //                         <div class="dropdown-divider"></div>
-        //                         <a class="dropdown-item" href="#">Something else here</a>
-        //                     </div>
-        //                 </div>
-        //             </div>
-        //             <!-- Card Body -->
-        //             <div class="card-body">
-        //                 <div class="">                                         
-        //                     <h3 id="${this.div_graph}" class="txt_sin_usuarios"></h3>                  
-        //                 </div>
-        //             </div>    
-        //         </div>
-        // </div>        
-        // `);
-        //     }
-
-
     }
 
     printCardSinInfo(){
@@ -371,8 +281,9 @@ class GraphicsDashboard {
                     </div>
                     <!-- Card Body -->
                     <div class="card-body">
-                        <div class="">                                           
-                        <h3 id="${this.div_graph}" class="txt_sin_usuarios">No hay información</h3>                  
+                        <div class="">
+                        <canvas id="${this.div_graph}" style="display: none"></canvas>                                           
+                        <h3 class="txt_sin_usuarios">No hay usuarios inscritos</h3>                  
                         </div>
                     </div>    
                 </div>
@@ -525,8 +436,7 @@ class GraphicsDashboard {
                 // console.log(percentage_not_approved)               
                 // d_graph.push(this.data_graph.approved_users);
                 // d_graph.push(this.data_graph.not_approved_users);
-                d_graph.push(percentage_not_approved);               
-                if (this.data_graph.enrolled_users > 0) {
+                d_graph.push(percentage_not_approved);                
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                         type: 'pie',
@@ -540,12 +450,6 @@ class GraphicsDashboard {
                         options: {
                         }
                     });
-                }
-                else {
-                    var ctx = document.getElementById(this.div_graph)
-                    ctx.innerHTML = "No existen usuarios inscritos";
-                }
-
                 break;
 
             case 'bar':
@@ -558,8 +462,7 @@ class GraphicsDashboard {
                 // d_graph.push(this.data_graph.not_approved_users);
                 d_graph.push(percentage_not_approved);                
                 d_graph.push('0'); 
-                d_graph.push('100');                                               
-                if (this.data_graph.enrolled_users > 0) {
+                d_graph.push('100');                
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                         // The type of chart we want to create
@@ -575,12 +478,6 @@ class GraphicsDashboard {
                             legend: { display: false }
                         }
                     });
-                }
-                else {
-                    var ctx = document.getElementById(this.div_graph)
-                    ctx.innerHTML = "No existen usuarios inscritos";
-                }
-
                 break;
 
 
