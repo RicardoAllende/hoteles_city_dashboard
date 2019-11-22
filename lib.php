@@ -2214,16 +2214,23 @@ function local_hoteles_city_dashboard_get_array_from_config($config, string $sep
     }
 }
 
-function local_hoteles_city_dashboard_get_regions(array $conditions = array()){
+$cache_regiones = null;
+function local_hoteles_city_dashboard_get_regions(){
+    global $cache_regiones;
+    if($cache_regiones !== null){
+        return $cache_regiones;
+    }
     global $DB;
-    return $DB->get_records('dashboard_region', $conditions);
+    $response = $DB->get_records('dashboard_region', array('active' => 1));
+    $cache_regiones = $response;
+    return $response;
 }
 
 function local_hoteles_city_dashboard_create_region(array $params){
     try{
         global $DB;
         $name = local_hoteles_city_dashboard_get_value_from_params($params, 'name', false);
-        $userid = local_hoteles_city_dashboard_get_value_from_params($params, 'userid');
+        $users = local_hoteles_city_dashboard_get_value_from_params($params, 'userid');
         if(local_hoteles_city_dashboard_has_empty($name)){
             // _log('Datos vacíos en creación de región', $params);
             return 'Hay datos vacíos';
@@ -2234,7 +2241,7 @@ function local_hoteles_city_dashboard_create_region(array $params){
         }
         $region = new stdClass();
         $region->name = $name;
-        $region->userid = intval($userid);
+        $region->users = local_hoteles_city_dashboard_get_string_from_value($users);
         $region->active = 1;
         $insertion = $DB->insert_record('dashboard_region', $region);
         return "ok";
@@ -2277,7 +2284,7 @@ function local_hoteles_city_dashboard_relate_region_institution(array $params){
 function local_hoteles_city_dashboard_update_region(array $params){
     try{
         $id = local_hoteles_city_dashboard_get_value_from_params($params, 'id', false);
-        $userid = local_hoteles_city_dashboard_get_value_from_params($params, 'userid', null);
+        $users = local_hoteles_city_dashboard_get_value_from_params($params, 'userid', '');
         if(empty($id)) return "No se encontró región";
         $delete = local_hoteles_city_dashboard_get_value_from_params($params, 'delete', false);
         
@@ -2300,7 +2307,7 @@ function local_hoteles_city_dashboard_update_region(array $params){
         if(empty($region)) return "No se encontró la región";
         
         $region->name = $name;
-        $region->userid = intval($userid);
+        $region->users = local_hoteles_city_dashboard_get_string_from_value($users);
         if($change_status) { $region->active = !$region->active; }
         // $record = $DB->get_record('dashboard_region_ins', array('regionid' => $regionid));
         $update = $DB->update_record('dashboard_region', $region, false);
@@ -2554,11 +2561,40 @@ function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
         return $institutions;
     }
     if(local_hoteles_city_dashboard_is_director_regional()){
+        $user_regions = local_hoteles_city_dashboard_get_user_regions($userid);
+        if(empty($user_regions)){
+            return $default;
+        }
+        $user_regions = implode(',', $user_regions);
         $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE institution != '' AND 
-        regionid IN (SELECT id FROM {dashboard_region} WHERE userid = {$userid})";
+        regionid IN ({$user_regions})";
         return $DB->get_fieldset_sql($query);
     }
     return $default;
+}
+
+/**
+ * Devuelve las regiones a las que el usuario fue asignado
+ * @param int $userid
+ */
+function local_hoteles_city_dashboard_get_user_regions($userid, bool $onlyIds = true){
+    $regiones = local_hoteles_city_dashboard_get_regions();
+    $response = array();
+    foreach($regiones as $region){
+        $users = $region->users;
+        if(empty($users)){
+            continue;
+        }
+        $users = explode(',', $users);
+        if(in_array($userid, $users)){
+            if($onlyIds){
+                array_push($response, $region->id);
+            }else{
+                array_push($response, $region);
+            }
+        }
+    }
+    return $response;
 }
 
 function local_hoteles_city_dashboard_get_regional_institutions(){
@@ -2696,22 +2732,19 @@ function local_hoteles_city_dashboard_update_gerente_regional(array $params){
     try{	
         global $DB;	
         $id = local_hoteles_city_dashboard_get_value_from_params($params, 'id', false);	
-        $userid = local_hoteles_city_dashboard_get_value_from_params($params, 'userid', false);	
-        if(local_hoteles_city_dashboard_has_empty($id, $userid)){	
+        $users = local_hoteles_city_dashboard_get_value_from_params($params, 'userid', '');	
+        if(local_hoteles_city_dashboard_has_empty($id)){	
             _log('local_hoteles_city_dashboard_update_gerente_regional Faltan datos institution, userid', $params);	
             return 'Por favor recargue la página';	
-        }	
+        }
+        $users = local_hoteles_city_dashboard_get_string_from_value($users);
+
         $record = $DB->get_record('dashboard_region', compact('id'));	
         if($record === false){ // Crear	
             return "No existe la región a actualizar ({$id})";	
-            // $record = new stdClass();	
-            // // $record->institution = $institution;	
-            // $record->userid = $userid;	
-            // // $record->active = 1;	
-            // $insertion = $DB->insert_record('dashboard_region', $record);	
         }else{ // Actualizar	
-            if($userid != $record->userid ){	
-                $record->userid = $userid;	
+            if($users != $record->users ){	
+                $record->users = $users;
                 // $record->active = 1;	
                 $update = $DB->update_record('dashboard_region', $record);	
             }	
@@ -3180,4 +3213,15 @@ function local_hoteles_city_dashboard_get_dashboard_cards_info(){
     $response->approved_users = $approved_users;
     $response->not_approved_users = $not_approved_users;
     return $response;
+}
+
+function local_hoteles_city_dashboard_get_string_from_value($value){
+    if(empty($value)){
+        return '';
+    }
+    if(is_string($value) || is_numeric($value)){
+        return $value;
+    }elseif(is_array($value)){
+        return implode(',', $value);
+    }
 }
