@@ -307,6 +307,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
             // $('select').each(function(index, element){ // Generación de filtros con herramenta choices.js 
             $('select[multiple]').each(function(index, element){ // Generación de filtros con herramenta choices.js
                 var multipleCancelButton = new Choices( '#' + element.id, { removeItemButton: true, searchEnabled: true,
+                    placeholderValue: 'Seleccionar', searchPlaceholderValue: 'Buscar',
                     placeholder: true,
                 } );
             });
@@ -608,12 +609,18 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
 
         function saveAllChanges() { // Guarda los ajustes
             informacion = $('#filter_settings, #permission_settings').serializeArray();
-            informacion.push({ name: 'request_type', value: 'save_settings' });
-            console.log(informacion);
+            peticion = Array();
+            peticion.push({ name: 'request_type', value: 'save_settings' });
+            $.each(informacion, function(i, field){
+                if(field.value != '_qf__force_multiselect_submission'){
+                    peticion.push(field);
+                }
+            });
+            console.log(peticion);
             $.ajax({
                     type: "POST",
                     url: "services.php",
-                    data: informacion,
+                    data: peticion,
                 })
                 .done(function(data) {
                     Swal.fire('Cambios guardados correctamente');
