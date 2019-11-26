@@ -23,9 +23,9 @@
 
 require_once(__DIR__ . "/../../config.php");
 require_once(__DIR__ . '/lib.php');
-$course = optional_param('course', '', PARAM_TEXT);
+$course = optional_param('course', '', PARAM_RAW);
 $params = array();
-if($course == ''){ // Vacío
+if($course != ''){ // Vacío
     $params['reportCourses'] = $course;
 }
 

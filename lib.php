@@ -155,7 +155,7 @@ function local_hoteles_city_dashboard_get_role_permissions(){
     $all_permissions = [
         local_hoteles_city_dashboard_avance_todos_los_cursos,
         local_hoteles_city_dashboard_reportes,
-        local_hoteles_city_dashboard_alta_baja_usuarios,
+        // local_hoteles_city_dashboard_alta_baja_usuarios,
         local_hoteles_city_dashboard_cambio_usuarios,
         local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
         local_hoteles_city_dashboard_listado_todos_los_usuarios,
@@ -2395,11 +2395,21 @@ function local_hoteles_city_dashboard_slug(string $text){
 
 /**
  * Devuelve arreglo de permisos [permiso1, permiso2] a las que el usuario tiene acceso, lo deja también almacenado en global $SESSION
+ * @param bool $forceReloadPermissions volver a consultar los roles y permisos
  * @return array [permiso1, permiso2]
  */
-function local_hoteles_city_dashboard_get_user_permissions(){
+function local_hoteles_city_dashboard_get_user_permissions(bool $forceReloadPermissions = false){
     global $SESSION;
-    if(isset($SESSION->dashboard_permissions)){
+    if(!isloggedin()){
+        if(isset($SESSION->dashboard_roles)){
+            unset($SESSION->dashboard_roles);
+        }
+        if(isset($SESSION->dashboard_permissions)){
+            unset($SESSION->dashboard_permissions);
+        }
+        return array();
+    }
+    if(isset($SESSION->dashboard_permissions) && !$forceReloadPermissions){
         return $SESSION->dashboard_permissions;
     }
     global $USER;
@@ -3228,8 +3238,8 @@ function local_hoteles_city_dashboard_export_configurable_report($type, $params 
 
     // _log("<br>El tiempo de exportado es: " . $tiempo . " segundos");
 
-    // $workbook->close();
-    // exit;    
+    $workbook->close();
+    exit;    
 }
 
 function local_hoteles_city_dashboard_get_configurable_report_records($type, array $params = array()){
@@ -3292,5 +3302,6 @@ function local_hoteles_city_dashboard_get_configurable_report_records($type, arr
     $query = "select {$select_sql} from {user} AS user {$join_sql} {$orderBy} {$columnSortOrder}";
     $records = $DB->get_records_sql($query, $queryParams);
 
+    _log(count($records));
     return $records;
 }

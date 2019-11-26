@@ -39,6 +39,8 @@ $tiempo_inicial = microtime(true); //true es para que sea calculado en segundos
 // _print($DB->get_fieldset_sql($sql, array('3')));
 _print(local_hoteles_city_dashboard_get_institutions_for_dashboard_user());
 echo $OUTPUT->action_link('www.google.com', $text = 'google', $component_action = null, $attributes_array = array('class' => 'descarga'));
+_print($SESSION->dashboard_permissions);
+_print($SESSION->dashboard_roles);
 // _print(local_hoteles_city_dashboard_make_courses_cache());
 
 // global $DB;
