@@ -332,21 +332,8 @@ function local_hoteles_city_dashboard_get_departments(){
     return $response;
 }
 
-$cache_institutions = null;
 function local_hoteles_city_dashboard_get_institutions(){
-    global $cache_institutions;
-    if($cache_institutions !== null){
-        return $cache_institutions;
-    }
-    $key = 'institution';
-    $result = local_hoteles_city_dashboard_get_catalogues([$key]);
-    $result = $result[$key];
-    $response = array();
-    foreach($result as $result){
-        $response[$result] = $result;
-    }
-    $cache_institutions = $response;
-    return $response;
+    return local_hoteles_city_dashboard_get_institutions_for_dashboard_user();
 }
 
 function local_hoteles_city_dashboard_get_marcas(){
@@ -358,14 +345,6 @@ function local_hoteles_city_dashboard_get_marcas(){
     return array();
 }
 
-// function local_hoteles_city_dashboard_get_institutions_for_profile(){
-//     global $USER;
-//     if($USER->department == 'Gerentes Generales'){
-//         $institution = $USER->institution;
-//     }
-//     $institution = 
-//     $query = "SELECT * FROM {dashboard_region_ins} WHERE regionid IN (SELECT distinct regionid FROM {dashboard_region_ins} WHERE institution = 'Hotel 2')";
-// }
 $cache_gerentes_generales = null;
 function local_hoteles_city_dashboard_get_gerentes_generales(){
     global $cache_gerentes_generales;
@@ -471,8 +450,7 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     }
 
     // if(in_array('institution', $allowed_fields)){
-        // $institutions = local_hoteles_city_dashboard_get_institutions_for_dashboard_user();
-        $institutions = local_hoteles_city_dashboard_get_regional_institutions();
+        $institutions = local_hoteles_city_dashboard_get_institutions_for_dashboard_user();
         $required = $strrequired;
         $mform->addElement('select', 'institution', 'Unidad operativa', $institutions);
         if(!empty($institutions)){
@@ -1584,6 +1562,7 @@ function local_hoteles_city_dashboard_get_userids_with_params($course, array $pa
  * @return string cadena para agregar como where in de los usuarios inscritos en el curso
  */
 function local_hoteles_city_dashboard_count_users_many_courses(string $courses, $params = array()){
+    $params = local_hoteles_city_dashboard_get_restricted_params($params);
     if(empty($courses)){
         print_error('No se ha enviado id del curso local_hoteles_city_dashboard_count_users_many_courses');
     }
@@ -1792,14 +1771,19 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
 
     ## Total number of record with filtering
     $query = "SELECT count(*) FROM (SELECT {$select_slim} FROM {user} AS user {$join_sql} {$searchQuery}) AS t1";
-    $queryParamsFilter = array($searchValue);
+    $queryParamsFilter = $queryParams;
+    if($searchValue != ''){
+        array_push($queryParamsFilter, $searchValue);
+        array_push($queryParams, $searchValue);
+    }
+    // $queryParamsFilter = array($searchValue);
     
     $totalRecordwithFilter = $DB->count_records_sql($query, $queryParamsFilter);
     // _log('Elementos filtrados', $totalRecordwithFilter);
     
     ## Consulta de los elementos
-    $queryParams = array();
-    array_push($queryParams, $searchValue);
+    // $queryParams = array();
+    // array_push($queryParams, $searchValue);
     $query = "select {$select_sql} from {user} AS user {$join_sql} {$searchQuery} order by {$columnName} {$columnSortOrder} {$limit}";
     // _sql($query, $queryParams);
     $records = $DB->get_records_sql($query, $queryParams);
@@ -2419,20 +2403,35 @@ function local_hoteles_city_dashboard_get_user_permissions(){
         return $SESSION->dashboard_permissions;
     }
     global $USER;
+
+    $email = $USER->email;
+    $permission_list = local_hoteles_city_dashboard_get_role_permissions();
+    $SESSION->dashboard_roles = array();
+    $SESSION->dashboard_permissions = array();
+
     if(empty($USER->email)){
         return array();
     }
-    $email = $USER->email;
-    $roles = array();
-    $permission_list = local_hoteles_city_dashboard_get_role_permissions();
-    $count_all_permissions = count($permission_list);
-    $user_permissions = array();
+    if(local_hoteles_city_dashboard_is_gerente_general()){
+        array_push($SESSION->dashboard_roles, local_hoteles_city_dashboard_gerente_hotel);
+        $SESSION->dashboard_permissions = array_merge($SESSION->dashboard_permissions, $permission_list[local_hoteles_city_dashboard_gerente_hotel]);
+        $SESSION->dashboard_permissions = array_unique($SESSION->dashboard_permissions);
+        $SESSION->dashboardCapability = in_array(local_hoteles_city_dashboard_reportes, $SESSION->dashboard_permissions);
+        return $SESSION->dashboard_permissions;
+    }
+    if(local_hoteles_city_dashboard_is_director_regional()){
+        array_push($SESSION->dashboard_roles, local_hoteles_city_dashboard_director_regional);
+        $SESSION->dashboard_permissions = array_merge($SESSION->dashboard_permissions, $permission_list[local_hoteles_city_dashboard_director_regional]);
+        $SESSION->dashboard_permissions = array_unique($SESSION->dashboard_permissions);
+        $SESSION->dashboardCapability = in_array(local_hoteles_city_dashboard_reportes, $SESSION->dashboard_permissions);
+        return $SESSION->dashboard_permissions;
+    }
     if(is_siteadmin()){
-        // $roles[local_hoteles_city_dashboard_administrador] = $permissions[local_hoteles_city_dashboard_administrador];
-        $user_permissions = array_merge($user_permissions, $permission_list[local_hoteles_city_dashboard_administrador]);
-        $user_permissions = array_unique($user_permissions);
-        $SESSION->dashboardCapability = in_array(local_hoteles_city_dashboard_reportes, $user_permissions);
-        if(count($user_permissions) == $count_all_permissions) return $user_permissions;
+        array_push($SESSION->dashboard_roles, local_hoteles_city_dashboard_administrador);
+        $SESSION->dashboard_permissions = array_merge($SESSION->dashboard_permissions, $permission_list[local_hoteles_city_dashboard_administrador]);
+        $SESSION->dashboard_permissions = array_unique($SESSION->dashboard_permissions);
+        $SESSION->dashboardCapability = in_array(local_hoteles_city_dashboard_reportes, $SESSION->dashboard_permissions);
+        return $SESSION->dashboard_permissions;
     }
     foreach (local_hoteles_city_dashboard_get_dashboard_roles() as $key => $name) {
         $config_name = $key;
@@ -2440,23 +2439,15 @@ function local_hoteles_city_dashboard_get_user_permissions(){
         if(!empty($config)){
             $config = explode(' ', $config);
             if(in_array($email, $config)){
-                $user_permissions = array_merge($user_permissions, $permission_list[$key]);
-                $user_permissions = array_unique($user_permissions);
-                $SESSION->dashboardCapability = in_array(local_hoteles_city_dashboard_reportes, $user_permissions);
-                if(count($user_permissions) == $count_all_permissions) return $user_permissions;
-                // $roles[$key] = $permission_list[$key];
+                array_push($SESSION->dashboard_roles, $key);
+                $SESSION->dashboard_permissions = array_merge($SESSION->dashboard_permissions, $permission_list[$key]);
+                $SESSION->dashboard_permissions = array_unique($SESSION->dashboard_permissions);
+                $SESSION->dashboardCapability = in_array(local_hoteles_city_dashboard_reportes, $SESSION->dashboard_permissions);
+                return $SESSION->dashboard_permissions;
             }
         }
     }
-    if(local_hoteles_city_dashboard_is_gerente_general()){
-        $user_permissions = array_merge($user_permissions, $permission_list[local_hoteles_city_dashboard_gerente_hotel]);
-        $user_permissions = array_unique($user_permissions);
-        $SESSION->dashboardCapability = in_array(local_hoteles_city_dashboard_reportes, $user_permissions);
-        if(count($user_permissions) == $count_all_permissions) return $user_permissions;
-    }
-    $SESSION->dashboard_permissions = $user_permissions;
-    $SESSION->dashboardCapability = in_array(local_hoteles_city_dashboard_reportes, $user_permissions);
-    return $user_permissions;
+    return $SESSION->dashboard_permissions;
 }
 
 function local_hoteles_city_dashboard_user_has_role(string $key){
@@ -2471,11 +2462,16 @@ function local_hoteles_city_dashboard_user_has_role(string $key){
     return false;
 }
 
+$cache_institutions = null;
 /**
  * Devuelve un listado de hoteles (institutions) del gerente general de la región
  * @return array Listado de instituciones
  */
 function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
+    global $cache_institutions;
+    if($cache_institutions !== null){
+        return $cache_institutions;
+    }
     $default = array();
     if(!isloggedin()){
         return $default;
@@ -2492,25 +2488,28 @@ function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
     // return $DB->get_fieldset_sql($query);
     $queryAllInstitutions = "SELECT DISTINCT institution FROM {user} WHERE deleted = 0 AND id > 1 AND institution != ''";
     if(is_siteadmin()){        
-        return $DB->get_fieldset_sql($queryAllInstitutions);
+        $cache_institutions = $DB->get_fieldset_sql($queryAllInstitutions); return $cache_institutions;
     }
     if(local_hoteles_city_dashboard_is_gerente_ao()){
-        return $DB->get_fieldset_sql($queryAllInstitutions);
+        $cache_institutions = $DB->get_fieldset_sql($queryAllInstitutions); return $cache_institutions;
     }
     if(local_hoteles_city_dashboard_is_personal_elearning()){
-        return $DB->get_fieldset_sql($queryAllInstitutions);
+        $cache_institutions = $DB->get_fieldset_sql($queryAllInstitutions); return $cache_institutions;
     }
     if(local_hoteles_city_dashboard_is_gerente_general()){
+        $institutions = array();
         $institution = $USER->institution;
-        if(empty($institution)){
-            return array();
+
+        if(!empty($institution)){
+            array_push($institutions, $institution);
         }
-        $query = "SELECT DISTINCT institution FROM {user} WHERE id = {$userid} AND institution != ''";
+        // $query = "SELECT DISTINCT institution FROM {user} WHERE id = {$userid} AND institution != ''";
         // $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE dri.regionid = (SELECT regionid 
         // FROM {dashboard_region_ins} WHERE institution = '{$institution}' LIMIT 1) AND institution != ''";
-        $institutions = $DB->get_fieldset_sql($query);
+        // $institutions = $DB->get_fieldset_sql($query);
         $temporal_institutions = local_hoteles_city_dashboard_get_temporal_institutions($email);
         $institutions = array_unique(array_merge($institutions, $temporal_institutions));
+        $cache_institutions = $institutions;
         return $institutions;
     }
     if(local_hoteles_city_dashboard_is_director_regional()){
@@ -2521,8 +2520,10 @@ function local_hoteles_city_dashboard_get_institutions_for_dashboard_user(){
         $user_regions = implode(',', $user_regions);
         $query = "SELECT DISTINCT institution FROM {dashboard_region_ins} as dri WHERE institution != '' AND 
         regionid IN ({$user_regions})";
-        return $DB->get_fieldset_sql($query);
+        $cache_institutions = $DB->get_fieldset_sql($query);
+        return $cache_institutions;
     }
+    $cache_institutions = $default;
     return $default;
 }
 
@@ -2586,8 +2587,8 @@ function local_hoteles_city_dashboard_get_temporal_institutions(string $user_ema
 
 function local_hoteles_city_dashboard_is_gerente_ao(){
     global $SESSION;
-    if(!empty($SESSION->dashboard_permissions)){
-        $global_user_permissions = (array) $SESSION->dashboard_permissions;
+    if(isset($SESSION->dashboard_roles)){
+        $global_user_permissions = (array) $SESSION->dashboard_roles;
         return in_array(local_hoteles_city_dashboard_gerente_ao, $global_user_permissions);
     }
     return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_gerente_ao);
@@ -2597,8 +2598,8 @@ DEFINE('local_hoteles_city_dashboard_director_regional_value', "Director Regiona
 
 function local_hoteles_city_dashboard_is_director_regional(){
     global $SESSION;
-    if(!empty($SESSION->dashboard_permissions)){
-        $global_user_permissions = (array) $SESSION->dashboard_permissions;
+    if(isset($SESSION->dashboard_roles)){
+        $global_user_permissions = (array) $SESSION->dashboard_roles;
         return in_array(local_hoteles_city_dashboard_director_regional, $global_user_permissions);
     }
     global $USER;
@@ -2612,8 +2613,8 @@ function local_hoteles_city_dashboard_is_director_regional(){
 
 function local_hoteles_city_dashboard_is_personal_elearning(){
     global $SESSION;
-    if(!empty($SESSION->dashboard_permissions)){
-        $global_user_permissions = (array) $SESSION->dashboard_permissions;
+    if(isset($SESSION->dashboard_roles)){
+        $global_user_permissions = (array) $SESSION->dashboard_roles;
         return in_array(local_hoteles_city_dashboard_personal_elearning, $global_user_permissions);
     }
     return local_hoteles_city_dashboard_user_has_role(local_hoteles_city_dashboard_personal_elearning);
@@ -2621,9 +2622,9 @@ function local_hoteles_city_dashboard_is_personal_elearning(){
 
 function local_hoteles_city_dashboard_is_gerente_general(){
     global $SESSION;
-    if(!empty($SESSION->dashboard_permissions)){
-        $global_user_permissions = (array) $SESSION->dashboard_permissions;
-        return in_array(local_hoteles_city_gerente_general_value, $global_user_permissions);
+    if(isset($SESSION->dashboard_roles)){
+        $global_user_permissions = (array) $SESSION->dashboard_roles;
+        return in_array(local_hoteles_city_dashboard_gerente_hotel, $global_user_permissions);
     }
     global $USER;
     return $USER->department == local_hoteles_city_gerente_general_value;
@@ -3042,24 +3043,31 @@ function local_hoteles_city_dashboard_get_restricted_params(array $params){
         $allowed_filters = local_hoteles_city_dashboard_get_allowed_filters();
         if(local_hoteles_city_dashboard_is_director_regional() || local_hoteles_city_dashboard_is_gerente_general()){
             $institutions = local_hoteles_city_dashboard_get_institutions();
+            if(empty($institutions)){ // No tiene instituciones asignadas, se debe tratar de un error
+                print_error('El usuario no tiene instituciones asignadas');
+            }
             foreach($allowed_filters->filters as $filter){
                 switch ($filter) {
                     case 'institution':
                         $allowed_elements = array();
-                        $institution_request = $params['institution'];
-                        if(is_string($institution_request) || is_numeric($institution_request)){
-                            if(!in_array($institution_request, $institutions)){ // No le corresponde esta institución
-                                unset($params['institution']);
+                        if(isset($params['institution'])){
+                            $institution_request = $params['institution'];
+                            if(is_string($institution_request) || is_numeric($institution_request)){
+                                if(!in_array($institution_request, $institutions)){ // No le corresponde esta institución, poner aquellas que sí
+                                    $params['institution'] = $institutions;
+                                }
+                            }elseif(is_array($institution_request)){
+                                foreach($institution_request as $ins){ // Recorrer aquellas que está consultando para ver si le corresponden
+                                    array_push($allowed_elements, $ins);
+                                }
+                                if(empty($allowed_elements)){ // Si no hay válidas, sólo incluir aquellas que le corresponden
+                                    $params['institution'] = $institutions;
+                                }else{
+                                    $params['institution'] = $allowed_elements;
+                                }
                             }
-                        }elseif(is_array($institution_request)){
-                            foreach($params['institution'] as $ins){
-                                array_push($allowed_elements, $ins);
-                            }
-                            if(empty($allowed_elements)){
-                                unset($params['institution']);                                
-                            }else{
-                                $params['institution'] = $allowed_elements;
-                            }
+                        }else{
+                            $params['institution'] = $institutions;
                         }
                         break;
                     case 'department':
@@ -3220,8 +3228,8 @@ function local_hoteles_city_dashboard_export_configurable_report($type, $params 
 
     // _log("<br>El tiempo de exportado es: " . $tiempo . " segundos");
 
-    $workbook->close();
-    exit;    
+    // $workbook->close();
+    // exit;    
 }
 
 function local_hoteles_city_dashboard_get_configurable_report_records($type, array $params = array()){
@@ -3236,6 +3244,7 @@ function local_hoteles_city_dashboard_get_configurable_report_records($type, arr
             if(is_array($courses)){
                 $courses = implode(',', $courses);
             }
+            _log('Generando desde ', $courses);
             if(empty($courses)){
                 $courses = '-1';
             }
@@ -3274,7 +3283,6 @@ function local_hoteles_city_dashboard_get_configurable_report_records($type, arr
     global $DB;
     
     $report_info = local_hoteles_city_dashboard_get_report_columns($type);
-    $queryParams = array();
     $select_sql = $report_info->select_sql;
     $orderBy = "";
     if(!empty($report_info->ajax_names)){

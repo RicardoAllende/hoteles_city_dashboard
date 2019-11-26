@@ -28,15 +28,16 @@ require_once(__DIR__ . '/lib.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title('Pruebas hoteles city');
 $PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/pruebas.php');
+$PAGE->set_pagelayout('admin');
 
 echo $OUTPUT->header();
-global $DB, $USER;
+global $DB, $USER, $SESSION;
 
 $tiempo_inicial = microtime(true); //true es para que sea calculado en segundos
 
 // $sql = "SELECT institution FROM {dashboard_region_ins} WHERE users LIKE ? ";
 // _print($DB->get_fieldset_sql($sql, array('3')));
-
+_print(local_hoteles_city_dashboard_get_institutions_for_dashboard_user());
 echo $OUTPUT->action_link('www.google.com', $text = 'google', $component_action = null, $attributes_array = array('class' => 'descarga'));
 // _print(local_hoteles_city_dashboard_make_courses_cache());
 
