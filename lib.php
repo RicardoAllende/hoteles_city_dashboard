@@ -1750,7 +1750,7 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
     
     ## Total number of records without filtering
     $query = "SELECT COUNT(*) FROM {user} AS user {$join_sql} WHERE " . $where_sql_query;
-    $totalRecords = $DB->count_records_sql($query, $enrol_params);//($table, $conditions_array);
+    $totalRecords = $DB->count_records_sql($query, $queryParams);//($table, $conditions_array);
     // _log('Elementos totales', $totalRecords);    
     if($searchValue != ''){
         if($columnName == 'name'){ // Campo por defecto name

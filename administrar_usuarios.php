@@ -370,7 +370,7 @@ if($creating_user){ // Rellenado de formulario
     echo "<script src='user.js'></script>";
 }
 if($user->suspended){ // Si el usuario está suspendido, se necesita el permiso para verlo
-    local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_cambio_usuarios, 'Usuario suspendido');
+    local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_cambio_usuarios, "Este usuario ({$$userfullname}) fue suspendido, actualmente no tiene el permiso para editarlo");
 }
 echo $specialScript;
 ?>
