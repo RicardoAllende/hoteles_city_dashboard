@@ -34,7 +34,6 @@ require_once($CFG->dirroot.'/user/lib.php');
 // require_once($CFG->dirroot.'/lib/formslib.php');
 
 $formulario_enviado = false;
-
 $id     = optional_param('id', -1, PARAM_INT);    // User id; -1 if creating new user.
 $page_params = "id=" . $id;
 $suspenduser = optional_param('suspenduser', -1, PARAM_INT);
@@ -43,6 +42,15 @@ $creating_user = false;
 if($id == -1){
     $creating_user = true;
 }
+
+/**
+ * Revisión de permisos de usuario
+ */
+if(!(local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_alta_baja_usuarios, '', false)
+ || local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_listado_todos_los_usuarios, '', false))){
+    print_error('Usted no tiene permiso para acceder a esta sección');
+}
+
 // $page_params = array('id' => $id);
 if($suspenduser != -1){
     $page_params .= '&suspenduser=1';
@@ -106,6 +114,14 @@ if ($id == -1) {
             $node->force_open();
         }
     }
+    
+    if(!local_hoteles_city_dashboard_user_has_all_permissions()){
+        $institutions = local_hoteles_city_dashboard_get_institutions();
+        if(!in_array($user->institution, $institutions)){ // Una institución que no pertenece al usuario
+            print_error('Usted no tiene permiso de acceder a esta sección');
+        }
+    }
+
 }
 
 // Remote users cannot be edited.

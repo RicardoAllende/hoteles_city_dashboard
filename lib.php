@@ -153,9 +153,9 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
 
 function local_hoteles_city_dashboard_get_role_permissions(){
     $all_permissions = [
-        local_hoteles_city_dashboard_avance_todos_los_cursos,
-        local_hoteles_city_dashboard_reportes,
-        // local_hoteles_city_dashboard_alta_baja_usuarios,
+        local_hoteles_city_dashboard_avance_todos_los_cursos, // Gráficas comparativas
+        local_hoteles_city_dashboard_reportes, // Gráficas por curso y listado de usuarios por curso
+        // local_hoteles_city_dashboard_alta_baja_usuarios, // Ellos tienen edición de todos los usuarios, esta opción es duplicada para ellos
         local_hoteles_city_dashboard_cambio_usuarios,
         local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
         local_hoteles_city_dashboard_listado_todos_los_usuarios,
@@ -170,7 +170,7 @@ function local_hoteles_city_dashboard_get_role_permissions(){
         ],
         local_hoteles_city_dashboard_gerente_hotel => [
             local_hoteles_city_dashboard_reportes,
-            local_hoteles_city_dashboard_alta_baja_usuarios,
+            local_hoteles_city_dashboard_alta_baja_usuarios, // Alta y baja de usuarios de hoteles
             local_hoteles_city_dashboard_services,
         ],
     );
@@ -3332,4 +3332,12 @@ function local_hoteles_city_dashboard_get_configurable_report_records($type, arr
 
     _log(count($records));
     return $records;
+}
+
+/**
+ * Devuelve si el usuario tiene acceso total en el dashboard
+ * @return bool true|false
+ */
+function local_hoteles_city_dashboard_user_has_all_permissions(){
+    return is_siteadmin() || local_hoteles_city_dashboard_is_personal_elearning() || local_hoteles_city_dashboard_is_gerente_ao();
 }
