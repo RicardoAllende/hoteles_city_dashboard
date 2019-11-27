@@ -1685,24 +1685,36 @@ function local_hoteles_city_dashboard_get_paginated_users(array $params, $type){
         break;
 
         case local_hoteles_city_dashboard_all_users_pagination:
-            $where_sql_query = " user.id > 1 AND user.deleted = 0";
+            $restricted_params = local_hoteles_city_dashboard_get_restricted_params($params);
+            list($user_table_sql, $user_table_params) = local_hoteles_city_dashboard_create_user_filters_sql($restricted_params, $prefix_ = 'user'); // Filtros de la tabla user
+            $queryParams = array_merge($queryParams, $user_table_params);
+            $where_sql_query = " user.id > 1 AND user.deleted = 0 {$user_table_sql}";
         break;
 
         case local_hoteles_city_dashboard_suspended_users_pagination:
-            $where_sql_query = ' user.id > 1 AND user.suspended = 1 AND user.deleted = 0';
+            $restricted_params = local_hoteles_city_dashboard_get_restricted_params($params);
+            list($user_table_sql, $user_table_params) = local_hoteles_city_dashboard_create_user_filters_sql($restricted_params, $prefix_ = 'user'); // Filtros de la tabla user
+            $queryParams = array_merge($queryParams, $user_table_params);
+            $where_sql_query = " user.id > 1 AND user.suspended = 1 AND user.deleted = 0 {$user_table_sql}";
         break;
 
         case local_hoteles_city_dashboard_actived_users_pagination:
+            $restricted_params = local_hoteles_city_dashboard_get_restricted_params($params);
+            list($user_table_sql, $user_table_params) = local_hoteles_city_dashboard_create_user_filters_sql($restricted_params, $prefix_ = 'user'); // Filtros de la tabla user
+            $queryParams = array_merge($queryParams, $user_table_params);
             $marcafield = local_hoteles_city_dashboard_get_marcafield(true);
             $marcaValue = local_hoteles_city_dashboard_oficina_central_value;
-            $where_sql_query = " user.id > 1 AND user.suspended = 0 AND user.deleted = 0 AND 
+            $where_sql_query = " user.id > 1 AND user.suspended = 0 AND user.deleted = 0 {$user_table_sql} AND 
             user.id NOT IN (SELECT distinct userid FROM {user_info_data} WHERE fieldid = {$marcafield} AND data = '{$marcaValue}')";
         break;
 
         case local_hoteles_city_dashboard_oficina_central_pagination:
+            $restricted_params = local_hoteles_city_dashboard_get_restricted_params($params);
+            list($user_table_sql, $user_table_params) = local_hoteles_city_dashboard_create_user_filters_sql($restricted_params, $prefix_ = 'user'); // Filtros de la tabla user
+            $queryParams = array_merge($queryParams, $user_table_params);
             $marcafield = local_hoteles_city_dashboard_get_marcafield(true);
             $marcaValue = local_hoteles_city_dashboard_oficina_central_value;
-            $where_sql_query = " user.id > 1 AND user.deleted = 0 AND user.id IN 
+            $where_sql_query = " user.id > 1 AND user.deleted = 0 {$user_table_sql} AND user.id IN 
              (SELECT distinct userid FROM {user_info_data} WHERE fieldid = {$marcafield} AND data = '{$marcaValue}')";
         break;
 
