@@ -37,7 +37,7 @@ $tiempo_inicial = microtime(true); //true es para que sea calculado en segundos
 // _print(local_hoteles_city_dashboard_get_user_permissions(true));
 // $sql = "SELECT institution FROM {dashboard_region_ins} WHERE users LIKE ? ";
 // _print($DB->get_fieldset_sql($sql, array('3')));
-_print('Instituciones', local_hoteles_city_dashboard_get_institutions_for_dashboard_user());
+_print('Instituciones', local_hoteles_city_dashboard_get_institutions());
 echo $OUTPUT->action_link('www.google.com', $text = 'google', $component_action = null, $attributes_array = array('class' => 'descarga'));
 _print('Permisos', local_hoteles_city_dashboard_get_user_permissions());
 _print('Roles', $SESSION->dashboard_roles);
