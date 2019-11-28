@@ -30,6 +30,9 @@ $permissions = null;
 
 DEFINE('local_hoteles_city_dashboard_return_random_data', false);
 
+/**
+ * Permisos que existen en el dashboard
+ */
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios', 'Administración de usuarios');
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central', 'Administración de usuarios de Oficina Central');
 DEFINE('local_hoteles_city_dashboard_listado_todos_los_usuarios', 'Administración de todos los usuarios');
@@ -176,7 +179,8 @@ function local_hoteles_city_dashboard_get_role_permissions(){
     );
     $response[local_hoteles_city_dashboard_gerente_ao] = $all_permissions;
     $response[local_hoteles_city_dashboard_personal_elearning] = $all_permissions;
-    $response[local_hoteles_city_dashboard_administrador] = $all_permissions;
+    $permisos_admin = array_diff($all_permissions, [local_hoteles_city_dashboard_cambio_usuarios]); // No se permite hacer cambios
+    $response[local_hoteles_city_dashboard_administrador] = $permisos_admin;
     return $response;
 }
 
