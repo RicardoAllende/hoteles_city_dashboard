@@ -60,15 +60,18 @@ $description = ""; // No es usado en esta sección
 
 <body style="background-color: #ecedf1; max-width: 100%;">
 
+    <div class='row'>
     <?php 
-        echo "<div class='container row'>" .
-        local_hoteles_city_dashboard_print_multiselect('report_courses', "Cursos", $default_courses, $courses, true, $class = 'col-sm-10') 
-        . "<div class='col-sm-2' style='margin: auto;'>
+        echo local_hoteles_city_dashboard_print_multiselect('report_courses', "Cursos", $default_courses, $courses, true, $class = 'col-sm-10 barra-cursos');
+    ?>
+        <div class='col-sm-2' style='margin: auto;'>
             <button id='descargar_reporte' onclick='descargar_reporte()' class='btn btn-info'>Descargar reporte</button>
             <button onclick='top.window.location.href=\"orden.php\"' style='margin:1%' class='btn btn-info'>Reordenar campos</button>
-        </div>"
-        . "</div>";
-    ?>
+        </div>
+
+        <!-- Div para pintar la grafica del curso -->    
+        <div class="col-12 card-detalle" id="grafica_reporte"></div>
+    </div>
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -77,10 +80,8 @@ $description = ""; // No es usado en esta sección
         </div>
     </div>
 
-    <!-- Div para pintar la grafica del curso -->
-    <div class="row">
-        <div class="col-12" id="grafica_reporte" style="margin-left: 500px;"></div>
-    </div>
+    
+    
 
     <table id='empTable' class='display dataTable table table-bordered'>
         <thead>
@@ -244,7 +245,7 @@ $description = ""; // No es usado en esta sección
                         informacion = data.data;
                         console.log(informacion)
                         cleanDiv();
-                        var report = new GraphicsDashboard('grafica_reporte', 'Comparativa', informacion.chart, informacion, 6, informacion.id);
+                        var report = new GraphicsDashboard('grafica_reporte', 'Comparativa', informacion.chart, informacion, 8, informacion.id);
                         report.printCardCourse();
                         if (informacion.chart == 'pie') {
                             report.individual_graph();

@@ -246,3 +246,15 @@
     display: none;
     text-align: center;
   }
+
+  /*Barra de cursos del archivo detalle_curso_iframe */
+  .barra-cursos {
+    padding-left: 3rem;
+  }
+
+  /* Estilo para la card comparativa en detalle_curso_iframe*/
+  .card-detalle{
+    padding-top: 1rem;
+    padding-left: 30rem;
+
+  }

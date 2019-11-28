@@ -19,7 +19,7 @@ function regresaInfoByCurso() {
             showPage();
 
 
-            console.log('HOLA')
+            
              
             for (var i = 0; i < respuesta.length; i++) {
                 resp = respuesta[i];
