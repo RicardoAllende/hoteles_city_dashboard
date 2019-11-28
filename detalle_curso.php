@@ -71,7 +71,7 @@ $description = ""; // No es usado en esta sección
                     if(element.contentWindow.document != null){
                         if(element.contentWindow.document.body != null){
                             if(element.contentWindow.document.body.offsetHeight != null){
-                                size = (element.contentWindow.document.body.offsetHeight ) + 'px';
+                                size = (element.contentWindow.document.body.offsetHeight + 500 ) + 'px';
                                 // console.log(size);
                                 document.getElementById(frame_id).style.height = "1500px";
                             }

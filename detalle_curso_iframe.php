@@ -267,8 +267,8 @@ $description = ""; // No es usado en esta sección
         });
         function descargar_reporte(){
             url = "descargar_reporte.php?course=" + reportCourses;
-            console.log("Descargando desde ", url);;
-            // window.location.href = url;
+            // console.log("Descargando desde ", url);;
+            window.location.href = url;
         }
     </script>
 
