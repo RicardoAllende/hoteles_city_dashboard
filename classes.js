@@ -15,15 +15,17 @@ function regresaInfoByCurso() {
             respuesta = JSON.parse(JSON.stringify(data));
             respuesta = respuesta.data;
             console.log('Imprimiendo la respuesta', respuesta);
+            
             showPage();
 
 
-
-
+            console.log('HOLA')
+             
             for (var i = 0; i < respuesta.length; i++) {
                 resp = respuesta[i];
                 var curso = new GraphicsDashboard('contenedor_graficas', resp.name, resp.chart, resp, 6);
-                if(resp.enrolled_users > 0){                    
+                if(resp.elements.length > 0){  
+                                     
                     curso.printCard();
                 }else{
                     curso.printCardSinInfo();                    
