@@ -739,10 +739,6 @@ function custom_profile_definition($mform, $userid = 0) {
                 $formfield->edit_field_set_default($mform);
                 $formfield->edit_field_set_required($mform);
 
-                $formfield->edit_field_add($mform);
-                $formfield->edit_field_set_default($mform);
-                $formfield->edit_field_set_required($mform);
-
                 $mform->addRule($formfield->inputname, 'Este campo es requerido', 'required');
             }
         }
@@ -1222,7 +1218,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, bool $return
             switch ($field_key) {
                 case 'name':
                     array_push($ajax_names, $field_key);
-                    array_push($select_sql, "concat({$prefix}firstname, ' ', {$prefix}lastname ) as {$field_key}");
+                    array_push($select_sql, "concat({$prefix}firstname, ' ', {$prefix}lastname, '||', {$prefix}id ) as {$field_key}");
                     array_push($visible_names, 'Nombre');
                 break;
 
@@ -1399,7 +1395,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, bool $return
                 $islink = false;
                 $ajax_code .= "{data: '{$an}', render: 
                     function ( data, type, row ) { 
-                        parts = data.split('||');
+                        parts = data.split('||');// nombre||id
                         return '<a class=\"\" href=\"administrar_usuarios.php?id=' + parts[1] + '\">' + parts[0] + '</a>'; 
                     } 
                 }, ";
