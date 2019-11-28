@@ -100,7 +100,7 @@ if ($id == -1) {
     $user->deleted = 0;
     $user->timezone = '99';
     // require_capability('moodle/user:create', $systemcontext);
-    admin_externalpage_setup('addnewuser', '', array('id' => -1));
+    // admin_externalpage_setup('addnewuser', '', array('id' => -1));
 } else {
     // Editing existing user.
     // require_capability('moodle/user:update', $systemcontext);
