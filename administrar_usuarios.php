@@ -33,6 +33,7 @@ require_once($CFG->dirroot.'/user/lib.php');
 // require_once($CFG->dirroot.'/webservice/lib.php');
 // require_once($CFG->dirroot.'/lib/formslib.php');
 
+$formulario_enviado = false;
 $id     = optional_param('id', -1, PARAM_INT);    // User id; -1 if creating new user.
 $page_params = "id=" . $id;
 $suspenduser = optional_param('suspenduser', -1, PARAM_INT);
@@ -41,6 +42,15 @@ $creating_user = false;
 if($id == -1){
     $creating_user = true;
 }
+
+/**
+ * Revisión de permisos de usuario
+ */
+if(!(local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_alta_baja_usuarios, '', false)
+ || local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_listado_todos_los_usuarios, '', false))){
+    print_error('Usted no tiene permiso para acceder a esta sección');
+}
+
 // $page_params = array('id' => $id);
 if($suspenduser != -1){
     $page_params .= '&suspenduser=1';
@@ -89,11 +99,11 @@ if ($id == -1) {
     $user->confirmed = 1;
     $user->deleted = 0;
     $user->timezone = '99';
-    require_capability('moodle/user:create', $systemcontext);
+    // require_capability('moodle/user:create', $systemcontext);
     admin_externalpage_setup('addnewuser', '', array('id' => -1));
 } else {
     // Editing existing user.
-    require_capability('moodle/user:update', $systemcontext);
+    // require_capability('moodle/user:update', $systemcontext);
     $user = $DB->get_record('user', array('id' => $id), '*', MUST_EXIST);
     $PAGE->set_context(context_user::instance($user->id));
     $PAGE->navbar->includesettingsbase = true;
@@ -104,6 +114,14 @@ if ($id == -1) {
             $node->force_open();
         }
     }
+    
+    if(!local_hoteles_city_dashboard_user_has_all_permissions()){
+        $institutions = local_hoteles_city_dashboard_get_institutions();
+        if(!in_array($user->institution, $institutions)){ // Una institución que no pertenece al usuario
+            print_error('Usted no tiene permiso de acceder a esta sección');
+        }
+    }
+
 }
 
 // Remote users cannot be edited.
@@ -175,6 +193,7 @@ $mform = new profileform_hoteles($current_url, array(
 echo $OUTPUT->header();
 $specialScript = "";
 if($usernew = $mform->get_data()){
+    $formulario_enviado = true;
     // _log($usernew);
     $usercreated = false;
 
@@ -365,12 +384,12 @@ if($user->suspended){
     $userfullname .= " (suspendido)";
 }
 echo $OUTPUT->heading($userfullname);
+if($user->suspended){ // Si el usuario está suspendido, se necesita el permiso para verlo
+    local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_cambio_usuarios, "Este usuario ({$userfullname}) fue suspendido, actualmente no tiene el permiso para editarlo");
+}
 $mform->display();
 if($creating_user){ // Rellenado de formulario
     echo "<script src='user.js'></script>";
-}
-if($user->suspended){ // Si el usuario está suspendido, se necesita el permiso para verlo
-    local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_cambio_usuarios, 'Usuario suspendido');
 }
 echo $specialScript;
 ?>

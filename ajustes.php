@@ -44,7 +44,7 @@ echo $OUTPUT->header();
 $institutions = local_hoteles_city_dashboard_get_all_institutions();
 $hasInstitutions = count($institutions) > 0;
 // $regions = $catalogues['departments'];
-$regions = local_hoteles_city_dashboard_get_regions();
+$regions = $DB->get_records('dashboard_region');;
 // _log('Regiones en ajustes.php ', $regions);
 $relationships = local_hoteles_city_dashboard_get_region_institution_relationships();
 if (is_array($regions)) {
@@ -105,7 +105,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                             $status = (!$region->active) ? "(Deshabilitada)" : "";
                             $class = (!$region->active) ? " gray-row " : "";
                             echo "<th scope=\"col\" class=\"text-center {$class}\"><button class='btn Info'
-                            onclick='show_region({$region->id}, \"{$region->name}\", $region->active, \"{$region->userid}\")'>
+                            onclick='show_region({$region->id}, \"{$region->name}\", $region->active, \"{$region->users}\")'>
                             {$region->name} {$status}&nbsp;<i class='fas fa-edit'></i></button>
                             </th>";
                         }
@@ -230,9 +230,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                     <div class="form-group">
                         <label for="edit_regional_manager" class="col-form-label">Director regional:</label>
                         <?php 
-                            echo "<td><select class='form-control' id='edit_regional_manager'>";
-                            // echo "<td><select class='form-control' id='edit_regional_manager' onchange=\"establecer_gerente_general('{$institution}', '#manager_{$ins}')\">";
-                            echo "<option value=''>Seleccionar</option>";
+                            echo "<td><select class='form-control' id='edit_regional_manager' multiple>";
                             foreach($directores_regionales as $id => $gr){
                                 // $selected = ($id == $default) ? 'selected' : '';
                                 echo "<option value='{$id}'>{$gr}</option>";
@@ -306,9 +304,12 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
             // $('.multiselect-setting').hide(); // Si no se oculta en bootstrap alpha 4
             // $('select').each(function(index, element){ // Generación de filtros con herramenta choices.js 
             $('select[multiple]').each(function(index, element){ // Generación de filtros con herramenta choices.js
-                var multipleCancelButton = new Choices( '#' + element.id, { removeItemButton: true, searchEnabled: true,
-                    placeholder: true,
-                } );
+                if(element.id != 'edit_regional_manager'){
+                    var multipleCancelButton = new Choices( '#' + element.id, { removeItemButton: true, searchEnabled: true,
+                        placeholderValue: 'Seleccionar', searchPlaceholderValue: 'Buscar',
+                        placeholder: true,
+                    } );
+                }
             });
         });
         
@@ -400,6 +401,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
             informacion.push({ name: 'request_type', value: 'get_region_institutions' });
             informacion.push({ name: 'region', value: regionid });
             // informacion.push({ name: 'userid', value: userid });
+            userid = userid.split(',');
             $('#edit_regional_manager').val(userid);
 
             $.ajax({
@@ -608,12 +610,18 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
 
         function saveAllChanges() { // Guarda los ajustes
             informacion = $('#filter_settings, #permission_settings').serializeArray();
-            informacion.push({ name: 'request_type', value: 'save_settings' });
-            console.log(informacion);
+            peticion = Array();
+            peticion.push({ name: 'request_type', value: 'save_settings' });
+            $.each(informacion, function(i, field){
+                if(field.value != '_qf__force_multiselect_submission'){
+                    peticion.push(field);
+                }
+            });
+            console.log(peticion);
             $.ajax({
                     type: "POST",
                     url: "services.php",
-                    data: informacion,
+                    data: peticion,
                 })
                 .done(function(data) {
                     Swal.fire('Cambios guardados correctamente');

@@ -22,6 +22,6 @@ require_once(__DIR__ . '/../lib.php');
 class local_biossmann_theme_selector_observer {
     public static function user_loggedin(\core\event\user_loggedin $event){
         // $userid = $event->userid;
-        local_hoteles_city_dashboard_get_user_permissions();
+        local_hoteles_city_dashboard_get_user_permissions(true);
     }
 }

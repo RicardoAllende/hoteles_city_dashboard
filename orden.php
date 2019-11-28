@@ -58,8 +58,8 @@ if($num_fields > 1){
 }else{
     $lastkey = '';
 }
-$reporte = $CFG->wwwroot . '/local/hoteles_city_dashboard/reporte_personalizado.php';
-$settingsurl = $CFG->wwwroot . '/admin/settings.php?section=local_hoteles_city_dashboard';
+$reporte = $CFG->wwwroot . '/local/hoteles_city_dashboard/detalle_curso.php';
+$settingsurl = $CFG->wwwroot . '/local/hoteles_city_dashboard/ajustes.php';
 ?>
 <div id="update_message"></div>
 <div class="row" style="padding-bottom: 2%;">
