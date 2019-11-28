@@ -67,7 +67,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
 
 ?>
 <link rel="stylesheet" href="estilos_city.css">
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
+<!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"> -->
 
 <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
@@ -106,7 +106,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                             $class = (!$region->active) ? " gray-row " : "";
                             echo "<th scope=\"col\" class=\"text-center {$class}\"><button class='btn Info'
                             onclick='show_region({$region->id}, \"{$region->name}\", $region->active, \"{$region->users}\")'>
-                            {$region->name} {$status}&nbsp;<i class='fas fa-edit'></i></button>
+                            {$region->name} {$status}&nbsp;<i class='fa fa-edit'></i></button>
                             </th>";
                         }
                         // echo "<th>Gerente general</th>";
@@ -127,7 +127,7 @@ $directores_regionales = local_hoteles_city_dashboard_get_directores_regionales(
                             $gerentes_generales = local_hoteles_city_dashboard_get_institution_manager($institution, false);
                             echo '<tr>';
                             echo "<td scope=\"col\" class=\"text-center btn Info\" onclick='showInstitution(\"{$institution}\", \"{$gerentes_generales}\")'>
-                             {$institution} &nbsp;&nbsp;<i class='fas fa-info-circle'></td>";
+                             {$institution} &nbsp;&nbsp;<i class='fa fa-info-circle'></td>";
                             $ins = local_hoteles_city_dashboard_slug($institution);
                             foreach ($regions as $region) {
                                 $checked = "";

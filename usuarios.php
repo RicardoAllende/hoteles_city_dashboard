@@ -29,6 +29,8 @@ $PAGE->set_context(context_system::instance());
 $type = optional_param('type', local_hoteles_city_dashboard_all_users_pagination, PARAM_INT);
 $PAGE->set_url($CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php?type=' . $type);
 
+local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_reportes); // Verifica si un usuario tiene acceso a alguna sección
+
 $title = local_hoteles_city_dashboard_get_pagination_name($type);
 
 $PAGE->set_title($title);
@@ -37,6 +39,17 @@ echo $OUTPUT->header();
 $report_info = local_hoteles_city_dashboard_get_report_columns($type);
 echo local_hoteles_city_dashboard_print_theme_variables();
 $request_type = "users_" . $type;
+?>
+
+<?php 
+if(local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_create_user, '', false)){ // Edición de usuarios
+    echo '
+    <div class="row">
+        <div class="col-2 offset-10 text-center pb-3">
+            <a href="administrar_usuarios.php" class="btn btn-primary" target="_blank">Crear nuevo usuario</a>
+        </div>
+    </div>';
+}
 ?>
 
 <table id='empTable' class='display dataTable table table-bordered'>    

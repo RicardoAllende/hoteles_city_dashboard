@@ -42,6 +42,7 @@ DEFINE('local_hoteles_city_dashboard_reportes', 'Gráficas de cursos');
 DEFINE('local_hoteles_city_dashboard_ajustes', 'Ajustes dashboard administrativo Hoteles City');
 DEFINE('local_hoteles_city_dashboard_services', 'Web service');
 DEFINE('local_hoteles_city_dashboard_apply_filters', 'Aplicar filtros'); // Aplicar filtros para personas con acceso a toda la información
+DEFINE('local_hoteles_city_dashboard_create_user', 'Crear usuario'); // Aplicar filtros para personas con acceso a toda la información
 
 
 DEFINE('local_hoteles_city_dashboard_gerente_ao', 'role_1');
@@ -165,6 +166,7 @@ function local_hoteles_city_dashboard_get_role_permissions(){
         local_hoteles_city_dashboard_ajustes,
         local_hoteles_city_dashboard_services,
         local_hoteles_city_dashboard_apply_filters,
+        local_hoteles_city_dashboard_create_user,
     ];
     $response = array(
         local_hoteles_city_dashboard_director_regional => [
@@ -172,6 +174,7 @@ function local_hoteles_city_dashboard_get_role_permissions(){
             local_hoteles_city_dashboard_services,
         ],
         local_hoteles_city_dashboard_gerente_hotel => [
+            local_hoteles_city_dashboard_create_user,
             local_hoteles_city_dashboard_reportes,
             local_hoteles_city_dashboard_alta_baja_usuarios, // Alta y baja de usuarios de hoteles
             local_hoteles_city_dashboard_services,
@@ -400,10 +403,6 @@ function local_hoteles_city_dashboard_get_personal_elearning(){
     return local_hoteles_city_dashboard_get_role_users(local_hoteles_city_dashboard_personal_elearning);
 }
 
-// function local_hoteles_city_dashboard_get_administradores(){
-//     return local_hoteles_city_dashboard_get_role_users(local_hoteles_city_dashboard_administrador);
-// }
-
 function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions, $user) {
     if(isset($_GET['suspenduser'])){
         $allowed_fields = "_";
@@ -452,7 +451,16 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     // if(in_array('institution', $allowed_fields)){
         $institutions = local_hoteles_city_dashboard_get_institutions();
         $required = $strrequired;
-        $mform->addElement('select', 'institution', 'Unidad operativa', $institutions);
+        $nombre = 'Unidad operativa';
+        if(isset($user->suspended) && isset($user->institution)){
+            if($user->suspended){
+                if(isset($_GET['suspenduser'])){ // Usuario suspendido que pretende ser reactivado
+                    $nombre = "Unidad operativa nueva";
+                    $mform->addElement('static', 'description', 'Unidad operativa actual: <b>' . $user->institution . '</b>');
+                }
+            }
+        }
+        $mform->addElement('select', 'institution', $nombre, $institutions);
         if(!empty($institutions)){
             $required = "Contacte al administrador para que le asigne unidades operativas";
             $mform->addRule('institution', $required, 'required');
@@ -463,7 +471,16 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
 
     // if(in_array('department', $allowed_fields)){
         $departments = local_hoteles_city_dashboard_get_departments();
-        $mform->addElement('select', 'department', 'Puesto', $departments);
+        $nombre = 'Puesto';
+        if(isset($user->suspended) && isset($user->department)){
+            if($user->suspended){
+                if(isset($_GET['suspenduser'])){ // Usuario suspendido que pretende ser reactivado
+                    $nombre = "Puesto nuevo";
+                    $mform->addElement('static', 'description', 'Puesto actual: <b>' . $user->department . '</b>');
+                }
+            }
+        }
+        $mform->addElement('select', 'department', $nombre, $departments);
         if(!empty($departments)){
             $mform->addRule('department', $strrequired, 'required');
         }
@@ -731,10 +748,6 @@ function custom_profile_definition($mform, $userid = 0) {
                     $mform->setExpanded('custom_fields', true);
                     $any = true;
                 }
-
-                $formfield->edit_field_add($mform);
-                $formfield->edit_field_set_default($mform);
-                $formfield->edit_field_set_required($mform);
 
                 $formfield->edit_field_add($mform);
                 $formfield->edit_field_set_default($mform);
@@ -1219,7 +1232,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, bool $return
             switch ($field_key) {
                 case 'name':
                     array_push($ajax_names, $field_key);
-                    array_push($select_sql, "concat({$prefix}firstname, ' ', {$prefix}lastname ) as {$field_key}");
+                    array_push($select_sql, "concat({$prefix}firstname, ' ', {$prefix}lastname, '||', {$prefix}id ) as {$field_key}");
                     array_push($visible_names, 'Nombre');
                 break;
 
@@ -1389,14 +1402,14 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, bool $return
             break;
             case 'link_edit_user':
                 $ajax_code .= "{data: '{$an}', render: 
-                function ( data, type, row ) { return '<a target=\"_blank\" class=\"btn btn-info\" href=\"administrar_usuarios.php?id=' + data + '\">Editar usuario</a>'; }  }, ";
+                function ( data, type, row ) { return '<a target=\"_blank\" class=\"btn btn-primay\" href=\"administrar_usuarios.php?id=' + data + '\">Editar usuario</a>'; }  }, ";
                 // $ajax_code .= "{data: '{$an}', render: function ( data, type, row ) { return data; }  }, ";            
             break;
             case 'name':
                 $islink = false;
                 $ajax_code .= "{data: '{$an}', render: 
                     function ( data, type, row ) { 
-                        parts = data.split('||');
+                        parts = data.split('||');// nombre||id
                         return '<a class=\"\" href=\"administrar_usuarios.php?id=' + parts[1] + '\">' + parts[0] + '</a>'; 
                     } 
                 }, ";
@@ -1406,7 +1419,7 @@ function local_hoteles_city_dashboard_get_report_columns(int $type, bool $return
                 global $CFG;
                 $ajax_code .= "{data: '{$an}', render: function ( data, type, row ) {
                     parts = data.split('||'); /* id||courseid */
-                    return `<a target=\"_blank\" class=\"btn btn-info\" href=\"{$CFG->wwwroot}/grade/report/user/index.php?id=` + parts[1] + `&userid=` + parts[0] + `\">Libro de calificaciones</a>`; 
+                    return `<a target=\"_blank\" class=\"btn btn-primay\" href=\"{$CFG->wwwroot}/grade/report/user/index.php?id=` + parts[1] + `&userid=` + parts[0] + `\">Libro de calificaciones</a>`; 
                 }}, ";
                 break;
             default:
@@ -2469,7 +2482,6 @@ function local_hoteles_city_dashboard_get_user_permissions(bool $forceReloadPerm
     }
     foreach (local_hoteles_city_dashboard_get_dashboard_roles() as $key => $name) {
         if(local_hoteles_city_dashboard_user_has_role($key)){
-            return array('Con rol', $name);
             array_push($SESSION->dashboard_roles, $key);
             $SESSION->dashboard_permissions = array_merge($SESSION->dashboard_permissions, $permission_list[$key]);
             $SESSION->dashboard_permissions = array_unique($SESSION->dashboard_permissions);
@@ -2604,7 +2616,12 @@ function local_hoteles_city_dashboard_get_regional_institutions(){
 function local_hoteles_city_dashboard_get_all_institutions(){
     global $DB;
     $queryAllInstitutions = "SELECT DISTINCT institution FROM {user} WHERE deleted = 0 AND id > 1 AND institution != ''";
-    return $DB->get_fieldset_sql($queryAllInstitutions);
+    $institutions = $DB->get_fieldset_sql($queryAllInstitutions);
+    $response = array();
+    foreach ($institutions as $institution) {
+        $response[$institution] = $institution;
+    }
+    return $response;
 }
 
 /**

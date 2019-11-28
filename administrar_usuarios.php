@@ -39,6 +39,8 @@ $page_params = "id=" . $id;
 $suspenduser = optional_param('suspenduser', -1, PARAM_INT);
 $shouldSuspend = $suspenduser != -1;
 $creating_user = false;
+$user_is_suspended = false;
+
 if($id == -1){
     $creating_user = true;
 }
@@ -100,11 +102,12 @@ if ($id == -1) {
     $user->deleted = 0;
     $user->timezone = '99';
     // require_capability('moodle/user:create', $systemcontext);
-    admin_externalpage_setup('addnewuser', '', array('id' => -1));
+    // admin_externalpage_setup('addnewuser', '', array('id' => -1));
 } else {
     // Editing existing user.
     // require_capability('moodle/user:update', $systemcontext);
     $user = $DB->get_record('user', array('id' => $id), '*', MUST_EXIST);
+    $user_is_suspended = $user->suspended;
     $PAGE->set_context(context_user::instance($user->id));
     $PAGE->navbar->includesettingsbase = true;
     if ($user->id != $USER->id) {
@@ -193,6 +196,7 @@ $mform = new profileform_hoteles($current_url, array(
 echo $OUTPUT->header();
 $specialScript = "";
 if($usernew = $mform->get_data()){
+    $user_is_suspended = $usernew->suspended;
     $formulario_enviado = true;
     // _log($usernew);
     $usercreated = false;
@@ -380,11 +384,11 @@ if($usernew = $mform->get_data()){
 // $streditmyprofile = get_string('editmyprofile');
 $PAGE->set_title('Administración de usuarios hoteles city');
 $userfullname = fullname($user, true);
-if($user->suspended){
+if($user_is_suspended){
     $userfullname .= " (suspendido)";
 }
 echo $OUTPUT->heading($userfullname);
-if($user->suspended){ // Si el usuario está suspendido, se necesita el permiso para verlo
+if($user_is_suspended){ // Si el usuario está suspendido, se necesita el permiso para verlo
     local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_cambio_usuarios, "Este usuario ({$userfullname}) fue suspendido, actualmente no tiene el permiso para editarlo");
 }
 $mform->display();
