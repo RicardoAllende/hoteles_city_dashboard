@@ -30,11 +30,14 @@ $permissions = null;
 
 DEFINE('local_hoteles_city_dashboard_return_random_data', false);
 
+/**
+ * Permisos que existen en el dashboard
+ */
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios', 'Administración de usuarios');
 DEFINE('local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central', 'Administración de usuarios de Oficina Central');
 DEFINE('local_hoteles_city_dashboard_listado_todos_los_usuarios', 'Administración de todos los usuarios');
 DEFINE('local_hoteles_city_dashboard_cambio_usuarios', 'Cambio de usuarios (suspendidos)');
-DEFINE('local_hoteles_city_dashboard_avance_todos_los_cursos', 'Avances de todos los cursos: por región, por hotel, por persona y por puesto');
+DEFINE('local_hoteles_city_dashboard_graficas_comparativas', 'Avances de todos los cursos: por región, por hotel, por persona y por puesto');
 DEFINE('local_hoteles_city_dashboard_reportes', 'Gráficas de cursos');
 DEFINE('local_hoteles_city_dashboard_ajustes', 'Ajustes dashboard administrativo Hoteles City');
 DEFINE('local_hoteles_city_dashboard_services', 'Web service');
@@ -133,7 +136,7 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
                 );
                 $node->showinflatnavigation = true;
                 break;
-            case local_hoteles_city_dashboard_avance_todos_los_cursos:
+            case local_hoteles_city_dashboard_graficas_comparativas:
                 $node = $nav->add (
                     $key,
                     new moodle_url( $CFG->wwwroot . '/local/hoteles_city_dashboard/dashboard.php' )
@@ -153,7 +156,7 @@ function local_hoteles_city_dashboard_extend_navigation(global_navigation $nav) 
 
 function local_hoteles_city_dashboard_get_role_permissions(){
     $all_permissions = [
-        local_hoteles_city_dashboard_avance_todos_los_cursos, // Gráficas comparativas
+        local_hoteles_city_dashboard_graficas_comparativas, // Gráficas comparativas
         local_hoteles_city_dashboard_reportes, // Gráficas por curso y listado de usuarios por curso
         // local_hoteles_city_dashboard_alta_baja_usuarios, // Ellos tienen edición de todos los usuarios, esta opción es duplicada para ellos
         local_hoteles_city_dashboard_cambio_usuarios,
@@ -176,7 +179,8 @@ function local_hoteles_city_dashboard_get_role_permissions(){
     );
     $response[local_hoteles_city_dashboard_gerente_ao] = $all_permissions;
     $response[local_hoteles_city_dashboard_personal_elearning] = $all_permissions;
-    $response[local_hoteles_city_dashboard_administrador] = $all_permissions;
+    $permisos_admin = array_diff($all_permissions, [local_hoteles_city_dashboard_cambio_usuarios]); // No se permite hacer cambios
+    $response[local_hoteles_city_dashboard_administrador] = $permisos_admin;
     return $response;
 }
 

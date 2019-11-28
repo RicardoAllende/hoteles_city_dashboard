@@ -27,7 +27,7 @@ require_once(__DIR__ . '/../../config.php');
 $context_system = context_system::instance();
 require_once(__DIR__ . '/lib.php');
 
-local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_avance_todos_los_cursos);
+local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_graficas_comparativas);
 $url = 'dashboard_iframe.php';
 
 require_login();
