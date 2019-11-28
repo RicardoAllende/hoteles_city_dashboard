@@ -456,7 +456,7 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
             if($user->suspended){
                 if(isset($_GET['suspenduser'])){ // Usuario suspendido que pretende ser reactivado
                     $nombre = "Unidad operativa nueva";
-                    $mform->addElement('static', 'description', 'Unidad operativa actual: ' . $user->institution);
+                    $mform->addElement('static', 'description', 'Unidad operativa actual: <b>' . $user->institution . '</b>');
                 }
             }
         }
@@ -476,7 +476,7 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
             if($user->suspended){
                 if(isset($_GET['suspenduser'])){ // Usuario suspendido que pretende ser reactivado
                     $nombre = "Puesto nuevo";
-                    $mform->addElement('static', 'description', 'Puesto actual: ' . $user->department);
+                    $mform->addElement('static', 'description', 'Puesto actual: <b>' . $user->department . '</b>');
                 }
             }
         }
