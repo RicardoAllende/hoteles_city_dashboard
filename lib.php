@@ -403,10 +403,6 @@ function local_hoteles_city_dashboard_get_personal_elearning(){
     return local_hoteles_city_dashboard_get_role_users(local_hoteles_city_dashboard_personal_elearning);
 }
 
-// function local_hoteles_city_dashboard_get_administradores(){
-//     return local_hoteles_city_dashboard_get_role_users(local_hoteles_city_dashboard_administrador);
-// }
-
 function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions, $user) {
     if(isset($_GET['suspenduser'])){
         $allowed_fields = "_";
@@ -455,7 +451,16 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     // if(in_array('institution', $allowed_fields)){
         $institutions = local_hoteles_city_dashboard_get_institutions();
         $required = $strrequired;
-        $mform->addElement('select', 'institution', 'Unidad operativa', $institutions);
+        $nombre = 'Unidad operativa';
+        if(isset($user->suspended) && isset($user->institution)){
+            if($user->suspended){
+                if(isset($_GET['suspenduser'])){ // Usuario suspendido que pretende ser reactivado
+                    $nombre = "Unidad operativa nueva";
+                    $mform->addElement('static', 'description', 'Unidad operativa actual: ' . $user->institution);
+                }
+            }
+        }
+        $mform->addElement('select', 'institution', $nombre, $institutions);
         if(!empty($institutions)){
             $required = "Contacte al administrador para que le asigne unidades operativas";
             $mform->addRule('institution', $required, 'required');
@@ -466,7 +471,16 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
 
     // if(in_array('department', $allowed_fields)){
         $departments = local_hoteles_city_dashboard_get_departments();
-        $mform->addElement('select', 'department', 'Puesto', $departments);
+        $nombre = 'Puesto';
+        if(isset($user->suspended) && isset($user->department)){
+            if($user->suspended){
+                if(isset($_GET['suspenduser'])){ // Usuario suspendido que pretende ser reactivado
+                    $nombre = "Puesto nuevo";
+                    $mform->addElement('static', 'description', 'Puesto actual: ' . $user->department);
+                }
+            }
+        }
+        $mform->addElement('select', 'department', $nombre, $departments);
         if(!empty($departments)){
             $mform->addRule('department', $strrequired, 'required');
         }

@@ -15,9 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for editing a users profile
+ * Form for editing a user profile
  *
  * @copyright 1999 Martin Dougiamas  http://dougiamas.com
+ * Editado por Subitus <contacto@subitus.com>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @package core_user
  */
