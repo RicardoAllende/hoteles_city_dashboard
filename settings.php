@@ -26,17 +26,49 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
+    require_once(__DIR__ . '/lib.php');
     // TODO: Define the plugin settings page.
     // https://docs.moodle.org/dev/Admin_settings
 
-    $ADMIN->add('modules', new admin_externalpage('local_hoteles_city_dashboard', get_string('pluginname', 'local_hoteles_city_dashboard'),
-     $CFG->wwwroot . '/local/hoteles_city_dashboard/administrar_regiones.php'));
+    $ADMIN->add('localplugins', new admin_category('local_hoteles_city_dashboard', get_string('pluginname', 'local_hoteles_city_dashboard')));
+
+    $ADMIN->add('local_hoteles_city_dashboard', new admin_externalpage('local_hoteles_city_dashboard_settings', get_string('pluginname', 'local_hoteles_city_dashboard') . ' ajustes',
+     $CFG->wwwroot . '/local/hoteles_city_dashboard/ajustes.php'));
+
+    $ADMIN->add('local_hoteles_city_dashboard', new admin_externalpage('local_hoteles_city_dashboard_alta_baja',
+     local_hoteles_city_dashboard_alta_baja_usuarios,
+     $CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php?type=' 
+     . local_hoteles_city_dashboard_actived_users_pagination));
+
+    $ADMIN->add('local_hoteles_city_dashboard', new admin_externalpage('local_hoteles_city_dashboard_oficina_central',
+     local_hoteles_city_dashboard_alta_baja_usuarios_oficina_central,
+     $CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php?type=' . local_hoteles_city_dashboard_oficina_central_pagination));
+
+    $ADMIN->add('local_hoteles_city_dashboard', new admin_externalpage('local_hoteles_city_dashboard_cambio_usuarios',
+     local_hoteles_city_dashboard_cambio_usuarios,
+     $CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php?type=' . local_hoteles_city_dashboard_suspended_users_pagination));
+
+    $ADMIN->add('local_hoteles_city_dashboard', new admin_externalpage('local_hoteles_city_dashboard_todos_los_usuarios',
+     local_hoteles_city_dashboard_listado_todos_los_usuarios,
+     $CFG->wwwroot . '/local/hoteles_city_dashboard/usuarios.php?type=' . local_hoteles_city_dashboard_all_users_pagination));
+
+    $ADMIN->add('local_hoteles_city_dashboard', new admin_externalpage('local_hoteles_city_dashboard_graficas',
+     'Gráficas de cursos',
+     $CFG->wwwroot . '/local/hoteles_city_dashboard/estatus_curso.php'));
+
+    $ADMIN->add('local_hoteles_city_dashboard', new admin_externalpage('local_hoteles_city_dashboard_reportes',
+     'Reporte de cursos ',
+     $CFG->wwwroot . '/local/hoteles_city_dashboard/detalle_curso.php'));
+
+    $ADMIN->add('local_hoteles_city_dashboard', new admin_externalpage('local_hoteles_city_dashboard_comparativas',
+     local_hoteles_city_dashboard_graficas_comparativas,
+     $CFG->wwwroot . '/local/hoteles_city_dashboard/dashboard.php'));
 
     // require_once(__DIR__ . '/lib.php');
     // $lhcd_pluginname = 'local_hoteles_city_dashboard';
 
     // $settings = new theme_boost_admin_settingspage_tabs($lhcd_pluginname, get_string('pluginname', $lhcd_pluginname));
-    // $ADMIN->add('localplugins', $settings);
+    // $ADMIN->add('local_hoteles_city_dashboard', $settings);
 
     // $page = new admin_settingpage($lhcd_pluginname . 'tab_userform', get_string('tab_userform', $lhcd_pluginname)); // Inicia pestaña
     
