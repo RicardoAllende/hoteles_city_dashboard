@@ -29,7 +29,7 @@ require_login();
 require_once(__DIR__ . '/lib.php');
 local_hoteles_city_dashboard_user_has_access(local_hoteles_city_dashboard_reportes);
 
-global $DB;
+global $DB, $CFG;
 $PAGE->set_url($CFG->wwwroot . "/local/hoteles_city_dashboard/orden.php");
 $PAGE->set_context($context_system);
 $PAGE->set_pagelayout('admin');
@@ -49,7 +49,7 @@ if($update_key != '' && $update_action != ''){
 $allfields = local_hoteles_city_dashboard_get_report_fields_in_order();
 $num_fields = count($allfields);
 if($num_fields == 0){
-    print_error('No se ha configurado ningún campo personalizado');
+    print_error('No se ha configurado ningún campo para el reporte', 'error', $CFG->wwwroot . '/local/hoteles_city_dashboard/ajustes.php');
 }
 $keys = array_keys($allfields);
 $firstkey = $keys[0];

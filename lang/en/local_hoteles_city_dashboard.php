@@ -76,3 +76,8 @@ $string['crontask_name'] = 'Generación de caché de cursos';
 
 $string['hoteles_city_dashboard:view'] = 'Ver Dashboard Hoteles City';
 $string['hoteles_city_dashboard:manage'] = 'Administrar Dashboard Hoteles City';
+
+$string['hoteles_city_dashboard:administrativo'] = 'Dahsboard hoteles city Administrativo';
+$string['hoteles_city_dashboard:ao'] = 'Dahsboard hoteles city Aprendizaje Organizacional';
+$string['hoteles_city_dashboard:gerente'] = 'Dahsboard hoteles city Gerente General';
+$string['hoteles_city_dashboard:regional'] = 'Dahsboard hoteles city Director Regional';
