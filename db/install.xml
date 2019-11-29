@@ -32,7 +32,7 @@
                 <FIELD NAME="query"             TYPE="text" NOTNULL="false"  SEQUENCE="false" COMMENT="Campo de la tabla dashboard_region" />
                 <FIELD NAME="enrolled_users"    TYPE="int"  LENGTH="9"  NOTNULL="false"  SEQUENCE="false" COMMENT="Campo de la tabla user" />
                 <FIELD NAME="approved_users"    TYPE="int"  LENGTH="9" SEQUENCE="false" COMMENT="Usuarios con acceso a esta sección tempralmente" />
-                <FIELD NAME="percentage"        TYPE="int"  LENGTH="9"  NOTNULL="false"  SEQUENCE="false" />
+                <FIELD NAME="percentage"        TYPE="float"  NOTNULL="false"  SEQUENCE="false" />
                 <FIELD NAME="courses"           TYPE="char" LENGTH="255" SEQUENCE="false" COMMENT="Acción realizada sobre el usuario" />
                 <FIELD NAME="timecreated"       TYPE="int"  LENGTH="10"     NOTNULL="false" SEQUENCE="false" />
             </FIELDS>
