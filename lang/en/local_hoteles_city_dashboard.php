@@ -73,3 +73,6 @@ $string['dashboard_courses'] = 'Cursos incluídos en los reportes';
 $string['dashboard_courses_desc'] = 'Seleccione los cursos que se incluirán en los reportes.'; // Presione ctrl para seleccionar varios elementos';
 
 $string['crontask_name'] = 'Generación de caché de cursos';
+
+$string['hoteles_city_dashboard:view'] = 'Ver Dashboard Hoteles City';
+$string['hoteles_city_dashboard:manage'] = 'Administrar Dashboard Hoteles City';
