@@ -191,7 +191,9 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
         </div>
         </div>   
     <!-- Termina row para cards informativas -->   
-    
+    <div class="col-12 text-right" style="padding-right: 2%;">
+                <button class='btn btn-primary' onclick="top.window.location.href='estatus_curso.php'">Gráficas de curso</button>
+    </div>
     
     
     <!-- Div para pintar las graficas en dashboard -->

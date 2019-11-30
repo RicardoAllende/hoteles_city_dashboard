@@ -244,11 +244,12 @@ $description = ""; // No es usado en esta sección
                         console.log('Gráfica detalle_curso_iframe.php', data);
                         informacion = data.data;
                         console.log(informacion)
-                        cleanDiv();
+                        cleanDiv();                           
+
                         var report = new GraphicsDashboard('grafica_reporte', 'Comparativa', informacion.chart, informacion, 8, informacion.id);
                         report.printCardCourse();
                         if (informacion.chart == 'pie') {
-                            report.individual_graph();
+                            report.individual_graph_report();
                         }
                         showPage();
 

@@ -165,10 +165,11 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     //console.log(data);
                     informacion = JSON.parse(JSON.stringify(data));
                     informacion = informacion.data;
-                    console.log('Imprimiendo la respuesta', informacion);
+                    console.log(data);
                     cleanDiv();
                     comparative(informacion);
-                    showPage();                    
+                    showPage();   
+                                    
                     
                     
                     for(var i = 0; i < informacion.length; i++){                        
@@ -225,20 +226,21 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
             dataset = [];        
             for(var i = 0; i < informacion.length; i++){
                 info = informacion[i];
-                data_labels.push(info.title);
-                // console.log('LABELS');
-                // console.log(data_labels)
+                data_labels.push(info.title);                
                 arr_completado_percantage.push(info.percentage);
-                // console.log('% COMPLETADO');
-                // console.log(arr_completado_percantage)
-                arr_nocompletado_percentage.push(100 - info.percentage);
+                approved_users = info.percentage;                
+                not_approved = 100 - approved_users;
+                percentage_not_approved = not_approved.toFixed(2);
+                arr_nocompletado_percentage.push(percentage_not_approved);
                 // console.log('% NO COMPLETADO');
                 // console.log(arr_nocompletado_percentage)
+                
             }
             dataset.push(datasets_completado);
             dataset.push(datasets_nocompletado);
             d_graph = { labels: data_labels, datasets: dataset };
 
+            // console.log(datasets_nocompletado)
             // console.log('INFO')
             // console.log(d_graph)
 

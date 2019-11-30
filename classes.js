@@ -9,12 +9,11 @@ function regresaInfoByCurso() {
         data: informacion,
         dataType: "json"
     })
-        .done(function (data) {
-            console.log('Aqui entra done');
+        .done(function (data) {            
             isCourseLoading = false;            
             respuesta = JSON.parse(JSON.stringify(data));
             respuesta = respuesta.data;
-            console.log('Imprimiendo la respuesta', respuesta);
+            console.log(data);
             
             showPage();
 
@@ -121,15 +120,19 @@ function graph_data(respuesta) {
         data_labels.push(resp.elements[j].name);
         //arr_datasets_aprobados.push(resp.elements[j].approved_users);
         arr_datasets_aprobados_percentage.push(resp.elements[j].percentage);
+        approved_users = resp.elements[j].percentage;
+        not_approved = 100 - approved_users;
+        percentage_not_approved = not_approved.toFixed(2);
         //arr_datasets_no_aprobados.push(resp.elements[j].not_approved_users);
-        arr_datasets_no_aprobados_percentage.push(100 - resp.elements[j].percentage);
+        arr_datasets_no_aprobados_percentage.push(percentage_not_approved);
+        
         //arr_datasets_inscritos.push(resp.elements[j].enrolled_users);
         suma_inscritos = suma_inscritos + resp.elements[j].enrolled_users;
         suma_no_aprobados = suma_no_aprobados + resp.elements[j].not_approved_users;
         suma_aprobados = suma_aprobados + resp.elements[j].approved_users;
         arr_datasets_inscritos.push('100');
     }    
-
+    
     arr_total_inscritos.push(suma_inscritos);
     arr_total_no_aprobados.push(suma_no_aprobados);
     arr_total_aprobados.push(suma_aprobados);
@@ -143,11 +146,12 @@ function graph_data(respuesta) {
     porcentaje_aprobados = (total_aprobados * 100) / total_inscritos;
     porcentaje_noaprobados = (total_no_aprobados * 100) / total_inscritos;
 
-    if (resp.chart == 'bar-agrupadas') {
+    if (resp.chart == 'bar-agrupadas') {        
         dataset.push(datasets_aprobados);
         dataset.push(datasets_no_aprobados);
         //dataset.push(datasets_inscritos);
         d_graph = { labels: data_labels, datasets: dataset };
+        
     }
     if (resp.chart == 'line') {
         dataset.push(datasets_aprobados);
@@ -430,15 +434,14 @@ class GraphicsDashboard {
     }
     individual_graph() {
         switch (this.type_graph) {
-            case 'pie':
+            case 'pie':                                 
                 var d_graph = Array();
-                d_graph.push(this.data_graph.percentage);
-                var percentage_not_approved = 100 - this.data_graph.percentage;
-                // console.log('INFO') 
-                // console.log(percentage_not_approved)               
-                // d_graph.push(this.data_graph.approved_users);
-                // d_graph.push(this.data_graph.not_approved_users);
-                d_graph.push(percentage_not_approved);                
+                d_graph.push(this.data_graph.percentage);                
+                approved_users = info.percentage;
+                not_approved = 100 - approved_users;
+                percentage_not_approved = not_approved.toFixed(2);
+                d_graph.push(percentage_not_approved);
+                                
                     var ctx = document.getElementById(this.div_graph);
                     var chart = new Chart(ctx, {
                         type: 'pie',
@@ -489,6 +492,38 @@ class GraphicsDashboard {
         }
 
     }
+
+    individual_graph_report() {
+        switch (this.type_graph) {
+            case 'pie':                  
+                
+                var d_graph = Array();
+                d_graph.push(this.data_graph.percentage);
+                var approved_users = informacion.percentage;
+                var not_approved = 100 - approved_users;
+                var percentage_not_approved = not_approved.toFixed(2);                
+                d_graph.push(percentage_not_approved); 
+                                
+                    var ctx = document.getElementById(this.div_graph);
+                    var chart = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: ["Completado", "No Completado"],
+                            datasets: [{                                
+                                backgroundColor: ["#1cc88a", "#e74a3b"],
+                                data: d_graph
+                            }]
+                        },
+                        options: {
+                        }
+                    });
+                break;
+            default:
+                break;
+        }
+
+    }
+
 }
 
 
