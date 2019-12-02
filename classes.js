@@ -437,8 +437,8 @@ class GraphicsDashboard {
             case 'pie':                                 
                 var d_graph = Array();
                 d_graph.push(this.data_graph.percentage);                
-                approved_users = info.percentage;
-                not_approved = 100 - approved_users;
+                var approved_users = info.percentage;
+                var not_approved = 100 - approved_users;
                 percentage_not_approved = not_approved.toFixed(2);
                 d_graph.push(percentage_not_approved);
                                 

@@ -13,7 +13,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
  * Plugin strings are defined here.
  *
@@ -22,21 +21,16 @@
  * @copyright   2019 Subitus <contacto@subitus.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require_once(__DIR__ . '/../../config.php');
 $context_system = context_system::instance();
 require_login();
 require_once(__DIR__ . '/lib.php');
-
 global $DB;
 $PAGE->set_url($CFG->wwwroot . "/local/hoteles_city_dashboard/graficas.php");
 $PAGE->set_context($context_system);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
-
-
 //$tabOptions = local_hoteles_city_dashboard_get_course_tabs();
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -113,8 +107,8 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                         </div>
                         <!-- Card Body -->
                         <div class="card-body">
-                            <div class="">                  
-                                <canvas id="grafica_comparativa"></canvas>                  
+                            <div class="" id="div_comparativa">                  
+                                <!-- <canvas id="grafica_comparativa"></canvas>                   -->
                             </div>
                         </div>    
                     </div>
@@ -167,6 +161,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     informacion = informacion.data;
                     console.log(data);
                     cleanDiv();
+                    $('#div_comparativa').html('<canvas id="grafica_comparativa"></canvas>');
                     comparative(informacion);
                     showPage();   
                                     
@@ -211,11 +206,9 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                     showPage();
                 });
         }
-
         function cleanDiv(){
             document.getElementById('curso_graficas').innerHTML='';
         }
-
         //Informacion para la grafica comparativa
         function comparative(informacion){
             data_labels = [];
@@ -239,13 +232,10 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
             dataset.push(datasets_completado);
             dataset.push(datasets_nocompletado);
             d_graph = { labels: data_labels, datasets: dataset };
-
             // console.log(datasets_nocompletado)
             // console.log('INFO')
             // console.log(d_graph)
-
             //return d_graph;
-
             var ctx = document.getElementById('grafica_comparativa');
             var chart = new Chart(ctx, {
                 type: 'line',        
@@ -264,9 +254,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
                                     // }]
                   
             });
-
         }
-
         function onchangeFilter(filterid){ // Se ejecuta esta función cuando el elemento ha cambiado
             // console.log('El elemento ha cambiado');
         }
@@ -284,7 +272,6 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
             background-position: center;
             cursor: pointer;
         }
-
         .choices__button:active{
             text-indent: -9999px;
             -webkit-appearance: none;
@@ -296,7 +283,6 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
             background-position: center;
             cursor: pointer;
         }
-
         .choices__button:visited{
             text-indent: -9999px;
             -webkit-appearance: none;
@@ -308,7 +294,6 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
             background-position: center;
             cursor: pointer;
         }
-
         .choices__button:focus{
             text-indent: -9999px;
             -webkit-appearance: none;
@@ -320,7 +305,6 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
             background-position: center;
             cursor: pointer;
         }
-
         .choices__button:focus-within{
             text-indent: -9999px;
             -webkit-appearance: none;
