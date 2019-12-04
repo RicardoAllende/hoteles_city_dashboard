@@ -1084,7 +1084,7 @@ function local_hoteles_city_dashboard_print_theme_variables(){
     foreach (local_hoteles_city_dashboard_theme_colors as $name => $value) {
         if(!empty($config[$name])) $value = $config[$name];
         $script .= " {$name} = '{$value}'; ";
-        $stylesheet .= " .{$name} { background-color: {$value} !important; color: #ffffff } .{$name}:hover { color: #ffffff !important; } ";
+        $stylesheet .= " .{$name} { background-color: {$value} !important; color: #ffffff !important; } .{$name}:hover { color: #ffffff !important; } ";
     }
     $script .= "</script>";
     $stylesheet .= "</style>";
