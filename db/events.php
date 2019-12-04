@@ -17,7 +17,7 @@
 /**
  * Forum event handler definition.
  *
- * @package mod_forum
+ * @package local_hoteles_city_dashboard
  * @category event
  * @copyright 2019 Subitus (contacto@subitus.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,7 +28,7 @@ $observers = array(
 
     array(
         'eventname'   => '\core\event\user_loggedin',
-        'callback'    => 'local_biossmann_theme_selector_observer::user_loggedin',
+        'callback'    => 'local_hoteles_city_dashboard_observer::user_loggedin',
         'internal'    => true,
         'priority'    => 9999,
     ),    
