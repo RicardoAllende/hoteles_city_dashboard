@@ -182,8 +182,8 @@ function local_hoteles_city_dashboard_get_role_permissions(){
     );
     $response[local_hoteles_city_dashboard_gerente_ao] = $all_permissions;
     $response[local_hoteles_city_dashboard_personal_elearning] = $all_permissions;
-    $permisos_admin = array_diff($all_permissions, [local_hoteles_city_dashboard_cambio_usuarios]); // No se permite hacer cambios
-    $response[local_hoteles_city_dashboard_administrador] = $permisos_admin;
+    // $permisos_admin = array_diff($all_permissions, [local_hoteles_city_dashboard_cambio_usuarios]); // No se permite hacer cambios
+    $response[local_hoteles_city_dashboard_administrador] = $all_permissions;
     return $response;
 }
 
