@@ -196,7 +196,9 @@ $mform = new profileform_hoteles($current_url, array(
 echo $OUTPUT->header();
 $specialScript = "";
 if($usernew = $mform->get_data()){
-    $user_is_suspended = $usernew->suspended;
+    if(isset($usernew->suspended)){
+        $user_is_suspended = $usernew->suspended;
+    }
     $formulario_enviado = true;
     // _log($usernew);
     $usercreated = false;
@@ -239,6 +241,9 @@ if($usernew = $mform->get_data()){
         }
         $usercreated = true;
     } else { // Editar usuario ya existente
+        if(isset($usernew->suspended)){
+            $user_is_suspended = $usernew->suspended;
+        }
         $allowed_fields = get_config('local_hoteles_city_dashboard', 'userformdefaultfields');
         if(empty($allowed_fields)){
             $allowed_fields = array();
@@ -395,6 +400,7 @@ $mform->display();
 if($creating_user){ // Rellenado de formulario
     echo "<script src='user.js'></script>";
 }
+echo "<script src='llenar_cohorte.js'></script>";
 echo $specialScript;
 ?>
 <?php

@@ -77,8 +77,10 @@ DEFINE('local_hoteles_city_dashboard_theme_colors', [
 ]);
 
 DEFINE('local_hoteles_city_dashboard_marca_field', 'marcafield');
+DEFINE('local_hoteles_city_dashboard_puesto_marca_field', 'puestomarcafield');
 DEFINE('local_hoteles_city_dashboard_special_custom_fields', [ // Campos personalizados necesarios
-    local_hoteles_city_dashboard_marca_field => "Marca"
+    local_hoteles_city_dashboard_marca_field => "Marca",
+    local_hoteles_city_dashboard_puesto_marca_field => "Puesto-marca"
 ]);
 
 // Agrega enlace al Dashboard en el menú lateral de Moodle
@@ -333,8 +335,16 @@ function local_hoteles_city_dashboard_get_departments(){
     $result = local_hoteles_city_dashboard_get_catalogues([$key]);
     $result = $result[$key];
     $response = array();
+    $return_all_departments = local_hoteles_city_dashboard_user_has_all_permissions();
     foreach($result as $result){
-        $response[$result] = $result;
+        $lower = strtolower($result);
+        if($lower == 'personal corporativo'){
+            if($return_all_departments){
+                $response[$result] = $result;
+            }
+        }else{
+            $response[$result] = $result;
+        }
     }
     return $response;
 }
@@ -499,11 +509,11 @@ function custom_useredit_shared_definition(&$mform, $editoroptions, $filemanager
     //     $mform->setType('email', PARAM_RAW_TRIMMED);
     // }
     // Mostrando campo de email
-    if(in_array('email', $allowed_fields)){
+    // if(in_array('email', $allowed_fields)){
         $mform->addElement('text', 'email', get_string('email'), 'maxlength="100" size="30"');
         $mform->addRule('email', $strrequired, 'required', null, 'client');
         $mform->setType('email', PARAM_RAW_TRIMMED);
-    }
+    // }
 
     // $choices = array();
     // $choices['0'] = get_string('emaildisplayno');
@@ -810,6 +820,7 @@ function local_hoteles_city_dashboard_get_default_profile_fields(bool $profileFo
         unset($fields['username']);
         unset($fields['firstname']);
         unset($fields['lastname']);
+        unset($fields['email']);
     // }else{
     //     $fields['fullname'] = 'Nombre completo'; // Fusión del nombre y apellido
     }
@@ -864,8 +875,8 @@ function local_hoteles_city_dashboard_get_enrolled_userids($course, string $fech
         JOIN {user_enrolments} AS __ue__ ON __ue__.userid = __user__.id
         JOIN {enrol} __enrol__ ON (__enrol__.id = __ue__.enrolid AND __enrol__.courseid $wherecourse)
         WHERE __ue__.status = 0 AND __user__.deleted = 0 {$filtro_fecha} AND __user__.suspended = 0 {$user_table_sql} )";
-    }else{
-        $query = "( SELECT __user__.id AS userid, __course__.fullname as coursename, __course__.id as courseid FROM {user} AS __user__
+    }else{ // Regresa un usuario varias veces pues está inscrito en varios cursos, cada línea es un curso
+        $query = "( SELECT DISTINCT __user__.id AS userid, __course__.fullname as coursename, __course__.id as courseid FROM {user} AS __user__
         JOIN {user_enrolments} AS __ue__ ON __ue__.userid = __user__.id
         JOIN {enrol} __enrol__ ON (__enrol__.id = __ue__.enrolid AND __enrol__.courseid $wherecourse)
         JOIN {course} __course__ ON __enrol__.courseid = __course__.id
@@ -3253,8 +3264,19 @@ function local_hoteles_city_dashboard_export_configurable_report($type, $params 
 
     $information = local_hoteles_city_dashboard_get_configurable_report_records($type, $params);
 
+    $courses = local_hoteles_city_dashboard_get_value_from_params($params, 'reportCourses');
+    if(empty($courses)){ // Todos los cursos configurados
+        $courses = local_hoteles_city_dashboard_get_courses_setting();
+    }
+    if(is_array($courses)){
+        $courses = implode(',', $courses);
+    }
+    global $DB;
+    $course_names = $DB->get_fieldset_sql("SELECT shortname FROM {course} WHERE ID IN ({$courses})");
+    $report_name = implode(' ', $course_names);
+
     $currentdate = date("d-m-Y_H:i:s");
-    $filename = 'Reporte_personalizado_' . $currentdate;
+    $filename = $report_name . $currentdate;
 
     $report_columns = local_hoteles_city_dashboard_get_report_columns($type, $returnLinks = false);
 

@@ -5,10 +5,10 @@
     <TABLES>
         <TABLE NAME="dashboard_region" COMMENT="">
             <FIELDS>
-                <FIELD NAME="id"        TYPE="int" LENGTH="10" NOTNULL="true"   SEQUENCE="true"  />
+                <FIELD NAME="id"        TYPE="int"  LENGTH="10" NOTNULL="true"   SEQUENCE="true"  />
                 <FIELD NAME="name"      TYPE="char" LENGTH="255" NOTNULL="false"  SEQUENCE="false" />
-                <FIELD NAME="users"     TYPE="char" LENGTH="255"  NOTNULL="false"  SEQUENCE="false" COMMENT="Gerentes regional" />
-                <FIELD NAME="active"    TYPE="int" LENGTH="1"  NOTNULL="false"  SEQUENCE="false" />
+                <FIELD NAME="users"     TYPE="text" NOTNULL="false"  SEQUENCE="false" COMMENT="Gerentes regional" />
+                <FIELD NAME="active"    TYPE="int"  LENGTH="1"  NOTNULL="false"  SEQUENCE="false" />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" />
@@ -30,10 +30,10 @@
             <FIELDS>
                 <FIELD NAME="id"                TYPE="int"  LENGTH="10"  NOTNULL="true"   SEQUENCE="true" />
                 <FIELD NAME="query"             TYPE="text" NOTNULL="false"  SEQUENCE="false" COMMENT="Campo de la tabla dashboard_region" />
-                <FIELD NAME="enrolled_users"    TYPE="int"  LENGTH="9"  NOTNULL="false"  SEQUENCE="false" COMMENT="Campo de la tabla user" />
-                <FIELD NAME="approved_users"    TYPE="int"  LENGTH="9" SEQUENCE="false" COMMENT="Usuarios con acceso a esta sección tempralmente" />
+                <FIELD NAME="enrolled_users"    TYPE="int"  LENGTH="9"  NOTNULL="false"  SEQUENCE="false" COMMENT="Usuarios inscritos" />
+                <FIELD NAME="approved_users"    TYPE="int"  LENGTH="9" SEQUENCE="false" COMMENT="Usuarios aprobados" />
                 <FIELD NAME="percentage"        TYPE="float"  NOTNULL="false"  SEQUENCE="false" />
-                <FIELD NAME="courses"           TYPE="char" LENGTH="255" SEQUENCE="false" COMMENT="Acción realizada sobre el usuario" />
+                <FIELD NAME="courses"           TYPE="text" SEQUENCE="false" COMMENT="Id de los cursos que se consultan" />
                 <FIELD NAME="timecreated"       TYPE="int"  LENGTH="10"     NOTNULL="false" SEQUENCE="false" />
             </FIELDS>
             <KEYS>
