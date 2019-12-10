@@ -22,7 +22,11 @@ function regresaInfoByCurso() {
              
             for (var i = 0; i < respuesta.length; i++) {
                 resp = respuesta[i];
-                var curso = new GraphicsDashboard('contenedor_graficas', resp.name, resp.chart, resp, 6);
+                if(respuesta.length == 1){
+                    var curso = new GraphicsDashboard('contenedor_graficas', resp.name, resp.chart, resp, 12);
+                }else{
+                    var curso = new GraphicsDashboard('contenedor_graficas', resp.name, resp.chart, resp, 6);
+                }
                 if(resp.elements.length > 0){  
                                      
                     curso.printCard();
