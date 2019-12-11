@@ -214,8 +214,8 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
             data_labels = [];
             arr_completado_percantage = [];
             arr_nocompletado_percentage = [];
-            datasets_completado = { label: 'Completado', borderColor: "#1cc88a", backgroundColor: 'transparent', data: arr_completado_percantage }
-            datasets_nocompletado = { label: 'No Completado', borderColor: "#e74a3b", backgroundColor: 'transparent', data: arr_nocompletado_percentage }
+            datasets_completado = { label: 'Completado', backgroundColor: '#1cc88a', stack: 'Stack 0', data: arr_completado_percantage }
+            datasets_nocompletado = { label: 'No Completado', backgroundColor: '#e74a3b', stack: 'Stack 0', data: arr_nocompletado_percentage }
             dataset = [];        
             for(var i = 0; i < informacion.length; i++){
                 info = informacion[i];
@@ -238,7 +238,7 @@ $PAGE->set_title(get_string('pluginname', 'local_hoteles_city_dashboard'));
             //return d_graph;
             var ctx = document.getElementById('grafica_comparativa');
             var chart = new Chart(ctx, {
-                type: 'line',        
+                type: 'bar',        
                 data: d_graph
                                     // labels: ['Variable 1', 'Variable 2', 'Variable 3', 'Variable 4', 'Variable 5', 'Variable 6'],
                                     // datasets: [{
